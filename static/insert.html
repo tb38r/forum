@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html> 
+<body>
+
+<h2>Insert Product</h2>
+
+<form action="/insert" method="POST">
+  <label for="nameID">UserName:</label><br>
+  <input type="text" id="nameID" name="nameName" value=""><br>
+  <label for="nameID">Surname:</label><br>
+  <input type="text" id="nameID" name="nameName" value=""><br>
+  <label for="priceID">Age:</label><br>
+  <input type="text" id="priceID" name="priceName" value=""><br>
+  <label for="descrID">University:</label><br>
+  <input type="text" id="descrID" name="descrName" value=""><br>
+  <input type="submit" value="Insert Product">
+</form>
+<br><br>
+
+{{if .}}
+  <h2>{{.}}</h2>
+{{end}}
+<br>
+<a href="/browse">Browse Products</a>
+</body>
+</html>
