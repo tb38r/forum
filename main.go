@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"forum/database"
+	"forum/web"
 	"log"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -14,5 +15,7 @@ func main() {
 		log.Fatal(err)
 	}
 	database.CreateDB(db)
+
+	web.OpenServer()
 
 }
