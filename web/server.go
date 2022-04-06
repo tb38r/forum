@@ -11,5 +11,5 @@ func OpenServer() {
 		fmt.Fprintf(w, "Hello World Secure!")
 	})
 
-	log.Fatal(http.ListenAndServeTLS("localhost:8080", "localhost.crt", "localhost.key", nil))
+	log.Fatal(http.ListenAndServeTLS(":8080", "tls/cert.pem", "tls/key.pem", nil))
 }
