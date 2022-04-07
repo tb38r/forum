@@ -2,6 +2,7 @@ package web
 
 import (
 	"fmt"
+	"forum/users"
 	"log"
 	"net/http"
 )
@@ -11,5 +12,6 @@ func OpenServer() {
 		fmt.Fprintf(w, "Hello World Secure!")
 	})
 
+	http.HandleFunc("/register/", users.RegisterUser)
 	log.Fatal(http.ListenAndServeTLS(":8080", "tls/cert.pem", "tls/key.pem", nil))
 }
