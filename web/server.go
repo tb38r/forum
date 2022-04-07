@@ -13,5 +13,6 @@ func OpenServer() {
 	})
 
 	http.HandleFunc("/register/", users.RegisterUser)
+	http.HandleFunc("/registerauth", users.RegisterAuth)
 	log.Fatal(http.ListenAndServeTLS(":8080", "tls/cert.pem", "tls/key.pem", nil))
 }
