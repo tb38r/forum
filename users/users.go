@@ -24,19 +24,19 @@ type AuthUser struct {
 var tpl = template.Must(template.ParseGlob("templates/*.html"))
 
 func RegisterUser(w http.ResponseWriter, r *http.Request) {
-	tpl.Execute(w, "register.html")
+	tpl.ExecuteTemplate(w, "register.html",nil)
 }
 
-func registerAuthHandler(w http.ResponseWriter, r *http.Request) {
+func RegisterAuthHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("********registerAuthHandler running*******")
 
 	r.ParseForm()
 
 	username := r.FormValue("username")
 
-	var nameAlphaNumeric = true
+	nameAlphaNumeric := true
 
-	//check whether each character in username AlphaNumeric
+	// check whether each character in username AlphaNumeric
 
 	for _, char := range username {
 		if unicode.IsLetter(char) == false && unicode.IsNumber(char) == false {
@@ -44,7 +44,7 @@ func registerAuthHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	//check username length is 6 < x < 10
+	// check username length is 6 < x < 10
 
 	var usernameLength bool
 
@@ -52,10 +52,10 @@ func registerAuthHandler(w http.ResponseWriter, r *http.Request) {
 		usernameLength = true
 	}
 
-	//check password is valid given all conditions
+	// check password is valid given all conditions
 
 	password := r.FormValue("password")
-	fmt.Println("password", password, "\npswdLength",len(password))
+	fmt.Println("password", password, "\npswdLength", len(password))
 
 	var pswdLowercase, pswdUpperCase, pswdNumber, pswdSpecical, pswdNoSpaces, passwordLength bool
 
@@ -75,10 +75,13 @@ func registerAuthHandler(w http.ResponseWriter, r *http.Request) {
 			pswdNoSpaces = false
 		}
 	}
-	//check password length is 5 < x < 20
-	if len(password) <= 20 && len(password) >= 5{
+	// check password length is 5 < x < 20
+	if len(password) <= 20 && len(password) >= 5 {
 		passwordLength = true
 	}
 
-
+	if !nameAlphaNumeric || !usernameLength || !pswdLowercase || !pswdUpperCase || !pswdNumber || !pswdSpecical || !pswdNoSpaces || !passwordLength {
+		tpl.ExecuteTemplate(w, "register.html", "Please check your username or password")
+		return
+	}
 }
