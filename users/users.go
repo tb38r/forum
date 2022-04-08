@@ -1,10 +1,13 @@
 package users
 
 import (
+	"database/sql"
 	"fmt"
 	"html/template"
 	"net/http"
 	"unicode"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
@@ -23,11 +26,36 @@ type AuthUser struct {
 
 var tpl = template.Must(template.ParseGlob("templates/*.html"))
 
-func RegisterUser(w http.ResponseWriter, r *http.Request) {
-	tpl.ExecuteTemplate(w, "register.html",nil)
+var db *sql.DB
+
+// this func registers a users username, password(as a hash)
+func registerUser(db *sql.DB, username string, hash []byte) {
+	// db, _ = sql.Open("sqlite3", "forum.db")
+	stmt, err := db.Prepare("INSERT INTO users (username, hash) VALUES (?, ?)")
+
+	if err != nil {
+		fmt.Println("error preparing statement:", err)
+		return
+	}
+	// defer stmt.Close()
+
+	result, _ := stmt.Exec(username, hash)
+	db.Close()
+
+	// checking if the result has been added and the last inserted row
+	rowsAff, _ := result.RowsAffected()
+	lastIns, _ := result.LastInsertId()
+	fmt.Println("rows affected:", rowsAff)
+	fmt.Println("last inserted:", lastIns)
+
+}
+
+func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
+	tpl.ExecuteTemplate(w, "register.html", nil)
 }
 
 func RegisterAuthHandler(w http.ResponseWriter, r *http.Request) {
+	db, _ = sql.Open("sqlite3", "forum.db")
 	fmt.Println("********registerAuthHandler running*******")
 
 	r.ParseForm()
@@ -39,7 +67,7 @@ func RegisterAuthHandler(w http.ResponseWriter, r *http.Request) {
 	// check whether each character in username AlphaNumeric
 
 	for _, char := range username {
-		if unicode.IsLetter(char) == false && unicode.IsNumber(char) == false {
+		if !unicode.IsLetter(char) && !unicode.IsNumber(char) {
 			nameAlphaNumeric = false
 		}
 	}
@@ -84,4 +112,31 @@ func RegisterAuthHandler(w http.ResponseWriter, r *http.Request) {
 		tpl.ExecuteTemplate(w, "register.html", "Please check your username or password")
 		return
 	}
+
+	// check if username already exists
+	stmt := "SELECT userID FROM users WHERE username = ?"
+	row := db.QueryRow(stmt, username)
+	var uID string
+	err := row.Scan(&uID)
+	if err != sql.ErrNoRows {
+		fmt.Println("username already exists, err:", err)
+		tpl.ExecuteTemplate(w, "register.html", "username already exists")
+		return
+	}
+
+	//  create hash from password
+	var hash []byte
+
+	hash, err = bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		fmt.Println("bcrypt err:", err)
+		tpl.ExecuteTemplate(w, "register.html", "there was a problem registering user")
+		return
+	}
+
+	fmt.Println("hash:", hash)
+	fmt.Println("string(hash)", string(hash))
+	registerUser(db, username, hash)
+	fmt.Fprintf(w, "congrats your account has been successfully created")
+
 }
