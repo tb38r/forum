@@ -4,7 +4,11 @@ import (
 	"database/sql"
 	"fmt"
 	"html/template"
+	"net"
 	"net/http"
+
+	//"net/mail"
+	"strings"
 	"unicode"
 
 	"golang.org/x/crypto/bcrypt"
@@ -28,18 +32,17 @@ var tpl = template.Must(template.ParseGlob("templates/*.html"))
 
 var db *sql.DB
 
-// this func registers a users username, password(as a hash)
-func registerUser(db *sql.DB, username string, hash []byte) {
+// this func registers a users username, password(as a hash) and email
+func registerUser(db *sql.DB, username string, hash []byte, email string) {
 	// db, _ = sql.Open("sqlite3", "forum.db")
-	stmt, err := db.Prepare("INSERT INTO users (username, hash) VALUES (?, ?)")
-
+	stmt, err := db.Prepare("INSERT INTO users (username, hash, email) VALUES (?, ?, ?)")
 	if err != nil {
 		fmt.Println("error preparing statement:", err)
 		return
 	}
 	// defer stmt.Close()
 
-	result, _ := stmt.Exec(username, hash)
+	result, _ := stmt.Exec(username, hash, email)
 	db.Close()
 
 	// checking if the result has been added and the last inserted row
@@ -47,7 +50,6 @@ func registerUser(db *sql.DB, username string, hash []byte) {
 	lastIns, _ := result.LastInsertId()
 	fmt.Println("rows affected:", rowsAff)
 	fmt.Println("last inserted:", lastIns)
-
 }
 
 func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -61,6 +63,7 @@ func RegisterAuthHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
 	username := r.FormValue("username")
+	fmt.Println("username", username)
 
 	nameAlphaNumeric := true
 
@@ -113,13 +116,33 @@ func RegisterAuthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// check if username already exists
-	stmt := "SELECT userID FROM users WHERE username = ?"
-	row := db.QueryRow(stmt, username)
+	email := r.FormValue("email")
+	fmt.Println("email", email)
+
+
+	if !ValidEmail(email) {
+		tpl.ExecuteTemplate(w, "register.html", "Please enter a valid email address")
+		return
+	}
+
+	// check if email already exists
+	emailStmt := "SELECT userID FROM users WHERE email = ?"
+	rowE := db.QueryRow(emailStmt, email)
 	var uID string
-	err := row.Scan(&uID)
+	err := rowE.Scan(&uID)
 	if err != sql.ErrNoRows {
-		fmt.Println("username already exists, err:", err)
+		fmt.Println("email already exists, err:", err)
+		tpl.ExecuteTemplate(w, "register.html", "email already exists")
+		return
+	}
+
+	// check if username already exists
+	userStmt := "SELECT userID FROM users WHERE username = ?"
+	rowU := db.QueryRow(userStmt, username)
+	var uIDs string
+	error := rowU.Scan(&uIDs)
+	if error != sql.ErrNoRows {
+		fmt.Println("username already exists, err:", error)
 		tpl.ExecuteTemplate(w, "register.html", "username already exists")
 		return
 	}
@@ -136,7 +159,23 @@ func RegisterAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("hash:", hash)
 	fmt.Println("string(hash)", string(hash))
-	registerUser(db, username, hash)
+	registerUser(db, username, hash, email)
 	fmt.Fprintf(w, "congrats your account has been successfully created")
+}
 
+func ValidEmail(email string) bool {
+	i := strings.Index(email, "@")
+	fmt.Println("i:", i)
+
+	domain := email[i+1:]
+	fmt.Println(domain)
+
+	_, err := net.LookupMX(domain)
+	// _, err2 := mail.ParseAddress(email)
+	if err != nil {
+		// fmt.Println("invalid email")
+		return false
+	}
+
+	return true
 }
