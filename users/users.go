@@ -183,3 +183,33 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("login handler running")
 	tpl.ExecuteTemplate(w, "login.html", nil)
 }
+
+func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
+	db, _ = sql.Open("sqlite3", "forum.db")
+	fmt.Println("login authHandler running")
+	r.ParseForm()
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+	fmt.Println("username:", username, "password", password)
+	// get password(hash form) from db to compare with users supplied password
+	var hash string
+	stmt := "SELECT hash FROM users WHERE username = ?"
+	row := db.QueryRow(stmt, username)
+	err := row.Scan(&hash)
+	fmt.Println("hash from db:", hash)
+	if err != nil {
+		fmt.Println("error with username, may not exist")
+		// keep the message to the user a little more vague, so hackers dont know whether you entered an incorrect username or password
+		tpl.ExecuteTemplate(w, "login.html", "check username and password")
+		return
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	if err == nil {
+		fmt.Fprintf(w, "Successful login!")
+		return
+	}
+	fmt.Println("incorrect password")
+	tpl.ExecuteTemplate(w, "login.html", "check username and password")
+
+}
