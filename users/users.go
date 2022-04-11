@@ -119,7 +119,6 @@ func RegisterAuthHandler(w http.ResponseWriter, r *http.Request) {
 	email := r.FormValue("email")
 	fmt.Println("email", email)
 
-
 	if !ValidEmail(email) {
 		tpl.ExecuteTemplate(w, "register.html", "Please enter a valid email address")
 		return
@@ -178,4 +177,9 @@ func ValidEmail(email string) bool {
 	}
 
 	return true
+}
+
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("login handler running")
+	tpl.ExecuteTemplate(w, "login.html", nil)
 }
