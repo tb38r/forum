@@ -11,6 +11,7 @@ import (
 	"strings"
 	"unicode"
 
+	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -28,7 +29,15 @@ type AuthUser struct {
 	PasswordHash string
 }
 
+//var tpl *template.Template
+var currentUser string
+var dbUsers = map[string]User{}
+var dbSessions = map[string]string{}
+var id = uuid.Must(uuid.NewV4())
+
 var tpl = template.Must(template.ParseGlob("templates/*.html"))
+
+//dbUsers["yonas@hotmail.com"] = User{Username: "yonas123", Email: "yonas@hotmail.com"}
 
 var db *sql.DB
 
@@ -160,6 +169,7 @@ func RegisterAuthHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("string(hash)", string(hash))
 	registerUser(db, username, hash, email)
 	fmt.Fprintf(w, "congrats your account has been successfully created")
+
 }
 
 func ValidEmail(email string) bool {
@@ -181,6 +191,7 @@ func ValidEmail(email string) bool {
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("login handler running")
+
 	tpl.ExecuteTemplate(w, "login.html", nil)
 }
 
@@ -191,6 +202,8 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	username := r.FormValue("username")
 	password := r.FormValue("password")
+
+	currentUser = username
 	fmt.Println("username:", username, "password", password)
 	// get password(hash form) from db to compare with users supplied password
 	var hash string
@@ -207,10 +220,37 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	if err == nil {
-		fmt.Fprintf(w, "Successful login!")
+		c := &http.Cookie{
+			Name:  username,
+			Value: id.String(),
+		}
+		http.SetCookie(w, c)
+		dbSessions[c.Value] = username
+		//fmt.Fprintf(w, "Successful login!")
+		tpl.ExecuteTemplate(w, "loginauth.html", "check username and password")
 		return
 	}
 	fmt.Println("incorrect password")
-	tpl.ExecuteTemplate(w, "login.html", "check username and password")
+	tpl.ExecuteTemplate(w, "loginauth.html", "check username and password")
+
+}
+
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+	username := r.FormValue("username")
+	fmt.Println("username check -----> ", username)
+	c, _ := r.Cookie(currentUser)
+	// delete the session
+	//delete(dbSessions, c.Value)
+	// remove the cookie
+	c = &http.Cookie{
+		Name:   currentUser,
+		Value:  "",
+		MaxAge: -1,
+	}
+	http.SetCookie(w, c)
+	//tpl.ExecuteTemplate(w, "/logout.html", nil)
+
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
 
 }
