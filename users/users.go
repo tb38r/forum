@@ -185,6 +185,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
+	// we need to figure out whether we have to close the database at some point to save resources.
 	db, _ = sql.Open("sqlite3", "forum.db")
 	fmt.Println("login authHandler running")
 	r.ParseForm()
