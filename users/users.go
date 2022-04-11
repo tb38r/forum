@@ -31,7 +31,8 @@ type AuthUser struct {
 
 //var tpl *template.Template
 var currentUser string
-var dbUsers = map[string]User{}
+
+//var dbUsers = map[string]User{}
 var dbSessions = map[string]string{}
 var id = uuid.Must(uuid.NewV4())
 
@@ -191,6 +192,10 @@ func ValidEmail(email string) bool {
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("login handler running")
+	fmt.Println("checking bool-----> ", alreadyLoggedIn(r))
+	if alreadyLoggedIn(r) {
+		http.Redirect(w, r, "/loginauth", http.StatusSeeOther)
+	}
 
 	tpl.ExecuteTemplate(w, "login.html", nil)
 }
@@ -227,18 +232,16 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, c)
 		dbSessions[c.Value] = username
 		//fmt.Fprintf(w, "Successful login!")
-		tpl.ExecuteTemplate(w, "loginauth.html", "check username and password")
+		tpl.ExecuteTemplate(w, "loginauth.html", nil)
 		return
 	}
 	fmt.Println("incorrect password")
-	tpl.ExecuteTemplate(w, "loginauth.html", "check username and password")
+	tpl.ExecuteTemplate(w, "login.html", "check username and password")
 
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	username := r.FormValue("username")
-	fmt.Println("username check -----> ", username)
+
 	c, _ := r.Cookie(currentUser)
 	// delete the session
 	//delete(dbSessions, c.Value)
@@ -253,4 +256,15 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 
+}
+
+func alreadyLoggedIn(r *http.Request) bool {
+
+	c, err := r.Cookie(currentUser)
+	if err != nil {
+		return false
+	}
+	// un := dbSessions[c.Value]
+	_, ok := dbSessions[c.Name]
+	return ok
 }
