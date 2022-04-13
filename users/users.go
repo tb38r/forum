@@ -192,16 +192,54 @@ func ValidEmail(email string) bool {
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
+
 	fmt.Println("login handler running")
 	fmt.Println("checking bool-----> ", alreadyLoggedIn(r))
 	// if  {
 	// 	http.Redirect(w, r, "/loginauth", http.StatusSeeOther)
 	// }
 
+	
+	// if sessionExists("tolu123") {
+
+	// 	//delete session id from existing cookie and delete it from map
+
+	// 	for _, cookie := range r.Cookies() {
+	// 		fmt.Println("-------Test Delete 1")
+
+	// 		if cookie.Name == "tolu123" && cookie.Value != "" {
+
+	// 			fmt.Println("-------Test Delete 2")
+	// 			cookie.Value = ""
+	// 			cookie.MaxAge = -1
+	// 			delete(dbSessions, "tolu123")
+	// 			http.Redirect(w, r, "/login", http.StatusSeeOther)
+	// 		}
+
+	// 	}
+
+	// 	// create new cookie for user
+	// 	id := uuid.Must(uuid.NewV4())
+	// 	c := &http.Cookie{
+	// 		Name:  "tolu1234",
+	// 		Value: id.String(),
+	// 	}
+
+	// 	http.SetCookie(w, c)
+	// 	dbSessions["currentUser"] = c.Value
+	// 	fmt.Println(dbSessions)
+	// 	tpl.ExecuteTemplate(w, "loginauth.html", "User already logged in")
+	// 	return
+
+	// }
+
 	tpl.ExecuteTemplate(w, "login.html", nil)
 }
 
 func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
+
+	///////
+
 	// we need to figure out whether we have to close the database at some point to save resources.
 	db, _ = sql.Open("sqlite3", "forum.db")
 	fmt.Println("login authHandler running")
@@ -226,13 +264,17 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	if err == nil {
-		fmt.Println(sessionExists(username))
+		//fmt.Println(sessionExists(username))
 		if sessionExists(username) {
+
 			//delete session id from existing cookie and delete it from map
 
 			for _, cookie := range r.Cookies() {
+				fmt.Println("-------Test Delete 3")
 
 				if cookie.Name == username && cookie.Value != "" {
+
+					fmt.Println("-------Test Delete 4")
 					cookie.Value = ""
 					cookie.MaxAge = -1
 					delete(dbSessions, username)
@@ -250,7 +292,7 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 			http.SetCookie(w, c)
 			dbSessions[username] = c.Value
-			tpl.ExecuteTemplate(w, "loginauth.html", nil)
+			tpl.ExecuteTemplate(w, "loginauth.html", "User already logged in")
 			return
 
 		} else {
@@ -263,11 +305,26 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 			http.SetCookie(w, c)
 			dbSessions[username] = c.Value
-			tpl.ExecuteTemplate(w, "loginauth.html", nil)
+			tpl.ExecuteTemplate(w, "loginauth.html", "New session created")
+
+			/////////remove///////////////////
+			fmt.Println(sessionExists(username))
+
+			for _, cookie := range r.Cookies() {
+				fmt.Println()
+				fmt.Println("Name : ", cookie.Name)
+				fmt.Println("Value/UUID : ", cookie.Value)
+			}
+
+			fmt.Println()
+
+			/////////////////////////////////////
 			return
 
 		}
+
 	}
+
 	fmt.Println("incorrect password")
 	tpl.ExecuteTemplate(w, "login.html", "check username and password")
 
@@ -304,10 +361,8 @@ func alreadyLoggedIn(r *http.Request) bool {
 
 func sessionExists(s string) bool {
 
-	var ok bool
-	if _, ok := dbSessions[currentUser]; ok {
-		ok = true
+	if _, user := dbSessions[s]; user {
 		return true
 	}
-	return ok
+	return false
 }
