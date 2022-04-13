@@ -33,8 +33,7 @@ type AuthUser struct {
 var currentUser string
 
 //var dbUsers = map[string]User{}
-var dbSessions = map[string]string{}
-var id = uuid.Must(uuid.NewV4())
+var dbSessions = make(map[string]string)
 
 var tpl = template.Must(template.ParseGlob("templates/*.html"))
 
@@ -193,9 +192,9 @@ func ValidEmail(email string) bool {
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("login handler running")
 	fmt.Println("checking bool-----> ", alreadyLoggedIn(r))
-	if alreadyLoggedIn(r) {
-		http.Redirect(w, r, "/loginauth", http.StatusSeeOther)
-	}
+	// if  {
+	// 	http.Redirect(w, r, "/loginauth", http.StatusSeeOther)
+	// }
 
 	tpl.ExecuteTemplate(w, "login.html", nil)
 }
@@ -225,15 +224,47 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	if err == nil {
-		c := &http.Cookie{
-			Name:  username,
-			Value: id.String(),
+		fmt.Println(sessionExists(username))
+		if sessionExists(username) {
+			//delete session id from existing cookie and delete it from map
+
+			for _, cookie := range r.Cookies() {
+
+				if cookie.Name == username && cookie.Value != "" {
+					cookie.Value = ""
+					cookie.MaxAge = -1
+					delete(dbSessions, username)
+					http.Redirect(w, r, "/login", http.StatusSeeOther)
+				}
+
+			}
+
+			// create new cookie for user
+			id := uuid.Must(uuid.NewV4())
+			c := &http.Cookie{
+				Name:  username,
+				Value: id.String(),
+			}
+
+			http.SetCookie(w, c)
+			dbSessions[username] = c.Value
+			tpl.ExecuteTemplate(w, "loginauth.html", nil)
+			return
+
+		} else {
+
+			id := uuid.Must(uuid.NewV4())
+			c := &http.Cookie{
+				Name:  username,
+				Value: id.String(),
+			}
+
+			http.SetCookie(w, c)
+			dbSessions[username] = c.Value
+			tpl.ExecuteTemplate(w, "loginauth.html", nil)
+			return
+
 		}
-		http.SetCookie(w, c)
-		dbSessions[c.Value] = username
-		//fmt.Fprintf(w, "Successful login!")
-		tpl.ExecuteTemplate(w, "loginauth.html", nil)
-		return
 	}
 	fmt.Println("incorrect password")
 	tpl.ExecuteTemplate(w, "login.html", "check username and password")
@@ -266,5 +297,15 @@ func alreadyLoggedIn(r *http.Request) bool {
 	}
 	// un := dbSessions[c.Value]
 	_, ok := dbSessions[c.Name]
+	return ok
+}
+
+func sessionExists(s string) bool {
+
+	var ok bool
+	if _, ok := dbSessions[currentUser]; ok {
+		ok = true
+		return true
+	}
 	return ok
 }
