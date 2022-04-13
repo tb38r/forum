@@ -42,6 +42,8 @@ var tpl = template.Must(template.ParseGlob("templates/*.html"))
 
 var db *sql.DB
 
+//nil
+
 // this func registers a users username, password(as a hash) and email
 func registerUser(db *sql.DB, username string, hash []byte, email string) {
 	// db, _ = sql.Open("sqlite3", "forum.db")
