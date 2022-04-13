@@ -199,7 +199,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	// 	http.Redirect(w, r, "/loginauth", http.StatusSeeOther)
 	// }
 
-	
 	// if sessionExists("tolu123") {
 
 	// 	//delete session id from existing cookie and delete it from map
@@ -266,7 +265,7 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 	if err == nil {
 		//fmt.Println(sessionExists(username))
 		if sessionExists(username) {
-
+			fmt.Println(dbSessions)
 			//delete session id from existing cookie and delete it from map
 
 			for _, cookie := range r.Cookies() {
@@ -274,10 +273,14 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 				if cookie.Name == username && cookie.Value != "" {
 
+					fmt.Println("testting--------", cookie.Name, cookie.Value)
 					fmt.Println("-------Test Delete 4")
 					cookie.Value = ""
 					cookie.MaxAge = -1
+					fmt.Println("sessions Map 1", dbSessions)
 					delete(dbSessions, username)
+					http.SetCookie(w, cookie)
+					fmt.Println("testting 222--------", cookie.Name, cookie.Value)
 					http.Redirect(w, r, "/login", http.StatusSeeOther)
 				}
 
@@ -292,7 +295,7 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 			http.SetCookie(w, c)
 			dbSessions[username] = c.Value
-			tpl.ExecuteTemplate(w, "loginauth.html", "User already logged in")
+			tpl.ExecuteTemplate(w, "loginauth.html", "session created after deleting cookie")
 			return
 
 		} else {
@@ -334,7 +337,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	c, _ := r.Cookie(currentUser)
 	// delete the session
-	//delete(dbSessions, c.Value)
+	delete(dbSessions, c.Value)
 	// remove the cookie
 	c = &http.Cookie{
 		Name:   currentUser,
