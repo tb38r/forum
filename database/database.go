@@ -16,14 +16,14 @@ func CreateDB() {
 		log.Fatal(err)
 	}
 
-	db.Exec("create table if not exists user (userID integer primary key, email text, username text, hash CHAR(60), usertype text, externalloginid text)")
+	db.Exec("create table if not exists users (userID integer primary key, email text, username text, hash CHAR(60), usertype text, externalloginid text)")
 	db.Exec(`create table if not exists post (
 		postID integer primary key, 
 		userID integer REFERENCES user(userID), 
 		commentID integer REFERENCES comment(commentID), 
 		categoryID integer REFERENCES category(categoryID), 
 		creationDate integer, 
-		postText text, 
+		postText CHAR(50), 
 		postImages text, 
 		likeID integer REFERENCES like(likeID), 
 		dislikeID integer REFERENCES dislike(dislikeID), 
