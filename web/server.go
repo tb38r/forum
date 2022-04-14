@@ -14,6 +14,8 @@ func OpenServer() {
 
 	http.HandleFunc("/login", users.LoginHandler)
 	http.HandleFunc("/loginauth", users.LoginAuthHandler)
+	http.HandleFunc("/logout", users.LogoutHandler)
+
 	http.HandleFunc("/register/", users.RegisterUserHandler)
 	http.HandleFunc("/registerauth", users.RegisterAuthHandler)
 	log.Fatal(http.ListenAndServeTLS(":8080", "tls/cert.pem", "tls/key.pem", nil))
