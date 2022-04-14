@@ -1,5 +1,7 @@
 package posts
 
+import "database/sql"
+
 type Post struct {
 	PostID       int
 	UserID       int
@@ -12,3 +14,7 @@ type Post struct {
 	DislikesID   int
 	Edited       bool
 }
+
+var db *sql.DB
+
+// func createPosts(db *sql.DB)
