@@ -13,6 +13,7 @@ type Post struct {
 	CommentID    int
 	CategoryID   int
 	CreationDate int
+	PostTitle    string
 	PostText     string
 	PostImage    string
 	LikesID      int
@@ -24,15 +25,15 @@ var db *sql.DB
 
 var tpl = template.Must(template.ParseGlob("templates/*.html"))
 
-func (*Post) createPosts(db *sql.DB, userID int, content string) {
-	stmt, err := db.Prepare("INSERT INTO post (userID, postTEXT) VALUES (?, ?)")
+func (*Post) createPosts(db *sql.DB, userID int, title string, content string) {
+	stmt, err := db.Prepare("INSERT INTO post (userID, postTitle, postContent) VALUES (?, ?, ?)")
 	if err != nil {
 		fmt.Println("error preparing statement:", err)
 		return
 	}
 	// defer stmt.Close()
 
-	result, _ := stmt.Exec(userID, content)
+	result, _ := stmt.Exec(userID, title, content)
 	db.Close()
 
 	// checking if the result has been added and the last inserted row

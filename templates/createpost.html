@@ -9,9 +9,11 @@
 <body>
     <H2>Create Post</H2>
     <form action="/postcreation" method="POST">
-        <label for="post">Content</label><br>
+        <label for="posttitle">Title</label><br>
+        <textarea id="title" name="title" rows="1" cols="50"></textarea><br>
+        <label for="postcontent">Content</label><br>
         <textarea id="content" name="content" rows="4" cols="50"></textarea><br>
-        <input type="submit" value="Create Post">
+        <input type="submit" value="Create Post"><br>
     </form>
 </body>
 </html>
