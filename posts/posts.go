@@ -46,3 +46,14 @@ func (*Post) createPosts(db *sql.DB, userID int, title string, content string) {
 func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	tpl.ExecuteTemplate(w, "createpost.html", nil)
 }
+
+func StorePostHandler(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+
+	title := r.FormValue("title")
+	content := r.FormValue("content")
+
+	fmt.Println("title:", title, "content:", content)
+
+	tpl.ExecuteTemplate(w, "storepost.html", nil)
+}

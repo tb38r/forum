@@ -195,43 +195,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("login handler running")
 	fmt.Println("checking bool-----> ", alreadyLoggedIn(r))
-	// if  {
-	// 	http.Redirect(w, r, "/loginauth", http.StatusSeeOther)
-	// }
-
-	// if sessionExists("tolu123") {
-
-	// 	//delete session id from existing cookie and delete it from map
-
-	// 	for _, cookie := range r.Cookies() {
-	// 		fmt.Println("-------Test Delete 1")
-
-	// 		if cookie.Name == "tolu123" && cookie.Value != "" {
-
-	// 			fmt.Println("-------Test Delete 2")
-	// 			cookie.Value = ""
-	// 			cookie.MaxAge = -1
-	// 			delete(dbSessions, "tolu123")
-	// 			http.Redirect(w, r, "/login", http.StatusSeeOther)
-	// 		}
-
-	// 	}
-
-	// 	// create new cookie for user
-	// 	id := uuid.Must(uuid.NewV4())
-	// 	c := &http.Cookie{
-	// 		Name:  "tolu1234",
-	// 		Value: id.String(),
-	// 	}
-
-	// 	http.SetCookie(w, c)
-	// 	dbSessions["currentUser"] = c.Value
-	// 	fmt.Println(dbSessions)
-	// 	tpl.ExecuteTemplate(w, "loginauth.html", "User already logged in")
-	// 	return
-
-	// }
-
 	tpl.ExecuteTemplate(w, "login.html", nil)
 }
 
