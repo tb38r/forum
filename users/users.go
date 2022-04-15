@@ -265,67 +265,62 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 	if err == nil {
 		if sessionExists(username) {
 			fmt.Println()
-
 			fmt.Println("Session Exists/ID", dbSessions)
 			fmt.Println()
 
+			// Read the cookie,if there are any
+			cookie, err := r.Cookie(username)
 
-				// Read the cookie,if there are any
-	cookie, err := r.Cookie(username)
-	if err != nil {
-		//i.e no active cookie on (presumably) new client
-			// create new cookie for user
-			id := uuid.Must(uuid.NewV4())
-			c := &http.Cookie{
-				Name:  username,
-				Value: id.String(),
+			//i.e session exists (on map) but no active cookie on (presumably) new client
+			if err != nil {
+
+				// create new cookie for user on this client
+				id := uuid.Must(uuid.NewV4())
+				c := &http.Cookie{
+					Name:  username,
+					Value: id.String(),
+				}
+
+				http.SetCookie(w, c)
+				dbSessions[username] = c.Value
+				tpl.ExecuteTemplate(w, "loginauth.html", "session created after reassigning ID in map")
+				fmt.Println("Map Values reassigned for new client log in: ", dbSessions)
+				fmt.Println()
+
+				return
+
+				//session exists but differing UUID,  logout/close session
+			} else if cookie.Value != dbSessions[username] {
+
+				//expire cookie as there's an active session elsewhere
+				for _, cookie := range r.Cookies() {
+					fmt.Println("-------Test Delete 3")
+
+					if cookie.Name == username {
+
+						cookie.MaxAge = -1
+
+						http.SetCookie(w, cookie)
+					}
+				}
+
+				//redirects to log in page where prior sessions exists
+				http.Redirect(w, r, "/login", http.StatusSeeOther)
+
+				fmt.Println("Cookie deleted due to pre-existing session")
+				fmt.Println()
+				return
+
+				//fmt.Print("Cookie: ",cookie.Value);
+
+				//UUID matches that within map, active session, no conflicts
+			} else if cookie.Value == dbSessions[username] {
+				tpl.ExecuteTemplate(w, "loginauth.html", "Active session no changes")
+				fmt.Println("Active session on client, no changes made")
+				fmt.Println()
+				return
+
 			}
-
-			http.SetCookie(w, c)
-			dbSessions[username] = c.Value
-			tpl.ExecuteTemplate(w, "loginauth.html", "session created after reassigning ID in map")
-			fmt.Println("Map Values reassigned for new client log in: ", dbSessions)
-			fmt.Println()
-
-
-			return
-
-
-	} else if cookie.Value == dbSessions[username] {
-		tpl.ExecuteTemplate(w, "loginauth.html", "Active session no changes")
-		fmt.Println("Active session on client, no changes made")
-		fmt.Println()
-		return
-
-		//fmt.Print("Cookie: ",cookie.Value);
-	}
-
-			//delete session id from existing cookie and delete it from map
-
-			// for _, cookie := range r.Cookies() {
-			// 	fmt.Println("-------Test Delete 3")
-
-			// 	if cookie.Name == username && cookie.Value == dbSessions[username] {
-
-			// 		// fmt.Println("testting--------", cookie.Name, cookie.Value)
-			// 		// fmt.Println("-------Test Delete 4")
-			// 		// cookie.Value = ""
-			// 		// cookie.MaxAge = -1
-			// 		// fmt.Println("sessions Map 1", dbSessions)
-			// 		// delete(dbSessions, username)
-			// 		// http.SetCookie(w, cookie)
-			// 		// fmt.Println("testting 222--------", cookie.Name, cookie.Value)
-			// 		tpl.ExecuteTemplate(w, "loginauth.html", "CURRENTLY ACTIVE SESSION")
-			// 		return
-			// 	}
-
-
-
-
-
-
-			// }
-
 			// create new cookie for user
 			id := uuid.Must(uuid.NewV4())
 			c := &http.Cookie{
@@ -336,13 +331,12 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 			http.SetCookie(w, c)
 			dbSessions[username] = c.Value
 			tpl.ExecuteTemplate(w, "loginauth.html", "session created after deleting cookie")
-		
+
 			return
 
 		} else {
 
 			//NO ACTIVE SESSION/FIRST TIME
-
 			id := uuid.Must(uuid.NewV4())
 			c := &http.Cookie{
 				Name:  username,
@@ -379,8 +373,9 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	c, _ := r.Cookie(currentUser)
+
 	// delete the session
-	delete(dbSessions, c.Value)
+	delete(dbSessions, c.Name)
 	// remove the cookie
 	c = &http.Cookie{
 		Name:   currentUser,
