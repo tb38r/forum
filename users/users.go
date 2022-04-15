@@ -253,7 +253,7 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 				return
 
-				//session exists but differing UUID,  logout/close session
+			//session exists but differing UUID,  logout/close session
 			} else if cookie.Value != dbSessions[username] {
 
 				//expire cookie as there's an active session elsewhere
@@ -277,7 +277,8 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 				//fmt.Print("Cookie: ",cookie.Value);
 
-				//UUID matches that within map, active session, no conflicts
+
+			//UUID matches that within map, active session, no conflicts
 			} else if cookie.Value == dbSessions[username] {
 				tpl.ExecuteTemplate(w, "loginauth.html", "Active session no changes")
 				fmt.Println("Active session on client, no changes made")
@@ -285,6 +286,7 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 				return
 
 			}
+
 			// create new cookie for user
 			id := uuid.Must(uuid.NewV4())
 			c := &http.Cookie{
@@ -340,6 +342,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	// delete the session
 	delete(dbSessions, c.Name)
+
 	// remove the cookie
 	c = &http.Cookie{
 		Name:   currentUser,
@@ -359,7 +362,6 @@ func alreadyLoggedIn(r *http.Request) bool {
 	if err != nil {
 		return false
 	}
-	// un := dbSessions[c.Value]
 	_, ok := dbSessions[c.Name]
 	return ok
 }
