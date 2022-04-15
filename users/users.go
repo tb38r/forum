@@ -350,7 +350,9 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		MaxAge: -1,
 	}
 	http.SetCookie(w, c)
-	//tpl.ExecuteTemplate(w, "/logout.html", nil)
+
+	fmt.Println("User logged out and redirected to the log-in page")
+
 
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 
