@@ -179,7 +179,7 @@ func ValidEmail(email string) bool {
 	fmt.Println("i:", i)
 
 	domain := email[i+1:]
-	fmt.Println("Domain: ",domain)
+	fmt.Println("Domain: ", domain)
 
 	_, err := net.LookupMX(domain)
 	// _, err2 := mail.ParseAddress(email)
@@ -195,13 +195,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("login handler running")
 	fmt.Println("checking bool-----> ", alreadyLoggedIn(r))
-	
 
 	tpl.ExecuteTemplate(w, "login.html", nil)
 }
 
 func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
-
 
 	// we need to figure out whether we have to close the database at some point to save resources.
 	db, _ = sql.Open("sqlite3", "forum.db")
@@ -253,7 +251,7 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 				return
 
-			//session exists but differing UUID,  logout/close session
+				//session exists but differing UUID,  logout/close session
 			} else if cookie.Value != dbSessions[username] {
 
 				//expire cookie as there's an active session elsewhere
@@ -268,17 +266,15 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 
-				//redirects to log in page where prior sessions exists
+				//redirects to log in page when prior session exists
 				http.Redirect(w, r, "/login", http.StatusSeeOther)
 
 				fmt.Println("Cookie deleted due to pre-existing session")
 				fmt.Println()
 				return
 
-				//fmt.Print("Cookie: ",cookie.Value);
 
-
-			//UUID matches that within map, active session, no conflicts
+				//UUID matches that within map, active session, no conflicts
 			} else if cookie.Value == dbSessions[username] {
 				tpl.ExecuteTemplate(w, "loginauth.html", "Active session no changes")
 				fmt.Println("Active session on client, no changes made")
@@ -287,18 +283,6 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 			}
 
-			// create new cookie for user
-			id := uuid.Must(uuid.NewV4())
-			c := &http.Cookie{
-				Name:  username,
-				Value: id.String(),
-			}
-
-			http.SetCookie(w, c)
-			dbSessions[username] = c.Value
-			tpl.ExecuteTemplate(w, "loginauth.html", "session created after deleting cookie")
-
-			return
 
 		} else {
 
@@ -352,7 +336,6 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, c)
 
 	fmt.Println("User logged out and redirected to the log-in page")
-
 
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 
