@@ -27,14 +27,24 @@ var db *sql.DB
 var tpl = template.Must(template.ParseGlob("templates/*.html"))
 
 func createPosts(db *sql.DB, userID int, title string, content string) {
-	stmt, err := db.Prepare("INSERT INTO post (userID, postTitle, postContent) VALUES (?, ?, ?)")
+	stmt, err := db.Prepare("INSERT INTO post (userID, postTitle, postContent, creationDate) VALUES (?, ?, ?, datetime('now'))")
 	if err != nil {
 		fmt.Println("error preparing statement:", err)
 		return
 	}
 	// defer stmt.Close()
-
 	result, _ := stmt.Exec(userID, title, content)
+
+	// adding the creationdate into the datebase
+
+	// stmt2, err2 := db.Prepare("INSERT INTO post (creationDate) VALUES datetime('now')")
+	// if err2 != nil {
+	// 	fmt.Println("error adding creation date")
+	// 	return
+	// }
+
+	// result2, _ := stmt2
+
 	db.Close()
 
 	// checking if the result has been added and the last inserted row
