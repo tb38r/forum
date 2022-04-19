@@ -44,7 +44,15 @@ func createPosts(db *sql.DB, userID int, title string, content string) {
 	fmt.Println("last inserted:", lastIns)
 }
 
+// this global variable for the userId will be used to get the id from create post handler (in url), and passed onto
+// the storepost handler to add as the foreign key of the posts table
+var userIdint int
+
 func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
+	// getting the user id from the url
+	userId := r.URL.Query().Get("userid")
+	fmt.Println("userId as string------>", userId)
+	userIdint, _ = strconv.Atoi(userId)
 	tpl.ExecuteTemplate(w, "createpost.html", nil)
 }
 
@@ -54,11 +62,7 @@ func StorePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	title := r.FormValue("title")
 	content := r.FormValue("content")
-
-	// URL query to get the userId from the url
-	userId := r.URL.Query().Get("userid")
-	userIdint, _ := strconv.Atoi(userId)
-
+	// fmt.Println(userIdint)
 	// adding the post to the database
 	createPosts(db, userIdint, title, content)
 
