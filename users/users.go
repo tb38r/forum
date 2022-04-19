@@ -179,7 +179,7 @@ func ValidEmail(email string) bool {
 	fmt.Println("i:", i)
 
 	domain := email[i+1:]
-	fmt.Println(domain)
+	fmt.Println("Domain: ", domain)
 
 	_, err := net.LookupMX(domain)
 	// _, err2 := mail.ParseAddress(email)
@@ -195,49 +195,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("login handler running")
 	fmt.Println("checking bool-----> ", alreadyLoggedIn(r))
-	// if  {
-	// 	http.Redirect(w, r, "/loginauth", http.StatusSeeOther)
-	// }
-
-	// if sessionExists("tolu123") {
-
-	// 	//delete session id from existing cookie and delete it from map
-
-	// 	for _, cookie := range r.Cookies() {
-	// 		fmt.Println("-------Test Delete 1")
-
-	// 		if cookie.Name == "tolu123" && cookie.Value != "" {
-
-	// 			fmt.Println("-------Test Delete 2")
-	// 			cookie.Value = ""
-	// 			cookie.MaxAge = -1
-	// 			delete(dbSessions, "tolu123")
-	// 			http.Redirect(w, r, "/login", http.StatusSeeOther)
-	// 		}
-
-	// 	}
-
-	// 	// create new cookie for user
-	// 	id := uuid.Must(uuid.NewV4())
-	// 	c := &http.Cookie{
-	// 		Name:  "tolu1234",
-	// 		Value: id.String(),
-	// 	}
-
-	// 	http.SetCookie(w, c)
-	// 	dbSessions["currentUser"] = c.Value
-	// 	fmt.Println(dbSessions)
-	// 	tpl.ExecuteTemplate(w, "loginauth.html", "User already logged in")
-	// 	return
-
-	// }
 
 	tpl.ExecuteTemplate(w, "login.html", nil)
 }
 
 func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
-
-	///////
 
 	// we need to figure out whether we have to close the database at some point to save resources.
 	db, _ = sql.Open("sqlite3", "forum.db")
@@ -263,43 +225,68 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	if err == nil {
-		//fmt.Println(sessionExists(username))
 		if sessionExists(username) {
-			fmt.Println(dbSessions)
-			//delete session id from existing cookie and delete it from map
+			fmt.Println()
+			fmt.Println("Session Exists/ID", dbSessions)
+			fmt.Println()
 
-			for _, cookie := range r.Cookies() {
-				fmt.Println("-------Test Delete 3")
+			// Read the cookie,if there are any
+			cookie, err := r.Cookie(username)
 
-				if cookie.Name == username && cookie.Value != "" {
+			//i.e session exists (on map) but no active cookie on (presumably) new client
+			if err != nil {
 
-					fmt.Println("testting--------", cookie.Name, cookie.Value)
-					fmt.Println("-------Test Delete 4")
-					cookie.Value = ""
-					cookie.MaxAge = -1
-					fmt.Println("sessions Map 1", dbSessions)
-					delete(dbSessions, username)
-					http.SetCookie(w, cookie)
-					fmt.Println("testting 222--------", cookie.Name, cookie.Value)
-					http.Redirect(w, r, "/login", http.StatusSeeOther)
+				// create new cookie for user on this client
+				id := uuid.Must(uuid.NewV4())
+				c := &http.Cookie{
+					Name:  username,
+					Value: id.String(),
 				}
 
+				http.SetCookie(w, c)
+				dbSessions[username] = c.Value
+				tpl.ExecuteTemplate(w, "loginauth.html", "session created after reassigning ID in map")
+				fmt.Println("Map Values reassigned for new client log in: ", dbSessions)
+				fmt.Println()
+
+				return
+
+				//session exists but differing UUID,  logout/close session
+			} else if cookie.Value != dbSessions[username] {
+
+				//expire cookie as there's an active session elsewhere
+				for _, cookie := range r.Cookies() {
+					fmt.Println("-------Test Delete 3")
+
+					if cookie.Name == username {
+
+						cookie.MaxAge = -1
+
+						http.SetCookie(w, cookie)
+					}
+				}
+
+				//redirects to log in page when prior session exists
+				http.Redirect(w, r, "/login", http.StatusSeeOther)
+
+				fmt.Println("Cookie deleted due to pre-existing session")
+				fmt.Println()
+				return
+
+
+				//UUID matches that within map, active session, no conflicts
+			} else if cookie.Value == dbSessions[username] {
+				tpl.ExecuteTemplate(w, "loginauth.html", "Active session no changes")
+				fmt.Println("Active session on client, no changes made")
+				fmt.Println()
+				return
+
 			}
 
-			// create new cookie for user
-			id := uuid.Must(uuid.NewV4())
-			c := &http.Cookie{
-				Name:  username,
-				Value: id.String(),
-			}
-
-			http.SetCookie(w, c)
-			dbSessions[username] = c.Value
-			tpl.ExecuteTemplate(w, "loginauth.html", "session created after deleting cookie")
-			return
 
 		} else {
 
+			//NO ACTIVE SESSION/FIRST TIME
 			id := uuid.Must(uuid.NewV4())
 			c := &http.Cookie{
 				Name:  username,
@@ -311,7 +298,7 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 			tpl.ExecuteTemplate(w, "loginauth.html", "New session created")
 
 			/////////remove///////////////////
-			fmt.Println(sessionExists(username))
+			fmt.Println("sessionbool", sessionExists(username))
 
 			for _, cookie := range r.Cookies() {
 				fmt.Println()
@@ -319,8 +306,8 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 				fmt.Println("Value/UUID : ", cookie.Value)
 			}
 
+			fmt.Println("First time log-in successful")
 			fmt.Println()
-
 			/////////////////////////////////////
 			return
 
@@ -336,8 +323,10 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	c, _ := r.Cookie(currentUser)
+
 	// delete the session
-	delete(dbSessions, c.Value)
+	delete(dbSessions, c.Name)
+
 	// remove the cookie
 	c = &http.Cookie{
 		Name:   currentUser,
@@ -345,7 +334,8 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		MaxAge: -1,
 	}
 	http.SetCookie(w, c)
-	//tpl.ExecuteTemplate(w, "/logout.html", nil)
+
+	fmt.Println("User logged out and redirected to the log-in page")
 
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 
@@ -357,7 +347,6 @@ func alreadyLoggedIn(r *http.Request) bool {
 	if err != nil {
 		return false
 	}
-	// un := dbSessions[c.Value]
 	_, ok := dbSessions[c.Name]
 	return ok
 }
