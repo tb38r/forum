@@ -224,6 +224,18 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// get userId to pass onto createpost handler
+
+	var userID int
+
+	stmt2 := "SELECT userID FROM users WHERE username = ?"
+	row2 := db.QueryRow(stmt2, username)
+	err2 := row2.Scan(&userID)
+	fmt.Println("userID from db:", userID)
+	if err2 != nil {
+		fmt.Println("user not found in db")
+	}
+
 	err = bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	if err == nil {
 		//fmt.Println(sessionExists(username))
@@ -258,7 +270,7 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 			http.SetCookie(w, c)
 			dbSessions[username] = c.Value
-			tpl.ExecuteTemplate(w, "loginauth.html", "session created after deleting cookie")
+			tpl.ExecuteTemplate(w, "loginauth.html", userID)
 			return
 
 		} else {
@@ -271,7 +283,7 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 			http.SetCookie(w, c)
 			dbSessions[username] = c.Value
-			tpl.ExecuteTemplate(w, "loginauth.html", "New session created")
+			tpl.ExecuteTemplate(w, "loginauth.html", userID)
 
 			/////////remove///////////////////
 			fmt.Println(sessionExists(username))

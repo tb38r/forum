@@ -19,7 +19,7 @@ func OpenServer() {
 
 	http.HandleFunc("/register/", users.RegisterUserHandler)
 	http.HandleFunc("/registerauth", users.RegisterAuthHandler)
-	http.HandleFunc("/createpost", posts.CreatePostHandler)
+	http.HandleFunc("/createpost/", posts.CreatePostHandler)
 	http.HandleFunc("/storepost", posts.StorePostHandler)
 	log.Fatal(http.ListenAndServeTLS(":8080", "tls/cert.pem", "tls/key.pem", nil))
 }
