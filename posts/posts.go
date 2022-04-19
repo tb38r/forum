@@ -68,5 +68,5 @@ func StorePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("title:", title, "content:", content)
 
-	tpl.ExecuteTemplate(w, "storepost.html", nil)
+	tpl.ExecuteTemplate(w, "storepost.html", "Post stored!")
 }
