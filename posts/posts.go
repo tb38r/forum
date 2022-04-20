@@ -51,7 +51,6 @@ var userIdint int
 func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	// getting the user id from the url
 	userId := r.URL.Query().Get("userid")
-	fmt.Println("userId as string------>", userId)
 	userIdint, _ = strconv.Atoi(userId)
 	tpl.ExecuteTemplate(w, "createpost.html", nil)
 }
