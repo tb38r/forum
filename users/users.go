@@ -195,7 +195,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("login handler running")
 	fmt.Println("checking bool-----> ", alreadyLoggedIn(r))
-
 	tpl.ExecuteTemplate(w, "login.html", nil)
 }
 
@@ -221,6 +220,18 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 		// keep the message to the user a little more vague, so hackers dont know whether you entered an incorrect username or password
 		tpl.ExecuteTemplate(w, "login.html", "check username and password")
 		return
+	}
+
+	// get userId to pass onto createpost handler
+
+	var userID int
+
+	stmt2 := "SELECT userID FROM users WHERE username = ?"
+	row2 := db.QueryRow(stmt2, username)
+	err2 := row2.Scan(&userID)
+	fmt.Println("userID from db:", userID)
+	if err2 != nil {
+		fmt.Println("user not found in db")
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
@@ -273,7 +284,6 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 				fmt.Println()
 				return
 
-
 				//UUID matches that within map, active session, no conflicts
 			} else if cookie.Value == dbSessions[username] {
 				tpl.ExecuteTemplate(w, "loginauth.html", "Active session no changes")
@@ -282,7 +292,6 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 				return
 
 			}
-
 
 		} else {
 
@@ -295,7 +304,7 @@ func LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 			http.SetCookie(w, c)
 			dbSessions[username] = c.Value
-			tpl.ExecuteTemplate(w, "loginauth.html", "New session created")
+			tpl.ExecuteTemplate(w, "loginauth.html", userID)
 
 			/////////remove///////////////////
 			fmt.Println("sessionbool", sessionExists(username))
