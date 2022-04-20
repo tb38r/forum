@@ -1,11 +1,12 @@
 package routes
 
 import (
-	"forum/web/server"
+	"forum/web/handlers"
 	"net/http"
 )
 
-func Routes(srv server.Server) {
+func Routes(srv handlers.Server) {
+	//http.HandleFunc("/register/", srv.handlers.RegisterUserHandler())
 	http.HandleFunc("/register/", srv.RegisterUserHandler())
 	http.HandleFunc("/registerauth", srv.RegisterAuthHandler())
 	http.HandleFunc("/login", srv.LoginHandler())

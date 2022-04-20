@@ -26,7 +26,7 @@ type AuthUser struct {
 }
 
 //var tpl *template.Template
-var currentUser string
+var CurrentUser string
 
 //var dbUsers = map[string]User{}
 var DbSessions = make(map[string]string)
@@ -35,7 +35,7 @@ var tpl = template.Must(template.ParseGlob("templates/*.html"))
 
 //dbUsers["yonas@hotmail.com"] = User{Username: "yonas123", Email: "yonas@hotmail.com"}
 
-var db *sql.DB
+var Db *sql.DB
 
 //nil
 
@@ -78,7 +78,7 @@ func ValidEmail(email string) bool {
 
 func AlreadyLoggedIn(r *http.Request) bool {
 
-	c, err := r.Cookie(currentUser)
+	c, err := r.Cookie(CurrentUser)
 	if err != nil {
 		return false
 	}
