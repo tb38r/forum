@@ -1,9 +1,9 @@
-package handlers
+package users
 
 import (
 	"database/sql"
 	"fmt"
-	"forum/users"
+
 	"forum/web/server"
 	"net/http"
 	"unicode"
@@ -26,7 +26,7 @@ func (s *Server) RegisterUserHandler() http.HandlerFunc {
 
 func (s *Server) RegisterAuthHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		users.Db, _ = sql.Open("sqlite3", "forum.db")
+		Db, _ = sql.Open("sqlite3", "forum.db")
 		fmt.Println("********registerAuthHandler running*******")
 
 		r.ParseForm()
@@ -88,14 +88,14 @@ func (s *Server) RegisterAuthHandler() http.HandlerFunc {
 		email := r.FormValue("email")
 		fmt.Println("email", email)
 
-		if !users.ValidEmail(email) {
+		if !ValidEmail(email) {
 			server.Tpl.ExecuteTemplate(w, "register.html", "Please enter a valid email address")
 			return
 		}
 
 		// check if email already exists
 		emailStmt := "SELECT userID FROM users WHERE email = ?"
-		rowE := users.Db.QueryRow(emailStmt, email)
+		rowE := Db.QueryRow(emailStmt, email)
 		var uID string
 		err := rowE.Scan(&uID)
 		if err != sql.ErrNoRows {
@@ -106,7 +106,7 @@ func (s *Server) RegisterAuthHandler() http.HandlerFunc {
 
 		// check if username already exists
 		userStmt := "SELECT userID FROM users WHERE username = ?"
-		rowU := users.Db.QueryRow(userStmt, username)
+		rowU := Db.QueryRow(userStmt, username)
 		var uIDs string
 		error := rowU.Scan(&uIDs)
 		if error != sql.ErrNoRows {
@@ -127,7 +127,7 @@ func (s *Server) RegisterAuthHandler() http.HandlerFunc {
 
 		fmt.Println("hash:", hash)
 		fmt.Println("string(hash)", string(hash))
-		users.RegisterUser(users.Db, username, hash, email)
+		RegisterUser(Db, username, hash, email)
 		fmt.Fprintf(w, "congrats your account has been successfully created")
 
 	}
@@ -136,7 +136,7 @@ func (s *Server) RegisterAuthHandler() http.HandlerFunc {
 func (s *Server) LoginHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("login handler running")
-		fmt.Println("checking bool-----> ", users.AlreadyLoggedIn(r))
+		fmt.Println("checking bool-----> ", AlreadyLoggedIn(r))
 		server.Tpl.ExecuteTemplate(w, "login.html", nil)
 	}
 }
@@ -144,18 +144,18 @@ func (s *Server) LoginHandler() http.HandlerFunc {
 func (s *Server) LoginAuthHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// we need to figure out whether we have to close the database at some point to save resources.
-		users.Db, _ = sql.Open("sqlite3", "forum.db")
+		Db, _ = sql.Open("sqlite3", "forum.db")
 		fmt.Println("login authHandler running")
 		r.ParseForm()
 		username := r.FormValue("username")
 		password := r.FormValue("password")
 
-		users.CurrentUser = username
+		CurrentUser = username
 		fmt.Println("username:", username, "password", password)
 		// get password(hash form) from db to compare with users supplied password
 		var hash string
 		stmt := "SELECT hash FROM users WHERE username = ?"
-		row := users.Db.QueryRow(stmt, username)
+		row := Db.QueryRow(stmt, username)
 		err := row.Scan(&hash)
 		fmt.Println("hash from db:", hash)
 		if err != nil {
@@ -170,7 +170,7 @@ func (s *Server) LoginAuthHandler() http.HandlerFunc {
 		var userID int
 
 		stmt2 := "SELECT userID FROM users WHERE username = ?"
-		row2 := users.Db.QueryRow(stmt2, username)
+		row2 := Db.QueryRow(stmt2, username)
 		err2 := row2.Scan(&userID)
 		fmt.Println("userID from db:", userID)
 		if err2 != nil {
@@ -179,9 +179,9 @@ func (s *Server) LoginAuthHandler() http.HandlerFunc {
 
 		err = bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 		if err == nil {
-			if users.SessionExists(username) {
+			if SessionExists(username) {
 				fmt.Println()
-				fmt.Println("Session Exists/ID", users.DbSessions)
+				fmt.Println("Session Exists/ID", DbSessions)
 				fmt.Println()
 
 				// Read the cookie,if there are any
@@ -198,15 +198,15 @@ func (s *Server) LoginAuthHandler() http.HandlerFunc {
 					}
 
 					http.SetCookie(w, c)
-					users.DbSessions[username] = c.Value
+					DbSessions[username] = c.Value
 					server.Tpl.ExecuteTemplate(w, "loginauth.html", "session created after reassigning ID in map")
-					fmt.Println("Map Values reassigned for new client log in: ", users.DbSessions)
+					fmt.Println("Map Values reassigned for new client log in: ", DbSessions)
 					fmt.Println()
 
 					return
 
 					//session exists but differing UUID,  logout/close session
-				} else if cookie.Value != users.DbSessions[username] {
+				} else if cookie.Value != DbSessions[username] {
 
 					//expire cookie as there's an active session elsewhere
 					for _, cookie := range r.Cookies() {
@@ -228,7 +228,7 @@ func (s *Server) LoginAuthHandler() http.HandlerFunc {
 					return
 
 					//UUID matches that within map, active session, no conflicts
-				} else if cookie.Value == users.DbSessions[username] {
+				} else if cookie.Value == DbSessions[username] {
 					server.Tpl.ExecuteTemplate(w, "loginauth.html", "Active session no changes")
 					fmt.Println("Active session on client, no changes made")
 					fmt.Println()
@@ -246,11 +246,11 @@ func (s *Server) LoginAuthHandler() http.HandlerFunc {
 				}
 
 				http.SetCookie(w, c)
-				users.DbSessions[username] = c.Value
+				DbSessions[username] = c.Value
 				server.Tpl.ExecuteTemplate(w, "loginauth.html", userID)
 
 				/////////remove///////////////////
-				fmt.Println("sessionbool", users.SessionExists(username))
+				fmt.Println("sessionbool", SessionExists(username))
 
 				for _, cookie := range r.Cookies() {
 					fmt.Println()
@@ -274,14 +274,14 @@ func (s *Server) LoginAuthHandler() http.HandlerFunc {
 
 func (s *Server) LogoutHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		c, _ := r.Cookie(users.CurrentUser)
+		c, _ := r.Cookie(CurrentUser)
 
 		// delete the session
-		delete(users.DbSessions, c.Name)
+		delete(DbSessions, c.Name)
 
 		// remove the cookie
 		c = &http.Cookie{
-			Name:   users.CurrentUser,
+			Name:   CurrentUser,
 			Value:  "",
 			MaxAge: -1,
 		}

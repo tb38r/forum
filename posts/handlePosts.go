@@ -1,20 +1,22 @@
-package handlers
+package posts
 
 import (
 	"database/sql"
 	"fmt"
-	"forum/posts"
+
 	"forum/users"
 	"forum/web/server"
 	"net/http"
 	"strconv"
 )
 
+type Server server.Server
+
 func (s *Server) CreatePostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// getting the user id from the url
 		userId := r.URL.Query().Get("userid")
-		posts.UserIdint, _ = strconv.Atoi(userId)
+		UserIdint, _ = strconv.Atoi(userId)
 		server.Tpl.ExecuteTemplate(w, "createpost.html", nil)
 	}
 }
@@ -28,7 +30,7 @@ func (s *Server) StorePostHandler() http.HandlerFunc {
 		content := r.FormValue("content")
 		// fmt.Println(UserIdint)
 		// adding the post to the database
-		posts.CreatePosts(users.Db, posts.UserIdint, title, content)
+		CreatePosts(users.Db, UserIdint, title, content)
 
 		fmt.Println("title:", title, "content:", content)
 
