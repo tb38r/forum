@@ -28,7 +28,43 @@ func (s *Server) StorePostHandler() http.HandlerFunc {
 
 		title := r.FormValue("title")
 		content := r.FormValue("content")
-		// fmt.Println(UserIdint)
+
+		// formvalue for buttons. If they have been clicked, the form value returned will be "on"
+		manutd := r.FormValue("manutd")
+		arsenal := r.FormValue("arsenal")
+		chelsea := r.FormValue("chelsea")
+		tottenham := r.FormValue("tottenham")
+		liverpool := r.FormValue("liverpool")
+		mancity := r.FormValue("mancity")
+
+		// use a switch case instead because we need to enter the cat name instead of the returned value "on"
+
+		switch "on" {
+		case manutd:
+			{
+				fmt.Println("Man utd was clicked")
+			}
+		case arsenal:
+			{
+
+			}
+		case chelsea:
+			{
+
+			}
+		case tottenham:
+			{
+
+			}
+		case mancity:
+			{
+
+			}
+		case liverpool:
+			{
+
+			}
+		}
 		// adding the post to the database
 		CreatePosts(users.Db, UserIdint, title, content)
 
