@@ -26,7 +26,7 @@ var db *sql.DB
 
 var tpl = template.Must(template.ParseGlob("templates/*.html"))
 
-func createPosts(db *sql.DB, userID int, title string, content string) {
+func CreatePosts(db *sql.DB, userID int, title string, content string) {
 	stmt, err := db.Prepare("INSERT INTO post (userID, postTitle, postContent, creationDate) VALUES (?, ?, ?, datetime('now', 'localtime'))")
 	if err != nil {
 		fmt.Println("error preparing statement:", err)
@@ -46,12 +46,12 @@ func createPosts(db *sql.DB, userID int, title string, content string) {
 
 // this global variable for the userId will be used to get the id from create post handler (in url), and passed onto
 // the storepost handler to add as the foreign key of the posts table
-var userIdint int
+var UserIdint int
 
 func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	// getting the user id from the url
 	userId := r.URL.Query().Get("userid")
-	userIdint, _ = strconv.Atoi(userId)
+	UserIdint, _ = strconv.Atoi(userId)
 	tpl.ExecuteTemplate(w, "createpost.html", nil)
 }
 
@@ -61,9 +61,9 @@ func StorePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	title := r.FormValue("title")
 	content := r.FormValue("content")
-	// fmt.Println(userIdint)
+	// fmt.Println(UserIdint)
 	// adding the post to the database
-	createPosts(db, userIdint, title, content)
+	CreatePosts(db, UserIdint, title, content)
 
 	fmt.Println("title:", title, "content:", content)
 
