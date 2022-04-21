@@ -24,6 +24,8 @@ type Post struct {
 
 var db *sql.DB
 
+// this global variable is needed in Handleposts to ge the postid from the last inserted row.
+var LastIns int64
 var tpl = template.Must(template.ParseGlob("templates/*.html"))
 
 func CreatePosts(db *sql.DB, userID int, title string, content string) {
@@ -35,13 +37,13 @@ func CreatePosts(db *sql.DB, userID int, title string, content string) {
 	// defer stmt.Close()
 	result, _ := stmt.Exec(userID, title, content)
 
-	db.Close()
+	// db.Close()
 
 	// checking if the result has been added and the last inserted row
 	rowsAff, _ := result.RowsAffected()
-	lastIns, _ := result.LastInsertId()
+	LastIns, _ = result.LastInsertId()
 	fmt.Println("rows affected:", rowsAff)
-	fmt.Println("last inserted:", lastIns)
+	fmt.Println("last inserted:", LastIns)
 }
 
 // this global variable for the userId will be used to get the id from create post handler (in url), and passed onto

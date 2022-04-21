@@ -13,7 +13,7 @@ type Category struct {
 
 var db *sql.DB
 
-func AddCategory(db *sql.DB, postID int, categoryname string) {
+func AddCategory(db *sql.DB, postID int64, categoryname string) {
 	stmt, err := db.Prepare("INSERT INTO category (postID, categoryname) VALUES (?, ?)")
 
 	if err != nil {
