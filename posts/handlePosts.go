@@ -43,50 +43,25 @@ func (s *Server) StorePostHandler() http.HandlerFunc {
 		newcastle := r.FormValue("newcastle")
 		mancity := r.FormValue("mancity")
 
-		// use a switch case instead because we need to enter the cat name instead of the returned value "on"
-
-		switch "on" {
-		case manutd:
-			{
-				categories.AddCategory(users.Db, LastIns, "manutd")
-			}
-		case arsenal:
-			{
-				categories.AddCategory(users.Db, LastIns, "arsenal")
-			}
-		case chelsea:
-			{
-				categories.AddCategory(users.Db, LastIns, "chelsea")
-			}
-		case tottenham:
-			{
-				categories.AddCategory(users.Db, LastIns, "tottenham")
-			}
-		case mancity:
-			{
-				categories.AddCategory(users.Db, LastIns, "mancity")
-			}
-		case newcastle:
-			{
-				categories.AddCategory(users.Db, LastIns, "newcastle")
-			}
+		// use if statements because we need to enter the cat name instead of the returned value "on"
+		if manutd == "on" {
+			categories.AddCategory(users.Db, LastIns, "manutd")
 		}
-
-		// fmt.Println("last inserted check", LastIns)
-
-		// postIdQuery := "SELECT postID FROM post WHERE userID = ?"
-
-		// fmt.Println("this is the user id from store post handler", UserIdint)
-
-		// row := users.Db.QueryRow(postIdQuery, 1)
-		// var postID int
-		// err := row.Scan(&postID)
-		// fmt.Println("lets see if it picks up post id", postID)
-		// if err != sql.ErrNoRows {
-		// 	fmt.Println("postID or UserID does not exist, err:", err)
-		// 	server.Tpl.ExecuteTemplate(w, "storepost.html", "Post not stored!")
-		// 	return
-		// }
+		if arsenal == "on" {
+			categories.AddCategory(users.Db, LastIns, "arsenal")
+		}
+		if chelsea == "on" {
+			categories.AddCategory(users.Db, LastIns, "chelsea")
+		}
+		if newcastle == "on" {
+			categories.AddCategory(users.Db, LastIns, "newcastle")
+		}
+		if tottenham == "on" {
+			categories.AddCategory(users.Db, LastIns, "tottenham")
+		}
+		if mancity == "on" {
+			categories.AddCategory(users.Db, LastIns, "mancity")
+		}
 
 		fmt.Println("title:", title, "content:", content)
 
