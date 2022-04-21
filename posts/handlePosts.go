@@ -13,6 +13,9 @@ import (
 
 type Server server.Server
 
+// this global variable for the userId will be used to get the id from create post handler (in url), and passed onto
+// the storepost handler to add as the foreign key of the posts table
+var UserIdint int
 var userID string
 
 func (s *Server) CreatePostHandler() http.HandlerFunc {
