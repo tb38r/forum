@@ -1,8 +1,9 @@
-package routes
+package web
 
 import (
 	"forum/posts"
 	"forum/users"
+
 	"forum/web/server"
 	"net/http"
 )
@@ -21,6 +22,6 @@ func UserRoutes(srv users.Server) {
 }
 
 func PostRoutes(srv posts.Server) {
-	http.HandleFunc("/createpost/", srv.CreatePostHandler())
+	http.HandleFunc("/createpost/", Auth(srv.CreatePostHandler()))
 	http.HandleFunc("/storepost", srv.StorePostHandler())
 }
