@@ -137,8 +137,10 @@ func (s *Server) RegisterAuthHandler() http.HandlerFunc {
 
 func (s *Server) LoginHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
 		fmt.Println("login handler running")
 		fmt.Println("checking bool-----> ", AlreadyLoggedIn(r))
+
 		server.Tpl.ExecuteTemplate(w, "login.html", nil)
 	}
 }

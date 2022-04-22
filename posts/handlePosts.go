@@ -84,15 +84,19 @@ var cookiecheck = func(w http.ResponseWriter, r *http.Request) {
 				fmt.Println("-------Test Delete 3")
 
 				if cookie.Name == users.CurrentUser {
+					fmt.Println("checking if loop entered--------------------------------------------------------")
+					fmt.Println("1st max age check ----> ", cookie.MaxAge, cookie.Value)
 
 					cookie.MaxAge = -1
-
-					http.SetCookie(w, cookie)
+					//cookie.Value = ""
+					//cookie.Expires = time.Date(2022, time.April, 21, 0000, 00, 00, 00, time.UTC)
+					fmt.Println("2nd max age check ----> ", cookie.MaxAge, cookie.Value)
 				}
+				http.SetCookie(w, cookie)
 			}
 
 			//redirects to log in page when prior session exists
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			http.Redirect(w, r, "/logout", http.StatusSeeOther)
 
 			fmt.Println("Cookie deleted due to pre-existing session")
 			fmt.Println()
@@ -106,33 +110,6 @@ var cookiecheck = func(w http.ResponseWriter, r *http.Request) {
 			return
 
 		}
-
-	} else {
-
-		//NO ACTIVE SESSION/FIRST TIME
-		id := uuid.Must(uuid.NewV4())
-		c := &http.Cookie{
-			Name:  users.CurrentUser,
-			Value: id.String(),
-		}
-
-		http.SetCookie(w, c)
-		users.DbSessions[users.CurrentUser] = c.Value
-		server.Tpl.ExecuteTemplate(w, "loginauth.html", users.GuserId)
-
-		/////////remove///////////////////
-		fmt.Println("sessionbool", users.SessionExists(users.CurrentUser))
-
-		for _, cookie := range r.Cookies() {
-			fmt.Println()
-			fmt.Println("Name : ", cookie.Name)
-			fmt.Println("Value/UUID : ", cookie.Value)
-		}
-
-		fmt.Println("First time log-in successful")
-		fmt.Println()
-		/////////////////////////////////////
-		return
 
 	}
 
