@@ -3,10 +3,14 @@ package routes
 import (
 	"forum/posts"
 	"forum/users"
+	"forum/web/server"
 	"net/http"
 )
 
+type rtr server.Server
+
 func UserRoutes(srv users.Server) {
+	http.HandleFunc("/register", srv.LoginAuthHandler())
 	//http.HandleFunc("/register/", srv.handlers.RegisterUserHandler())
 	http.HandleFunc("/register/", srv.RegisterUserHandler())
 	http.HandleFunc("/registerauth", srv.RegisterAuthHandler())

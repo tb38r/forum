@@ -12,6 +12,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+var GuserId int
+
 type Server server.Server
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -173,6 +175,7 @@ func (s *Server) LoginAuthHandler() http.HandlerFunc {
 		row2 := Db.QueryRow(stmt2, username)
 		err2 := row2.Scan(&userID)
 		fmt.Println("userID from db:", userID)
+		GuserId = userID
 		if err2 != nil {
 			fmt.Println("user not found in db")
 		}
