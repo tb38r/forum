@@ -26,6 +26,8 @@ var db *sql.DB
 
 var tpl = template.Must(template.ParseGlob("templates/*.html"))
 
+var LastIns int64
+
 func CreatePosts(db *sql.DB, userID int, title string, content string) {
 	stmt, err := db.Prepare("INSERT INTO post (userID, postTitle, postContent, creationDate) VALUES (?, ?, ?, datetime('now', 'localtime'))")
 	if err != nil {
@@ -39,9 +41,9 @@ func CreatePosts(db *sql.DB, userID int, title string, content string) {
 
 	// checking if the result has been added and the last inserted row
 	rowsAff, _ := result.RowsAffected()
-	lastIns, _ := result.LastInsertId()
+	LastIns, _ = result.LastInsertId()
 	fmt.Println("rows affected:", rowsAff)
-	fmt.Println("last inserted:", lastIns)
+	fmt.Println("last inserted:", LastIns)
 }
 
 // this global variable for the userId will be used to get the id from create post handler (in url), and passed onto
