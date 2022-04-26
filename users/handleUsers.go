@@ -12,6 +12,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+var GuserId int
+
 type Server server.Server
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -135,8 +137,10 @@ func (s *Server) RegisterAuthHandler() http.HandlerFunc {
 
 func (s *Server) LoginHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
 		fmt.Println("login handler running")
 		fmt.Println("checking bool-----> ", AlreadyLoggedIn(r))
+
 		server.Tpl.ExecuteTemplate(w, "login.html", nil)
 	}
 }
@@ -173,6 +177,7 @@ func (s *Server) LoginAuthHandler() http.HandlerFunc {
 		row2 := Db.QueryRow(stmt2, username)
 		err2 := row2.Scan(&userID)
 		fmt.Println("userID from db:", userID)
+		GuserId = userID
 		if err2 != nil {
 			fmt.Println("user not found in db")
 		}
@@ -274,11 +279,18 @@ func (s *Server) LoginAuthHandler() http.HandlerFunc {
 
 func (s *Server) LogoutHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		c, _ := r.Cookie(CurrentUser)
+		c, err := r.Cookie(CurrentUser)
+
+		if err != nil {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
+		}
 
 		// delete the session
-		delete(DbSessions, c.Name)
+		if c.Value == DbSessions[c.Name] {
 
+			delete(DbSessions, c.Name)
+		}
 		// remove the cookie
 		c = &http.Cookie{
 			Name:   CurrentUser,
