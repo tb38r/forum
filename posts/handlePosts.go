@@ -21,8 +21,6 @@ func (s *Server) CreatePostHandler() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		cookiecheck(w, r)
-
 		// getting the user id from the url
 		userId := r.URL.Query().Get("userid")
 		UserIdint, _ = strconv.Atoi(userId)
@@ -34,7 +32,7 @@ func (s *Server) CreatePostHandler() http.HandlerFunc {
 
 func (s *Server) StorePostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		cookiecheck(w, r)
+
 		s.Db, _ = sql.Open("sqlite3", "forum.db")
 		r.ParseForm()
 

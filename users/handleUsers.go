@@ -287,8 +287,10 @@ func (s *Server) LogoutHandler() http.HandlerFunc {
 		}
 
 		// delete the session
-		delete(DbSessions, c.Name)
+		if c.Value == DbSessions[c.Name] {
 
+			delete(DbSessions, c.Name)
+		}
 		// remove the cookie
 		c = &http.Cookie{
 			Name:   CurrentUser,
