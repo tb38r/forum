@@ -25,7 +25,7 @@ func Auth(HandlerFunc http.HandlerFunc) http.HandlerFunc {
 func SessionChecker(HandlerFunc http.HandlerFunc) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
-
+		fmt.Println(users.DbSessions)
 		if users.SessionExists(users.CurrentUser) {
 			fmt.Println()
 			fmt.Println("Session Exists/ID", users.DbSessions)
