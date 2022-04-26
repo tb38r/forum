@@ -34,6 +34,7 @@ func (s *Server) CreatePostHandler() http.HandlerFunc {
 
 func (s *Server) StorePostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		cookiecheck(w, r)
 		s.Db, _ = sql.Open("sqlite3", "forum.db")
 		r.ParseForm()
 

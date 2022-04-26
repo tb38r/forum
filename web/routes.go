@@ -23,5 +23,5 @@ func UserRoutes(srv users.Server) {
 
 func PostRoutes(srv posts.Server) {
 	http.HandleFunc("/createpost/", Auth(srv.CreatePostHandler()))
-	http.HandleFunc("/storepost", srv.StorePostHandler())
+	http.HandleFunc("/storepost", Auth(srv.StorePostHandler()))
 }

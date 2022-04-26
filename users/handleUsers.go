@@ -279,7 +279,12 @@ func (s *Server) LoginAuthHandler() http.HandlerFunc {
 
 func (s *Server) LogoutHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		c, _ := r.Cookie(CurrentUser)
+		c, err := r.Cookie(CurrentUser)
+
+		if err != nil {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
+		}
 
 		// delete the session
 		delete(DbSessions, c.Name)
