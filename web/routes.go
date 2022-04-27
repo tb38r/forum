@@ -6,6 +6,7 @@ import (
 
 func (s *Server) Routes() {
 	// http.HandleFunc("/register", srv.LoginAuthHandler())
+	http.HandleFunc("/home", s.HomepageHandler())
 	http.HandleFunc("/register/", s.RegisterUserHandler())
 	http.HandleFunc("/registerauth", s.RegisterAuthHandler())
 	http.HandleFunc("/login", s.LoginHandler())
@@ -13,6 +14,7 @@ func (s *Server) Routes() {
 	http.HandleFunc("/logout", s.LogoutHandler())
 	http.HandleFunc("/createpost/", Auth(SessionChecker(s.CreatePostHandler())))
 	http.HandleFunc("/storepost", Auth(SessionChecker(s.StorePostHandler())))
-	http.HandleFunc("/", s.HomepageHandler())
+	// this is for the template css files to run.
+	http.Handle("/templates/", http.StripPrefix("/templates/", http.FileServer(http.Dir("./templates"))))
 
 }
