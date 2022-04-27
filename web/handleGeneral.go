@@ -7,8 +7,8 @@ import (
 
 // eventually need this struct to pass onto the handler with all the data within
 // type HomepageData struct {
-// 	allPostTitles []string
-// 	Loggedin?  // whether user is logged in
+// 	// allPostTitles []string
+// 	Loggedin?  bool
 
 // }
 

@@ -3,9 +3,6 @@ package posts
 import (
 	"database/sql"
 	"fmt"
-	"html/template"
-	"net/http"
-	"strconv"
 )
 
 type Post struct {
@@ -26,8 +23,6 @@ var db *sql.DB
 
 // type s *web.Server
 
-var tpl = template.Must(template.ParseGlob("templates/*.html"))
-
 var LastIns int64
 
 func CreatePosts(db *sql.DB, userID int, title string, content string) {
@@ -44,30 +39,4 @@ func CreatePosts(db *sql.DB, userID int, title string, content string) {
 	LastIns, _ = result.LastInsertId()
 	fmt.Println("rows affected:", rowsAff)
 	fmt.Println("last inserted:", LastIns)
-}
-
-// this global variable for the userId will be used to get the id from create post handler (in url), and passed onto
-// the storepost handler to add as the foreign key of the posts table
-var UserIdint int
-
-func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
-	// getting the user id from the url
-	userId := r.URL.Query().Get("userid")
-	UserIdint, _ = strconv.Atoi(userId)
-	tpl.ExecuteTemplate(w, "createpost.html", nil)
-}
-
-func StorePostHandler(w http.ResponseWriter, r *http.Request) {
-	db, _ = sql.Open("sqlite3", "forum.db")
-	r.ParseForm()
-
-	title := r.FormValue("title")
-	content := r.FormValue("content")
-	// fmt.Println(UserIdint)
-	// adding the post to the database
-	CreatePosts(db, UserIdint, title, content)
-
-	fmt.Println("title:", title, "content:", content)
-
-	tpl.ExecuteTemplate(w, "storepost.html", "Post stored!")
 }
