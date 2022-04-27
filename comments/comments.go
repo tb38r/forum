@@ -19,10 +19,9 @@ type Comment struct {
 var db *sql.DB
 
 var LastIns int64
-var UserIDint int
 
 func CreateComment(db *sql.DB, userID int, commentText string) {
-	stmt, err := db.Prepare("INSERT INTO comments(userID, commentText, creationDate) VALUES (?,?, datetime('now', 'local time'))")
+	stmt, err := db.Prepare("INSERT INTO comments (userID, commentText, creationDate) VALUES (?,?, datetime('now', 'local time'))")
 	if err != nil {
 		fmt.Println("error preparing statement")
 		return

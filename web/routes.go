@@ -15,6 +15,6 @@ func (s *Server) Routes() {
 	http.HandleFunc("/storepost", Auth(SessionChecker(s.StorePostHandler())))
 	http.HandleFunc("/", s.HomepageHandler())
 	http.HandleFunc("/createcomment/", Auth(SessionChecker(s.CreateCommentHandler())))
-	http.HandleFunc("/storecomment/", Auth(SessionChecker(s.StoreCommentHandler())))
+	http.HandleFunc("/storecomment", Auth(SessionChecker(s.StoreCommentHandler())))
 
 }

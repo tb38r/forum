@@ -16,3 +16,7 @@ POTENTIAL MIDDLEWARE
 - When they log in check if they're logging in for the first time - if they are give them a cookie
 
 if not first time, check other session, delete other session&cookie and then give them a new cookie
+
+--------------------------------------------------------------
+Got the comments stored on the DB now
+Still not catching userID even when using link that gets userid from the URL. 
