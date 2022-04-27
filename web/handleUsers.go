@@ -13,10 +13,6 @@ import (
 
 var GuserId int
 
-func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	s.ServeHTTP(w, r)
-}
-
 func (s *Server) RegisterUserHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Tpl.ExecuteTemplate(w, "register.html", nil)
