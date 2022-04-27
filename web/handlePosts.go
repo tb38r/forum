@@ -1,20 +1,15 @@
-package posts
+package web
 
 import (
-	"database/sql"
 	"fmt"
 
 	"forum/categories"
-	"forum/users"
-	"forum/web/server"
+	"forum/posts"
 	"net/http"
 	"strconv"
 )
 
-type Server server.Server
-
-var req http.Request
-var wr http.ResponseWriter
+// type Server server.Server
 
 func (s *Server) CreatePostHandler() http.HandlerFunc {
 
@@ -22,8 +17,8 @@ func (s *Server) CreatePostHandler() http.HandlerFunc {
 
 		// getting the user id from the url
 		userId := r.URL.Query().Get("userid")
-		UserIdint, _ = strconv.Atoi(userId)
-		server.Tpl.ExecuteTemplate(w, "createpost.html", nil)
+		posts.UserIdint, _ = strconv.Atoi(userId)
+		Tpl.ExecuteTemplate(w, "createpost.html", nil)
 
 	}
 
@@ -32,14 +27,14 @@ func (s *Server) CreatePostHandler() http.HandlerFunc {
 func (s *Server) StorePostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		s.Db, _ = sql.Open("sqlite3", "forum.db")
+		// s.Db, _ = sql.Open("sqlite3", "forum.db")
 		r.ParseForm()
 
 		title := r.FormValue("title")
 		content := r.FormValue("content")
 		// fmt.Println(UserIdint)
 		// adding the post to the database
-		CreatePosts(s.Db, UserIdint, title, content)
+		posts.CreatePosts(s.Db, posts.UserIdint, title, content)
 		// formvalue for buttons. If they have been clicked, the form value returned will be "on"
 		manutd := r.FormValue("manutd")
 		arsenal := r.FormValue("arsenal")
@@ -50,25 +45,25 @@ func (s *Server) StorePostHandler() http.HandlerFunc {
 
 		// use if statements because we need to enter the cat name instead of the returned value "on"
 		if manutd == "on" {
-			categories.AddCategory(users.Db, LastIns, "manutd")
+			categories.AddCategory(s.Db, posts.LastIns, "manutd")
 		}
 		if arsenal == "on" {
-			categories.AddCategory(users.Db, LastIns, "arsenal")
+			categories.AddCategory(s.Db, posts.LastIns, "arsenal")
 		}
 		if chelsea == "on" {
-			categories.AddCategory(users.Db, LastIns, "chelsea")
+			categories.AddCategory(s.Db, posts.LastIns, "chelsea")
 		}
 		if newcastle == "on" {
-			categories.AddCategory(users.Db, LastIns, "newcastle")
+			categories.AddCategory(s.Db, posts.LastIns, "newcastle")
 		}
 		if tottenham == "on" {
-			categories.AddCategory(users.Db, LastIns, "tottenham")
+			categories.AddCategory(s.Db, posts.LastIns, "tottenham")
 		}
 		if mancity == "on" {
-			categories.AddCategory(users.Db, LastIns, "mancity")
+			categories.AddCategory(s.Db, posts.LastIns, "mancity")
 		}
 		fmt.Println("title:", title, "content:", content)
 
-		server.Tpl.ExecuteTemplate(w, "storepost.html", "Post stored!")
+		Tpl.ExecuteTemplate(w, "storepost.html", "Post stored!")
 	}
 }

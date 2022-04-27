@@ -3,7 +3,6 @@ package users
 import (
 	"database/sql"
 	"fmt"
-	"html/template"
 	"net"
 	"net/http"
 
@@ -31,11 +30,7 @@ var CurrentUser string
 //var dbUsers = map[string]User{}
 var DbSessions = make(map[string]string)
 
-var tpl = template.Must(template.ParseGlob("templates/*.html"))
-
 //dbUsers["yonas@hotmail.com"] = User{Username: "yonas123", Email: "yonas@hotmail.com"}
-
-var Db *sql.DB
 
 //nil
 
@@ -50,7 +45,6 @@ func RegisterUser(db *sql.DB, username string, hash []byte, email string) {
 	// defer stmt.Close()
 
 	result, _ := stmt.Exec(username, hash, email)
-	db.Close()
 
 	// checking if the result has been added and the last inserted row
 	rowsAff, _ := result.RowsAffected()
@@ -69,7 +63,7 @@ func ValidEmail(email string) bool {
 	_, err := net.LookupMX(domain)
 	// _, err2 := mail.ParseAddress(email)
 	if err != nil {
-		// fmt.Println("invalid email")
+		fmt.Println("invalid email")
 		return false
 	}
 
