@@ -4,20 +4,26 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post Stored</title>
+    <title>Store Comment</title>
 </head>
 <body>
     {{if .}}
     <h2>{{.}}</h2>
     {{end}}
 
+    <h2>COMMENT HAS BEEN STORED</h2>
+
     <form action="/createpost" method="post">
         <button>CLICK HERE TO MAKE ANOTHER POST</button>
         </form>
 
         <form action="/createcomment" method="post">
-            <button>CLICK HERE TO MAKE A COMMENT</button>
+            <button>CLICK HERE TO MAKE ANOTHER COMMENT</button>
             </form>
 
+            <form action="/logout" method="post">
+                <button>CLICK HERE TO LOGOUT</button>
+                </form>
+    
 </body>
 </html>
