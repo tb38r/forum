@@ -24,6 +24,8 @@ type Post struct {
 
 var db *sql.DB
 
+// type s *web.Server
+
 var tpl = template.Must(template.ParseGlob("templates/*.html"))
 
 var LastIns int64
@@ -36,8 +38,6 @@ func CreatePosts(db *sql.DB, userID int, title string, content string) {
 	}
 	// defer stmt.Close()
 	result, _ := stmt.Exec(userID, title, content)
-
-	db.Close()
 
 	// checking if the result has been added and the last inserted row
 	rowsAff, _ := result.RowsAffected()

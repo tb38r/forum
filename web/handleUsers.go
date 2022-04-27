@@ -1,10 +1,9 @@
-package users
+package web
 
 import (
 	"database/sql"
 	"fmt"
-
-	"forum/web/server"
+	"forum/users"
 	"net/http"
 	"unicode"
 
@@ -14,21 +13,19 @@ import (
 
 var GuserId int
 
-type Server server.Server
-
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.ServeHTTP(w, r)
 }
 
 func (s *Server) RegisterUserHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		server.Tpl.ExecuteTemplate(w, "register.html", nil)
+		Tpl.ExecuteTemplate(w, "register.html", nil)
 	}
 }
 
 func (s *Server) RegisterAuthHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		Db, _ = sql.Open("sqlite3", "forum.db")
+		s.Db, _ = sql.Open("sqlite3", "forum.db")
 		fmt.Println("********registerAuthHandler running*******")
 
 		r.ParseForm()
@@ -83,37 +80,37 @@ func (s *Server) RegisterAuthHandler() http.HandlerFunc {
 		}
 
 		if !nameAlphaNumeric || !usernameLength || !pswdLowercase || !pswdUpperCase || !pswdNumber || !pswdSpecical || !pswdNoSpaces || !passwordLength {
-			server.Tpl.ExecuteTemplate(w, "register.html", "Please check your username or password")
+			Tpl.ExecuteTemplate(w, "register.html", "Please check your username or password")
 			return
 		}
 
 		email := r.FormValue("email")
 		fmt.Println("email", email)
 
-		if !ValidEmail(email) {
-			server.Tpl.ExecuteTemplate(w, "register.html", "Please enter a valid email address")
+		if !users.ValidEmail(email) {
+			Tpl.ExecuteTemplate(w, "register.html", "Please enter a valid email address")
 			return
 		}
 
 		// check if email already exists
 		emailStmt := "SELECT userID FROM users WHERE email = ?"
-		rowE := Db.QueryRow(emailStmt, email)
+		rowE := s.Db.QueryRow(emailStmt, email)
 		var uID string
 		err := rowE.Scan(&uID)
 		if err != sql.ErrNoRows {
 			fmt.Println("email already exists, err:", err)
-			server.Tpl.ExecuteTemplate(w, "register.html", "email already exists")
+			Tpl.ExecuteTemplate(w, "register.html", "email already exists")
 			return
 		}
 
 		// check if username already exists
 		userStmt := "SELECT userID FROM users WHERE username = ?"
-		rowU := Db.QueryRow(userStmt, username)
+		rowU := s.Db.QueryRow(userStmt, username)
 		var uIDs string
 		error := rowU.Scan(&uIDs)
 		if error != sql.ErrNoRows {
 			fmt.Println("username already exists, err:", error)
-			server.Tpl.ExecuteTemplate(w, "register.html", "username already exists")
+			Tpl.ExecuteTemplate(w, "register.html", "username already exists")
 			return
 		}
 
@@ -123,13 +120,13 @@ func (s *Server) RegisterAuthHandler() http.HandlerFunc {
 		hash, err = bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		if err != nil {
 			fmt.Println("bcrypt err:", err)
-			server.Tpl.ExecuteTemplate(w, "register.html", "there was a problem registering user")
+			Tpl.ExecuteTemplate(w, "register.html", "there was a problem registering user")
 			return
 		}
 
 		fmt.Println("hash:", hash)
 		fmt.Println("string(hash)", string(hash))
-		RegisterUser(Db, username, hash, email)
+		users.RegisterUser(s.Db, username, hash, email)
 		fmt.Fprintf(w, "congrats your account has been successfully created")
 
 	}
@@ -139,33 +136,33 @@ func (s *Server) LoginHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		fmt.Println("login handler running")
-		fmt.Println("checking bool-----> ", AlreadyLoggedIn(r))
+		fmt.Println("checking bool-----> ", users.AlreadyLoggedIn(r))
 
-		server.Tpl.ExecuteTemplate(w, "login.html", nil)
+		Tpl.ExecuteTemplate(w, "login.html", nil)
 	}
 }
 
 func (s *Server) LoginAuthHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// we need to figure out whether we have to close the database at some point to save resources.
-		Db, _ = sql.Open("sqlite3", "forum.db")
+		s.Db, _ = sql.Open("sqlite3", "forum.db")
 		fmt.Println("login authHandler running")
 		r.ParseForm()
 		username := r.FormValue("username")
 		password := r.FormValue("password")
 
-		CurrentUser = username
+		users.CurrentUser = username
 		fmt.Println("username:", username, "password", password)
 		// get password(hash form) from db to compare with users supplied password
 		var hash string
 		stmt := "SELECT hash FROM users WHERE username = ?"
-		row := Db.QueryRow(stmt, username)
+		row := s.Db.QueryRow(stmt, username)
 		err := row.Scan(&hash)
 		fmt.Println("hash from db:", hash)
 		if err != nil {
 			fmt.Println("error with username, may not exist")
 			// keep the message to the user a little more vague, so hackers dont know whether you entered an incorrect username or password
-			server.Tpl.ExecuteTemplate(w, "login.html", "check username and password")
+			Tpl.ExecuteTemplate(w, "login.html", "check username and password")
 			return
 		}
 
@@ -174,7 +171,7 @@ func (s *Server) LoginAuthHandler() http.HandlerFunc {
 		var userID int
 
 		stmt2 := "SELECT userID FROM users WHERE username = ?"
-		row2 := Db.QueryRow(stmt2, username)
+		row2 := s.Db.QueryRow(stmt2, username)
 		err2 := row2.Scan(&userID)
 		fmt.Println("userID from db:", userID)
 		GuserId = userID
@@ -193,11 +190,11 @@ func (s *Server) LoginAuthHandler() http.HandlerFunc {
 			}
 
 			http.SetCookie(w, c)
-			DbSessions[username] = c.Value
-			server.Tpl.ExecuteTemplate(w, "loginauth.html", userID)
+			users.DbSessions[username] = c.Value
+			Tpl.ExecuteTemplate(w, "loginauth.html", userID)
 
 			/////////remove///////////////////
-			fmt.Println("sessionbool", SessionExists(username))
+			fmt.Println("sessionbool", users.SessionExists(username))
 
 			for _, cookie := range r.Cookies() {
 				fmt.Println()
@@ -213,14 +210,14 @@ func (s *Server) LoginAuthHandler() http.HandlerFunc {
 		}
 
 		fmt.Println("incorrect password")
-		server.Tpl.ExecuteTemplate(w, "login.html", "check username and password")
+		Tpl.ExecuteTemplate(w, "login.html", "check username and password")
 	}
 
 }
 
 func (s *Server) LogoutHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		c, err := r.Cookie(CurrentUser)
+		c, err := r.Cookie(users.CurrentUser)
 
 		if err != nil {
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -228,20 +225,19 @@ func (s *Server) LogoutHandler() http.HandlerFunc {
 		}
 
 		// delete the session
-		if c.Value == DbSessions[c.Name] {
+		if c.Value == users.DbSessions[c.Name] {
 
-			delete(DbSessions, c.Name)
+			delete(users.DbSessions, c.Name)
 		}
 		// remove the cookie
 		c = &http.Cookie{
-			Name:   CurrentUser,
+			Name:   users.CurrentUser,
 			Value:  "",
 			MaxAge: -1,
 		}
 		http.SetCookie(w, c)
 
 		fmt.Println("User logged out and redirected to the log-in page")
-
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 
 	}

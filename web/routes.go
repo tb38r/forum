@@ -1,27 +1,18 @@
 package web
 
 import (
-	"forum/posts"
-	"forum/users"
-
-	"forum/web/server"
 	"net/http"
 )
 
-type rtr server.Server
+func (s *Server) Routes() {
+	// http.HandleFunc("/register", srv.LoginAuthHandler())
+	http.HandleFunc("/register/", s.RegisterUserHandler())
+	http.HandleFunc("/registerauth", s.RegisterAuthHandler())
+	http.HandleFunc("/login", s.LoginHandler())
+	http.HandleFunc("/loginauth", s.LoginAuthHandler())
+	http.HandleFunc("/logout", s.LogoutHandler())
+	http.HandleFunc("/createpost/", Auth(SessionChecker(s.CreatePostHandler())))
+	http.HandleFunc("/storepost", Auth(SessionChecker(s.StorePostHandler())))
+	http.HandleFunc("/", s.HomepageHandler())
 
-func UserRoutes(srv users.Server) {
-	http.HandleFunc("/register", srv.LoginAuthHandler())
-	//http.HandleFunc("/register/", srv.handlers.RegisterUserHandler())
-	http.HandleFunc("/register/", srv.RegisterUserHandler())
-	http.HandleFunc("/registerauth", srv.RegisterAuthHandler())
-	http.HandleFunc("/login", srv.LoginHandler())
-	http.HandleFunc("/loginauth", srv.LoginAuthHandler())
-	http.HandleFunc("/logout", srv.LogoutHandler())
-
-}
-
-func PostRoutes(srv posts.Server) {
-	http.HandleFunc("/createpost/", Auth(SessionChecker(srv.CreatePostHandler())))
-	http.HandleFunc("/storepost", Auth(SessionChecker(srv.StorePostHandler())))
 }
