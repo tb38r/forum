@@ -3,6 +3,7 @@ package posts
 import (
 	"database/sql"
 	"fmt"
+	"log"
 )
 
 type Post struct {
@@ -39,4 +40,24 @@ func CreatePosts(db *sql.DB, userID int, title string, content string) {
 	LastIns, _ = result.LastInsertId()
 	fmt.Println("rows affected:", rowsAff)
 	fmt.Println("last inserted:", LastIns)
+}
+
+// function that gets all the post titles and returns a slice of string
+func GetAllPostTitles(db *sql.DB) []string {
+	rows, err := db.Query("SELECT postTitle FROM post")
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	AllpostTitles := []string{}
+	var postTitle string
+	defer rows.Close()
+	for rows.Next() {
+		err2 := rows.Scan(&postTitle)
+		if err2 != nil {
+			log.Fatal(err2)
+		}
+		AllpostTitles = append(AllpostTitles, postTitle)
+	}
+	return AllpostTitles
 }
