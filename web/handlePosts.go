@@ -2,31 +2,30 @@ package web
 
 import (
 	"fmt"
+	"net/http"
+	"strconv"
 
 	"forum/categories"
 	"forum/posts"
-	"net/http"
-	"strconv"
 )
 
 // type Server server.Server
 
+// this global variable for the userId will be used to get the id from create post handler (in url), and passed onto
+// the storepost handler to add as the foreign key of the posts table
+var UserIdint int
+
 func (s *Server) CreatePostHandler() http.HandlerFunc {
-
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		// getting the user id from the url
 		userId := r.URL.Query().Get("userid")
-		posts.UserIdint, _ = strconv.Atoi(userId)
-		Tpl.ExecuteTemplate(w, "createpost.html", nil)
-
+		UserIdint, _ = strconv.Atoi(userId)
+		tpl.ExecuteTemplate(w, "createpost.html", nil)
 	}
-
 }
 
 func (s *Server) StorePostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		// s.Db, _ = sql.Open("sqlite3", "forum.db")
 		r.ParseForm()
 
@@ -34,7 +33,7 @@ func (s *Server) StorePostHandler() http.HandlerFunc {
 		content := r.FormValue("content")
 		// fmt.Println(UserIdint)
 		// adding the post to the database
-		posts.CreatePosts(s.Db, posts.UserIdint, title, content)
+		posts.CreatePosts(s.Db, UserIdint, title, content)
 		// formvalue for buttons. If they have been clicked, the form value returned will be "on"
 		manutd := r.FormValue("manutd")
 		arsenal := r.FormValue("arsenal")
@@ -64,6 +63,6 @@ func (s *Server) StorePostHandler() http.HandlerFunc {
 		}
 		fmt.Println("title:", title, "content:", content)
 
-		Tpl.ExecuteTemplate(w, "storepost.html", "Post stored!")
+		tpl.ExecuteTemplate(w, "storepost.html", "Post stored!")
 	}
 }
