@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"forum/categories"
+	"forum/likes"
 	"forum/posts"
 )
 
@@ -39,6 +40,7 @@ func (s *Server) StorePostHandler() http.HandlerFunc {
 		tottenham := r.FormValue("tottenham")
 		newcastle := r.FormValue("newcastle")
 		mancity := r.FormValue("mancity")
+		like := r.FormValue("like")
 
 		// use if statements because we need to enter the cat name instead of the returned value "on"
 		if manutd == "on" {
@@ -58,6 +60,9 @@ func (s *Server) StorePostHandler() http.HandlerFunc {
 		}
 		if mancity == "on" {
 			categories.AddCategory(s.Db, posts.LastIns, "mancity")
+		}
+		if like == "on" {
+			likes.LikeButton(s.Db, GuserId, 1)
 		}
 		fmt.Println("title:", title, "content:", content)
 
