@@ -24,7 +24,10 @@
         </div>
       </div>
       <div class="showposts">
-          
+          <h3>POSTS</h3>
+          {{ range $_, $title := .AllPostTitles }}
+          <h4>{{ $title }}</h4>
+          {{end}}
       </div>
 </body>
 </html>

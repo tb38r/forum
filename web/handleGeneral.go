@@ -1,7 +1,9 @@
 package web
 
 import (
+	"database/sql"
 	"fmt"
+	"forum/posts"
 	"forum/users"
 	"net/http"
 )
@@ -9,9 +11,9 @@ import (
 // eventually need this struct to pass onto the handler with all the data within
 // struct fields need to be capitalized, to be used in the templates
 type HomepageData struct {
-	Username string
-	// AllPostTitles []string
-	Loggedin bool
+	Username      string
+	AllPostTitles []string
+	Loggedin      bool
 }
 
 // in chrome this handler is being run twice on localhost:8080, on safari only once (which is what we need) *** UNLESS route is changed from / to /home
@@ -20,7 +22,9 @@ func (s *Server) HomepageHandler() http.HandlerFunc {
 		fmt.Println("homepage handler running")
 		// checking if user is logged in
 		user := users.CurrentUser
-		homePageData := HomepageData{user, users.AlreadyLoggedIn(r)}
+		s.Db, _ = sql.Open("sqlite3", "forum.db")
+		postTitles := posts.GetAllPostTitles(s.Db)
+		homePageData := HomepageData{user, postTitles, users.AlreadyLoggedIn(r)}
 		Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
 	}
 }
