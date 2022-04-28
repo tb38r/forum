@@ -8,15 +8,17 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var (
+type RateLimiter struct {
 	limiter <-chan time.Time
 	seconds time.Duration
-)
+}
 
 func main() {
-	seconds = 2
-	limiter = time.Tick(seconds * time.Second)
+	rate := RateLimiter{}
+
+	rate.seconds = 2
+	rate.limiter = time.Tick(rate.seconds * time.Second)
 
 	database.CreateDB()
-	web.OpenServer(limiter)
+	web.OpenServer(rate.limiter)
 }
