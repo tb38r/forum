@@ -2,7 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"forum/posts"
 	"log"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -30,10 +29,8 @@ func CreateDB() {
 		likeID integer REFERENCES like(likeID), 
 		dislikeID integer REFERENCES dislike(dislikeID), 
 		edited integer);`)
-	db.Exec("create table if not exists category (categoryID integer PRIMARY KEY, postID integer REFERENCES post(postID), categoryname text)")
-	// db.Exec("create table if not exists comments (CommentID integer primary key, UserID integer foreign key, PostID integer foreign key, CommentText text, LikeID integer foreign key, Dislikes integer foreign key, Edited integer, CreationDate integer)")
-	// db.Exec("create table if not exists likes (LikeID integer primary key, UserID integer foreign key, CommentID integer foreign key, PostID integer foreign key)")
+	// db.Exec("create table if not exists category (categoryID integer PRIMARY KEY, postID integer REFERENCES post(postID), categoryname text)")
+	db.Exec(`create table if not exists comments (commentID integer PRIMARY KEY, userID integer REFERENCES users(userID), postID integer post(postID);`)
+	db.Exec(`create table if not exists likes (likeID integer PRIMARY KEY, userID integer REFERENCES users(userID), postID integer post(postID), commentID integer REFERENCES comments(commentID));`)
 	// db.Exec("create table if not exists dislikes (DislikeID integer primary key, UserID integer foreign key, CommentID integer foreign key, PostID integer foreign key)")
-	posts.GetAllPostTitles(db)
-
 }

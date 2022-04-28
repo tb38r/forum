@@ -2,33 +2,28 @@ package web
 
 import (
 	"fmt"
+	"net/http"
+	"strconv"
 
 	"forum/categories"
 	"forum/posts"
-	"net/http"
-	"strconv"
 )
 
 // type Server server.Server
 var UserIdint int
 
 func (s *Server) CreatePostHandler() http.HandlerFunc {
-
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		// getting the user id from the url
 		userId := r.URL.Query().Get("userid")
 		fmt.Println(userId)
 		UserIdint, _ = strconv.Atoi(userId)
-		Tpl.ExecuteTemplate(w, "createpost.html", nil)
-
+		tpl.ExecuteTemplate(w, "createpost.html", nil)
 	}
-
 }
 
 func (s *Server) StorePostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		// s.Db, _ = sql.Open("sqlite3", "forum.db")
 		r.ParseForm()
 
@@ -66,6 +61,6 @@ func (s *Server) StorePostHandler() http.HandlerFunc {
 		}
 		fmt.Println("title:", title, "content:", content)
 
-		Tpl.ExecuteTemplate(w, "storepost.html", "Post stored!")
+		tpl.ExecuteTemplate(w, "storepost.html", "Post stored!")
 	}
 }
