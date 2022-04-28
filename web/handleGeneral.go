@@ -3,9 +3,10 @@ package web
 import (
 	"database/sql"
 	"fmt"
+	"net/http"
+
 	"forum/posts"
 	"forum/users"
-	"net/http"
 )
 
 // eventually need this struct to pass onto the handler with all the data within

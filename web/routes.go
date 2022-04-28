@@ -17,4 +17,5 @@ func (s *Server) Routes() {
 	// this is for the template css files to run.
 	http.Handle("/templates/", http.StripPrefix("/templates/", http.FileServer(http.Dir("./templates"))))
 
+	http.HandleFunc("/likes", s.LikeHandler())
 }

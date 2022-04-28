@@ -1,24 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<script>
-function clickCounter() {
-  if (typeof(Storage) !== "undefined") {
-    if (localStorage.clickcount) {
-      localStorage.clickcount = Number(localStorage.clickcount)+1;
-    } else {
-      localStorage.clickcount = 1;
-    }
-    document.getElementById("result").innerHTML = "Like # " + localStorage.clickcount;
-  } else {
-    document.getElementById("result").innerHTML = "Sorry, your browser does not support web storage...";
-  }
-}
-</script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Like Stored</title>
 </head>
 <body>
+    {{if .}}
+    <h2>{{.}}</h2>
+    {{end}}
 
-<p><button onclick="clickCounter()" type="button">Like</button></p>
-<div id="result"></div>
+    <form action="/createpost" method="post">
+        <button>CLICK HERE TO MAKE ANOTHER POST</button>
+        </form>
+
 </body>
 </html>

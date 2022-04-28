@@ -6,7 +6,7 @@ import (
 	//"strconv"
 )
 
-// var PostIdint int
+var CUserIdint int
 
 func (s *Server) LikeHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
