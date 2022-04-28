@@ -18,6 +18,7 @@ func (s *Server) CreatePostHandler() http.HandlerFunc {
 
 		// getting the user id from the url
 		userId := r.URL.Query().Get("userid")
+		fmt.Println(userId)
 		UserIdint, _ = strconv.Atoi(userId)
 		Tpl.ExecuteTemplate(w, "createpost.html", nil)
 
