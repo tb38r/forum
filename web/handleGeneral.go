@@ -27,6 +27,6 @@ func (s *Server) HomepageHandler() http.HandlerFunc {
 		s.Db, _ = sql.Open("sqlite3", "forum.db")
 		postTitles := posts.GetAllPostTitles(s.Db)
 		homePageData := HomepageData{user, postTitles, users.AlreadyLoggedIn(r), GuserId}
-		tpl.ExecuteTemplate(w, "homepage.html", homePageData)
+		Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
 	}
 }

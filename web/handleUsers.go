@@ -15,7 +15,7 @@ var GuserId int
 
 func (s *Server) RegisterUserHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		tpl.ExecuteTemplate(w, "register.html", nil)
+		Tpl.ExecuteTemplate(w, "register.html", nil)
 	}
 }
 
@@ -76,7 +76,7 @@ func (s *Server) RegisterAuthHandler() http.HandlerFunc {
 		}
 
 		if !nameAlphaNumeric || !usernameLength || !pswdLowercase || !pswdUpperCase || !pswdNumber || !pswdSpecical || !pswdNoSpaces || !passwordLength {
-			tpl.ExecuteTemplate(w, "register.html", "Please check your username or password")
+			Tpl.ExecuteTemplate(w, "register.html", "Please check your username or password")
 			return
 		}
 
@@ -84,7 +84,7 @@ func (s *Server) RegisterAuthHandler() http.HandlerFunc {
 		fmt.Println("email", email)
 
 		if !users.ValidEmail(email) {
-			tpl.ExecuteTemplate(w, "register.html", "Please enter a valid email address")
+			Tpl.ExecuteTemplate(w, "register.html", "Please enter a valid email address")
 			return
 		}
 
@@ -95,7 +95,7 @@ func (s *Server) RegisterAuthHandler() http.HandlerFunc {
 		err := rowE.Scan(&uID)
 		if err != sql.ErrNoRows {
 			fmt.Println("email already exists, err:", err)
-			tpl.ExecuteTemplate(w, "register.html", "email already exists")
+			Tpl.ExecuteTemplate(w, "register.html", "email already exists")
 			return
 		}
 
@@ -106,7 +106,7 @@ func (s *Server) RegisterAuthHandler() http.HandlerFunc {
 		error := rowU.Scan(&uIDs)
 		if error != sql.ErrNoRows {
 			fmt.Println("username already exists, err:", error)
-			tpl.ExecuteTemplate(w, "register.html", "username already exists")
+			Tpl.ExecuteTemplate(w, "register.html", "username already exists")
 			return
 		}
 
@@ -116,7 +116,7 @@ func (s *Server) RegisterAuthHandler() http.HandlerFunc {
 		hash, err = bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		if err != nil {
 			fmt.Println("bcrypt err:", err)
-			tpl.ExecuteTemplate(w, "register.html", "there was a problem registering user")
+			Tpl.ExecuteTemplate(w, "register.html", "there was a problem registering user")
 			return
 		}
 
@@ -134,7 +134,7 @@ func (s *Server) LoginHandler() http.HandlerFunc {
 		fmt.Println("login handler running")
 		fmt.Println("checking bool-----> ", users.AlreadyLoggedIn(r))
 
-		tpl.ExecuteTemplate(w, "login.html", nil)
+		Tpl.ExecuteTemplate(w, "login.html", nil)
 	}
 }
 
@@ -158,7 +158,7 @@ func (s *Server) LoginAuthHandler() http.HandlerFunc {
 		if err != nil {
 			fmt.Println("error with username, may not exist")
 			// keep the message to the user a little more vague, so hackers dont know whether you entered an incorrect username or password
-			tpl.ExecuteTemplate(w, "login.html", "check username and password")
+			Tpl.ExecuteTemplate(w, "login.html", "check username and password")
 			return
 		}
 
@@ -207,7 +207,7 @@ func (s *Server) LoginAuthHandler() http.HandlerFunc {
 		}
 
 		fmt.Println("incorrect password")
-		tpl.ExecuteTemplate(w, "login.html", "check username and password")
+		Tpl.ExecuteTemplate(w, "login.html", "check username and password")
 	}
 
 }

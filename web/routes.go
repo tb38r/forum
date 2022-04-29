@@ -35,7 +35,6 @@ func Rate(a <-chan time.Time, next http.HandlerFunc) http.HandlerFunc {
 
 func (s *Server) Routes(a <-chan time.Time) {
 	// http.HandleFunc("/register", srv.LoginAuthHandler())
-<<<<<<< HEAD
 	http.HandleFunc("/home", Rate(a, s.HomepageHandler()))
 	http.HandleFunc("/register/", Rate(a, s.RegisterUserHandler()))
 	http.HandleFunc("/registerauth", Rate(a, s.RegisterAuthHandler()))
@@ -44,21 +43,11 @@ func (s *Server) Routes(a <-chan time.Time) {
 	http.HandleFunc("/logout", Rate(a, s.LogoutHandler()))
 	http.HandleFunc("/createpost/", Rate(a, Auth(SessionChecker(s.CreatePostHandler()))))
 	http.HandleFunc("/storepost", Rate(a, Auth(SessionChecker(s.StorePostHandler()))))
+	http.HandleFunc("/createcomment/", Rate(a, Auth(SessionChecker(s.CreateCommentHandler()))))
+	http.HandleFunc("/storecomment", Rate(a, Auth(SessionChecker(s.StoreCommentHandler()))))
+	http.HandleFunc("/likes", Rate(a, Auth(SessionChecker(s.LikeHandler()))))
 	// http.HandleFunc("/", Rate(a,s.HomepageHandler()))
 	// this is for the template css files to run.
 	http.Handle("/templates/", http.StripPrefix("/templates/", http.FileServer(http.Dir("./templates"))))
-=======
-	http.HandleFunc("/register/", s.RegisterUserHandler())
-	http.HandleFunc("/registerauth", s.RegisterAuthHandler())
-	http.HandleFunc("/login", s.LoginHandler())
-	http.HandleFunc("/loginauth", s.LoginAuthHandler())
-	http.HandleFunc("/logout", s.LogoutHandler())
-	http.HandleFunc("/createpost/", Auth(SessionChecker(s.CreatePostHandler())))
-	http.HandleFunc("/storepost", Auth(SessionChecker(s.StorePostHandler())))
-	http.HandleFunc("/", s.HomepageHandler())
-	http.HandleFunc("/createcomment/", Auth(SessionChecker(s.CreateCommentHandler())))
-	http.HandleFunc("/storecomment", Auth(SessionChecker(s.StoreCommentHandler())))
->>>>>>> yonas-comments
 
-	http.HandleFunc("/likes", s.LikeHandler())
 }

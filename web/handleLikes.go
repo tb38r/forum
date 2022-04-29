@@ -19,6 +19,6 @@ func (s *Server) LikeHandler() http.HandlerFunc {
 
 		like := r.FormValue("like")
 		fmt.Println("what is this", like)
-		tpl.ExecuteTemplate(w, "likes.html", nil)
+		Tpl.ExecuteTemplate(w, "likes.html", nil)
 	}
 }
