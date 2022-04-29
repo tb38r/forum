@@ -7,13 +7,13 @@
     <title>Post Stored</title>
 </head>
 <body>
-    {{if .}}
-    <h2>{{.}}</h2>
-    {{end}}
 
     <form action="/createpost" method="post">
-        <button>CLICK HERE TO MAKE ANOTHER POST</button>
+        <button>CLICK HERE TO CREATE ANOTHER POST</button>
         </form>
 
+        <br><br>
+        
+        <a href="/createcomment?userid={{.}}">Create Comment</a>
 </body>
 </html>

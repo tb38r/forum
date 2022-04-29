@@ -6,7 +6,7 @@ import (
 	"text/template"
 )
 
-var tpl = template.Must(template.ParseGlob("templates/*.html"))
+var Tpl = template.Must(template.ParseGlob("templates/*.html"))
 
 type Server struct {
 	Db     *sql.DB
