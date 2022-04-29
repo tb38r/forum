@@ -3,9 +3,10 @@ package web
 import (
 	"database/sql"
 	"fmt"
+	"net/http"
+
 	"forum/posts"
 	"forum/users"
-	"net/http"
 )
 
 // eventually need this struct to pass onto the handler with all the data within
@@ -26,6 +27,6 @@ func (s *Server) HomepageHandler() http.HandlerFunc {
 		s.Db, _ = sql.Open("sqlite3", "forum.db")
 		postTitles := posts.GetAllPostTitles(s.Db)
 		homePageData := HomepageData{user, postTitles, users.AlreadyLoggedIn(r), GuserId}
-		Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
+		tpl.ExecuteTemplate(w, "homepage.html", homePageData)
 	}
 }

@@ -2,33 +2,29 @@ package web
 
 import (
 	"fmt"
-
-	"forum/categories"
-	"forum/posts"
 	"net/http"
 	"strconv"
+
+	"forum/categories"
+	"forum/likes"
+	"forum/posts"
 )
 
 // type Server server.Server
 var UserIdint int
 
 func (s *Server) CreatePostHandler() http.HandlerFunc {
-
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		// getting the user id from the url
 		userId := r.URL.Query().Get("userid")
 		fmt.Println(userId)
 		UserIdint, _ = strconv.Atoi(userId)
-		Tpl.ExecuteTemplate(w, "createpost.html", nil)
-
+		tpl.ExecuteTemplate(w, "createpost.html", nil)
 	}
-
 }
 
 func (s *Server) StorePostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		// s.Db, _ = sql.Open("sqlite3", "forum.db")
 		r.ParseForm()
 
@@ -44,6 +40,7 @@ func (s *Server) StorePostHandler() http.HandlerFunc {
 		tottenham := r.FormValue("tottenham")
 		newcastle := r.FormValue("newcastle")
 		mancity := r.FormValue("mancity")
+		like := r.FormValue("like")
 
 		// use if statements because we need to enter the cat name instead of the returned value "on"
 		if manutd == "on" {
@@ -64,8 +61,11 @@ func (s *Server) StorePostHandler() http.HandlerFunc {
 		if mancity == "on" {
 			categories.AddCategory(s.Db, posts.LastIns, "mancity")
 		}
+		if like == "on" {
+			likes.LikeButton(s.Db, GuserId, 1)
+		}
 		fmt.Println("title:", title, "content:", content)
 
-		Tpl.ExecuteTemplate(w, "storepost.html", "Post stored!")
+		tpl.ExecuteTemplate(w, "storepost.html", "Post stored!")
 	}
 }
