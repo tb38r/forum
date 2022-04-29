@@ -21,9 +21,6 @@ type HomepageData struct {
 func (s *Server) HomepageHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("homepage handler running")
-		// userId := r.URL.Query().Get("userid")
-		// fmt.Println("WHAT IS THIS????---------", userId)
-		// UserIdint, _ = strconv.Atoi(userId)
 		// checking if user is logged in
 		user := users.CurrentUser
 		s.Db, _ = sql.Open("sqlite3", "forum.db")
