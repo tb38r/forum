@@ -187,7 +187,8 @@ func (s *Server) LoginAuthHandler() http.HandlerFunc {
 
 			http.SetCookie(w, c)
 			users.DbSessions[username] = c.Value
-			Tpl.ExecuteTemplate(w, "loginauth.html", userID)
+			// Tpl.ExecuteTemplate(w, "loginauth.html", userID)
+			http.Redirect(w, r, "/home", http.StatusSeeOther)
 
 			/////////remove///////////////////
 			fmt.Println("sessionbool", users.SessionExists(username))

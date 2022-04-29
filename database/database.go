@@ -19,7 +19,7 @@ func CreateDB() {
 	db.Exec("create table if not exists users (userID integer primary key, email text, username text, hash CHAR(60), usertype text, externalloginid text)")
 	db.Exec(`create table if not exists post (
 		postID integer primary key, 
-		userID integer REFERENCES user(userID), 
+		userID integer REFERENCES users(userID), 
 		commentID integer REFERENCES comment(commentID), 
 		categoryID integer REFERENCES category(categoryID), 
 		creationDate integer,
@@ -33,5 +33,4 @@ func CreateDB() {
 	// db.Exec("create table if not exists comments (CommentID integer primary key, UserID integer foreign key, PostID integer foreign key, CommentText text, LikeID integer foreign key, Dislikes integer foreign key, Edited integer, CreationDate integer)")
 	// db.Exec("create table if not exists likes (LikeID integer primary key, UserID integer foreign key, CommentID integer foreign key, PostID integer foreign key)")
 	// db.Exec("create table if not exists dislikes (DislikeID integer primary key, UserID integer foreign key, CommentID integer foreign key, PostID integer foreign key)")
-
 }

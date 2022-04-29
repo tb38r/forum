@@ -10,6 +10,7 @@ import (
 )
 
 // type Server server.Server
+var UserIdint int
 
 func (s *Server) CreatePostHandler() http.HandlerFunc {
 
@@ -17,7 +18,8 @@ func (s *Server) CreatePostHandler() http.HandlerFunc {
 
 		// getting the user id from the url
 		userId := r.URL.Query().Get("userid")
-		posts.UserIdint, _ = strconv.Atoi(userId)
+		fmt.Println(userId)
+		UserIdint, _ = strconv.Atoi(userId)
 		Tpl.ExecuteTemplate(w, "createpost.html", nil)
 
 	}
@@ -34,7 +36,7 @@ func (s *Server) StorePostHandler() http.HandlerFunc {
 		content := r.FormValue("content")
 		// fmt.Println(UserIdint)
 		// adding the post to the database
-		posts.CreatePosts(s.Db, posts.UserIdint, title, content)
+		posts.CreatePosts(s.Db, UserIdint, title, content)
 		// formvalue for buttons. If they have been clicked, the form value returned will be "on"
 		manutd := r.FormValue("manutd")
 		arsenal := r.FormValue("arsenal")

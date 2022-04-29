@@ -35,13 +35,16 @@ func Rate(a <-chan time.Time, next http.HandlerFunc) http.HandlerFunc {
 
 func (s *Server) Routes(a <-chan time.Time) {
 	// http.HandleFunc("/register", srv.LoginAuthHandler())
-	http.HandleFunc("/register/", Rate(a,s.RegisterUserHandler()))
-	http.HandleFunc("/registerauth", Rate(a,s.RegisterAuthHandler()))
-	http.HandleFunc("/login", Rate(a,s.LoginHandler()))
-	http.HandleFunc("/loginauth", Rate(a,s.LoginAuthHandler()))
-	http.HandleFunc("/logout", Rate(a,s.LogoutHandler()))
-	http.HandleFunc("/createpost/", Rate(a,Auth(SessionChecker(s.CreatePostHandler()))))
-	http.HandleFunc("/storepost", Rate(a,Auth(SessionChecker(s.StorePostHandler()))))
-	http.HandleFunc("/", Rate(a,s.HomepageHandler()))
+	http.HandleFunc("/home", Rate(a, s.HomepageHandler()))
+	http.HandleFunc("/register/", Rate(a, s.RegisterUserHandler()))
+	http.HandleFunc("/registerauth", Rate(a, s.RegisterAuthHandler()))
+	http.HandleFunc("/login", Rate(a, s.LoginHandler()))
+	http.HandleFunc("/loginauth", Rate(a, s.LoginAuthHandler()))
+	http.HandleFunc("/logout", Rate(a, s.LogoutHandler()))
+	http.HandleFunc("/createpost/", Rate(a, Auth(SessionChecker(s.CreatePostHandler()))))
+	http.HandleFunc("/storepost", Rate(a, Auth(SessionChecker(s.StorePostHandler()))))
+	// http.HandleFunc("/", Rate(a,s.HomepageHandler()))
+	// this is for the template css files to run.
+	http.Handle("/templates/", http.StripPrefix("/templates/", http.FileServer(http.Dir("./templates"))))
 
 }
