@@ -13,8 +13,6 @@ func Rate(a <-chan time.Time, next http.HandlerFunc) http.HandlerFunc {
 
 		Requests = append(Requests, r)
 
-		fmt.Println("Len of Requests", len(Requests), Requests)
-
 		if len(Requests) > 0 {
 			func() {
 				<-a
@@ -26,22 +24,21 @@ func Rate(a <-chan time.Time, next http.HandlerFunc) http.HandlerFunc {
 
 		}
 
-		fmt.Println("PART 2 Len of Requests :", len(Requests), Requests)
 		fmt.Println()
 
 	}
 
 }
 
-func (s *Server) Routes(a <-chan time.Time) {
+func (s *myServer) Routes(a <-chan time.Time) {
 	// http.HandleFunc("/register", srv.LoginAuthHandler())
-	http.HandleFunc("/register/", Rate(a,s.RegisterUserHandler()))
-	http.HandleFunc("/registerauth", Rate(a,s.RegisterAuthHandler()))
-	http.HandleFunc("/login", Rate(a,s.LoginHandler()))
-	http.HandleFunc("/loginauth", Rate(a,s.LoginAuthHandler()))
-	http.HandleFunc("/logout", Rate(a,s.LogoutHandler()))
-	http.HandleFunc("/createpost/", Rate(a,Auth(SessionChecker(s.CreatePostHandler()))))
-	http.HandleFunc("/storepost", Rate(a,Auth(SessionChecker(s.StorePostHandler()))))
-	http.HandleFunc("/", Rate(a,s.HomepageHandler()))
+	http.HandleFunc("/register/", Rate(a, s.RegisterUserHandler()))
+	http.HandleFunc("/registerauth", Rate(a, s.RegisterAuthHandler()))
+	http.HandleFunc("/login", Rate(a, s.LoginHandler()))
+	http.HandleFunc("/loginauth", Rate(a, s.LoginAuthHandler()))
+	http.HandleFunc("/logout", Rate(a, s.LogoutHandler()))
+	http.HandleFunc("/createpost/", Rate(a, Auth(SessionChecker(s.CreatePostHandler()))))
+	http.HandleFunc("/storepost", Rate(a, Auth(SessionChecker(s.StorePostHandler()))))
+	http.HandleFunc("/", Rate(a, s.HomepageHandler()))
 
 }

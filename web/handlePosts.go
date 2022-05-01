@@ -11,7 +11,7 @@ import (
 
 // type Server server.Server
 
-func (s *Server) CreatePostHandler() http.HandlerFunc {
+func (s *myServer) CreatePostHandler() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -24,7 +24,7 @@ func (s *Server) CreatePostHandler() http.HandlerFunc {
 
 }
 
-func (s *Server) StorePostHandler() http.HandlerFunc {
+func (s *myServer) StorePostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		// s.Db, _ = sql.Open("sqlite3", "forum.db")

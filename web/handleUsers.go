@@ -13,13 +13,13 @@ import (
 
 var GuserId int
 
-func (s *Server) RegisterUserHandler() http.HandlerFunc {
+func (s *myServer) RegisterUserHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Tpl.ExecuteTemplate(w, "register.html", nil)
 	}
 }
 
-func (s *Server) RegisterAuthHandler() http.HandlerFunc {
+func (s *myServer) RegisterAuthHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		s.Db, _ = sql.Open("sqlite3", "forum.db")
 		fmt.Println("********registerAuthHandler running*******")
@@ -128,7 +128,7 @@ func (s *Server) RegisterAuthHandler() http.HandlerFunc {
 	}
 }
 
-func (s *Server) LoginHandler() http.HandlerFunc {
+func (s *myServer) LoginHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		fmt.Println("login handler running")
@@ -138,7 +138,7 @@ func (s *Server) LoginHandler() http.HandlerFunc {
 	}
 }
 
-func (s *Server) LoginAuthHandler() http.HandlerFunc {
+func (s *myServer) LoginAuthHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// we need to figure out whether we have to close the database at some point to save resources.
 		s.Db, _ = sql.Open("sqlite3", "forum.db")
@@ -211,7 +211,7 @@ func (s *Server) LoginAuthHandler() http.HandlerFunc {
 
 }
 
-func (s *Server) LogoutHandler() http.HandlerFunc {
+func (s *myServer) LogoutHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		c, err := r.Cookie(users.CurrentUser)
 

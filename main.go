@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"forum/database"
+	"forum/tls"
 	"forum/web"
 	"time"
 
@@ -16,9 +18,12 @@ type RateLimiter struct {
 func main() {
 	rate := RateLimiter{}
 
-	rate.seconds = 2
+	rate.seconds = 1
 	rate.limiter = time.Tick(rate.seconds * time.Second)
+	fmt.Println(tls.Sskey())
 
 	database.CreateDB()
+	tls.Pemcert()
+	tls.Pemkey()
 	web.OpenServer(rate.limiter)
 }
