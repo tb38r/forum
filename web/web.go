@@ -12,10 +12,11 @@ func OpenServer(a <-chan time.Time) {
 	mainserver := myServer{
 		serve: &http.Server{
 			Addr:              ":8080",
-			//ReadHeaderTimeout: 0,
+			ReadHeaderTimeout: 0,
 			Handler:           nil,
 			TLSConfig: &tls.Config{
-				MinVersion: tls.VersionTLS10,
+				MinVersion: tls.VersionTLS13,
+				PreferServerCipherSuites: true,
 			},
 		},
 	}
