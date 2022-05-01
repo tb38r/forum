@@ -8,7 +8,7 @@ import (
 
 // var CUserIdint int
 
-func (s *Server) LikeHandler() http.HandlerFunc {
+func (s *myServer) LikeHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("like handler running")
 

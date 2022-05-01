@@ -33,7 +33,7 @@ func Rate(a <-chan time.Time, next http.HandlerFunc) http.HandlerFunc {
 
 }
 
-func (s *Server) Routes(a <-chan time.Time) {
+func (s *myServer) Routes(a <-chan time.Time) {
 	// http.HandleFunc("/register", srv.LoginAuthHandler())
 	http.HandleFunc("/home", Rate(a, s.HomepageHandler()))
 	http.HandleFunc("/register/", Rate(a, s.RegisterUserHandler()))

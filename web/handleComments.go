@@ -9,7 +9,7 @@ import (
 
 var CUserIdint int
 
-func (s *Server) CreateCommentHandler() http.HandlerFunc {
+func (s *myServer) CreateCommentHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
 		userID := r.URL.Query().Get("userid")
@@ -19,7 +19,7 @@ func (s *Server) CreateCommentHandler() http.HandlerFunc {
 	}
 }
 
-func (s *Server) StoreCommentHandler() http.HandlerFunc {
+func (s *myServer) StoreCommentHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		r.ParseForm()

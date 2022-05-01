@@ -8,11 +8,15 @@ import (
 
 var Tpl = template.Must(template.ParseGlob("templates/*.html"))
 
-type Server struct {
+type myServer struct {
+	
 	Db     *sql.DB
 	Router *http.ServeMux
+	serve *http.Server
+	
 }
 
-// func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-// 	s.ServeHTTP(w, r)
-// }
+func (s *myServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	s.ServeHTTP(w, r)
+}
+
