@@ -9,32 +9,22 @@ import (
 
 func OpenServer(a <-chan time.Time) {
 
+	//ReadHeaderTimeout can be used in place of ReadTimeout, but for audit purposes RT's preferred
 	mainserver := myServer{
 		serve: &http.Server{
-			Addr:              ":8080",
-			ReadHeaderTimeout: 0,
-			Handler:           nil,
+			Addr:         ":8080",
+			ReadTimeout:  4 * time.Second,
+			WriteTimeout: 8 * time.Second,
+			IdleTimeout:  10 * time.Second,
+			Handler:      nil,
 			TLSConfig: &tls.Config{
-				MinVersion: tls.VersionTLS13,
+				MinVersion:               tls.VersionTLS13,
 				PreferServerCipherSuites: true,
 			},
 		},
 	}
 
 	mainserver.Routes(a)
-
-	// x.serve.ReadHeaderTimeout = 2
-	// x.serve.Handler =
-
-	// srv := &http.Server{
-	// 	Addr:              ":8080",
-	// 	ReadHeaderTimeout: 10,
-	// 	Handler:           nil,
-	// 	TLSConfig: &tls.Config{
-	// 		MinVersion: tls.VersionTLS10,
-	// 	},
-	// }
-	//srv.ReadHeaderTimeout = 10
 
 	log.Fatal(mainserver.serve.ListenAndServeTLS("tls/cert.pem", "tls/key.pem"))
 

@@ -14,7 +14,7 @@ func Rate(a <-chan time.Time, next http.HandlerFunc) http.HandlerFunc {
 		Requests = append(Requests, r)
 
 		fmt.Println("Len of Requests", len(Requests), Requests)
-
+		
 		if len(Requests) > 0 {
 			func() {
 				<-a
