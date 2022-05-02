@@ -70,8 +70,5 @@ func GetPostData(db *sql.DB, postID int) Post {
 	if err != nil {
 		fmt.Println(err)
 	}
-	if post.PostID == postID {
-		return post
-	}
-	return Post{}
+	return post
 }
