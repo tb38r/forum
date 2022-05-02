@@ -80,7 +80,7 @@ func (s *myServer) StorePostHandler() http.HandlerFunc {
 	}
 }
 
-func (s *Server) ShowPostHandler() http.HandlerFunc {
+func (s *myServer) ShowPostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// had to open the database here as it wasnt picking the correct post everytime without this.
 		s.Db, _ = sql.Open("sqlite3", "forum.db")
