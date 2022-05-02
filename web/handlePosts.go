@@ -1,6 +1,7 @@
 package web
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -9,6 +10,15 @@ import (
 	"forum/likes"
 	"forum/posts"
 )
+
+type PostPageData struct {
+	PostId   int
+	Title    string
+	Content  string
+	Comments []string
+	Likes    int
+	Dislikes int
+}
 
 // type Server server.Server
 var UserIdint int
@@ -67,5 +77,16 @@ func (s *myServer) StorePostHandler() http.HandlerFunc {
 		fmt.Println("title:", title, "content:", content)
 
 		Tpl.ExecuteTemplate(w, "storepost.html", "Post stored!")
+	}
+}
+
+func (s *Server) ShowPostHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// had to open the database here as it wasnt picking the correct post everytime without this.
+		s.Db, _ = sql.Open("sqlite3", "forum.db")
+		// get the postId and display the post and its contents
+		postID := r.URL.Query().Get("postid")
+		postIDInt, _ := strconv.Atoi(postID)
+		Tpl.ExecuteTemplate(w, "showpost.html", posts.GetPostData(s.Db, postIDInt))
 	}
 }

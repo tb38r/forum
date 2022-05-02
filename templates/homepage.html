@@ -20,13 +20,14 @@
             <input type="password" placeholder="Password" name="password">
             <button type="submit">Login</button> 
           </form>
+          <a href="/register">Register</a>
             {{end}}
         </div>
       </div>
       <div class="showposts">
           <h3>POSTS</h3>
-          {{ range $_, $title := .AllPostTitles }}
-          <h4>{{ $title }}</h4>
+          {{ range $id, $title := .AllPostTitles }}
+            <a href="/showpost?postid={{$id}}"><h4>{{ $title }}</h4></a>  
           {{end}}
       </div>
       {{if .Loggedin}}

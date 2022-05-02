@@ -9,14 +9,10 @@ import (
 type Post struct {
 	PostID       int
 	UserID       int
-	CommentID    int
-	CategoryID   int
-	CreationDate int
+	CreationDate string
 	PostTitle    string
-	PostText     string
+	PostContent  string
 	PostImage    string
-	LikesID      int
-	DislikesID   int
 	Edited       bool
 }
 
@@ -42,22 +38,37 @@ func CreatePosts(db *sql.DB, userID int, title string, content string) {
 	fmt.Println("last inserted:", LastIns)
 }
 
-// function that gets all the post titles and returns a slice of string
-func GetAllPostTitles(db *sql.DB) []string {
-	rows, err := db.Query("SELECT postTitle FROM post")
+// function that gets all the post titles and returns a slice of string, also now getting the postId
+func GetAllPostTitles(db *sql.DB) map[int]string {
+	rows, err := db.Query("SELECT postID, postTitle FROM post")
 
 	if err != nil {
 		fmt.Println(err)
 	}
-	AllpostTitles := []string{}
+	// AllpostTitles := []string{}
+	AllpostTitles := make(map[int]string)
+
+	var postID int
 	var postTitle string
 	defer rows.Close()
 	for rows.Next() {
-		err2 := rows.Scan(&postTitle)
+		err2 := rows.Scan(&postID, &postTitle)
 		if err2 != nil {
 			log.Fatal(err2)
 		}
-		AllpostTitles = append(AllpostTitles, postTitle)
+		// AllpostTitles = append(AllpostTitles, postID, postTitle)
+		AllpostTitles[postID] = postTitle
 	}
 	return AllpostTitles
+}
+
+// getting the data from one post, and storing the values in the post struct
+func GetPostData(db *sql.DB, postID int) Post {
+	row := db.QueryRow("SELECT * FROM post WHERE postID = ?;", postID)
+	var post Post
+	err := row.Scan(&post.PostID, &post.UserID, &post.CreationDate, &post.PostTitle, &post.PostContent, &post.PostImage, &post.Edited)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return post
 }
