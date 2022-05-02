@@ -10,6 +10,15 @@ import (
 	"forum/posts"
 )
 
+type PostPageData struct {
+	PostId   int
+	Title    string
+	Content  string
+	Comments []string
+	Likes    int
+	Dislikes int
+}
+
 // type Server server.Server
 var UserIdint int
 
@@ -67,5 +76,12 @@ func (s *Server) StorePostHandler() http.HandlerFunc {
 		fmt.Println("title:", title, "content:", content)
 
 		Tpl.ExecuteTemplate(w, "storepost.html", "Post stored!")
+	}
+}
+
+func (s *Server) ShowPostHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// get the postId and display the post and its contents
+		Tpl.ExecuteTemplate(w, "showpost.html", posts.GetPostData(s.Db, 1))
 	}
 }

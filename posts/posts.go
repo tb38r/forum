@@ -9,14 +9,10 @@ import (
 type Post struct {
 	PostID       int
 	UserID       int
-	CommentID    int
-	CategoryID   int
-	CreationDate int
+	CreationDate string
 	PostTitle    string
-	PostText     string
+	PostContent  string
 	PostImage    string
-	LikesID      int
-	DislikesID   int
 	Edited       bool
 }
 
@@ -60,4 +56,18 @@ func GetAllPostTitles(db *sql.DB) []string {
 		AllpostTitles = append(AllpostTitles, postTitle)
 	}
 	return AllpostTitles
+}
+
+// getting the data from one post, and storing the values in the post struct
+func GetPostData(db *sql.DB, postID int) Post {
+	row := db.QueryRow("SELECT * FROM post WHERE postID = ?;", postID)
+	var post Post
+	err := row.Scan(&post.PostID, &post.UserID, &post.CreationDate, &post.PostTitle, &post.PostContent, &post.PostImage, &post.Edited)
+	if err != nil {
+		fmt.Println(err)
+	}
+	if post.UserID == postID {
+		return post
+	}
+	return Post{}
 }

@@ -46,6 +46,7 @@ func (s *Server) Routes(a <-chan time.Time) {
 	http.HandleFunc("/createcomment/", Rate(a, Auth(SessionChecker(s.CreateCommentHandler()))))
 	http.HandleFunc("/storecomment", Rate(a, Auth(SessionChecker(s.StoreCommentHandler()))))
 	http.HandleFunc("/likes", Rate(a, Auth(SessionChecker(s.LikeHandler()))))
+	http.HandleFunc("/showpost", Rate(a, s.ShowPostHandler()))
 	// http.HandleFunc("/", Rate(a,s.HomepageHandler()))
 	// this is for the template css files to run.
 	http.Handle("/templates/", http.StripPrefix("/templates/", http.FileServer(http.Dir("./templates"))))
