@@ -38,22 +38,26 @@ func CreatePosts(db *sql.DB, userID int, title string, content string) {
 	fmt.Println("last inserted:", LastIns)
 }
 
-// function that gets all the post titles and returns a slice of string
-func GetAllPostTitles(db *sql.DB) []string {
-	rows, err := db.Query("SELECT postTitle FROM post")
+// function that gets all the post titles and returns a slice of string, also now getting the postId
+func GetAllPostTitles(db *sql.DB) map[int]string {
+	rows, err := db.Query("SELECT postID, postTitle FROM post")
 
 	if err != nil {
 		fmt.Println(err)
 	}
-	AllpostTitles := []string{}
+	// AllpostTitles := []string{}
+	AllpostTitles := make(map[int]string)
+
+	var postID int
 	var postTitle string
 	defer rows.Close()
 	for rows.Next() {
-		err2 := rows.Scan(&postTitle)
+		err2 := rows.Scan(&postID, &postTitle)
 		if err2 != nil {
 			log.Fatal(err2)
 		}
-		AllpostTitles = append(AllpostTitles, postTitle)
+		// AllpostTitles = append(AllpostTitles, postID, postTitle)
+		AllpostTitles[postID] = postTitle
 	}
 	return AllpostTitles
 }
@@ -66,7 +70,7 @@ func GetPostData(db *sql.DB, postID int) Post {
 	if err != nil {
 		fmt.Println(err)
 	}
-	if post.UserID == postID {
+	if post.PostID == postID {
 		return post
 	}
 	return Post{}

@@ -26,8 +26,8 @@
       </div>
       <div class="showposts">
           <h3>POSTS</h3>
-          {{ range $_, $title := .AllPostTitles }}
-            <a href="/showpost"><h4>{{ $title }}</h4></a>  
+          {{ range $id, $title := .AllPostTitles }}
+            <a href="/showpost?postid={{$id}}"><h4>{{ $title }}</h4></a>  
           {{end}}
       </div>
       {{if .Loggedin}}

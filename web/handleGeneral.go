@@ -13,7 +13,7 @@ import (
 // struct fields need to be capitalized, to be used in the templates
 type HomepageData struct {
 	Username      string
-	AllPostTitles []string
+	AllPostTitles map[int]string
 	Loggedin      bool
 	UserID        int
 }
