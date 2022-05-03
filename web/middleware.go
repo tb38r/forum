@@ -88,6 +88,6 @@ func SessionChecker(HandlerFunc http.HandlerFunc) http.HandlerFunc {
 			}
 
 		}
-
+		HandlerFunc.ServeHTTP(w, r)
 	}
 }
