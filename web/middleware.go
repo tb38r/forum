@@ -88,6 +88,63 @@ func SessionChecker(HandlerFunc http.HandlerFunc) http.HandlerFunc {
 			}
 
 		}
+	}
+}
 
+func HomepageSessionChecker(HandlerFunc http.HandlerFunc) http.HandlerFunc {
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println(users.DbSessions)
+		if users.SessionExists(users.CurrentUser) {
+			fmt.Println()
+			fmt.Println("Session Exists/ID", users.DbSessions)
+			fmt.Println()
+
+			// Read the cookie,if there are any
+			cookie, err := r.Cookie(users.CurrentUser)
+
+			//i.e session exists (on map) but no active cookie on (presumably) new client
+			if err != nil {
+				// create new cookie for user on this client
+				HandlerFunc.ServeHTTP(w, r)
+				return
+
+				//session exists but differing UUID,  logout/close session
+			} else if cookie.Value != users.DbSessions[users.CurrentUser] {
+
+				//expire cookie as there's an active session elsewhere
+				for _, cookie := range r.Cookies() {
+					fmt.Println("-------Test Delete 3")
+
+					if cookie.Name == users.CurrentUser {
+						fmt.Println("checking if loop entered--------------------------------------------------------")
+						fmt.Println("1st max age check ----> ", cookie.MaxAge, cookie.Value)
+
+						cookie.MaxAge = -1
+						//cookie.Value = ""
+						//cookie.Expires = time.Date(2022, time.April, 21, 0000, 00, 00, 00, time.UTC)
+						fmt.Println("2nd max age check ----> ", cookie.MaxAge, cookie.Value)
+					}
+					http.SetCookie(w, cookie)
+				}
+
+				//redirects to log in page when prior session exists
+				http.Redirect(w, r, "/logout", http.StatusSeeOther)
+
+				fmt.Println("Cookie deleted due to pre-existing session")
+				fmt.Println()
+				return
+
+				//UUID matches that within map, active session, no conflicts
+			} else if cookie.Value == users.DbSessions[users.CurrentUser] {
+				HandlerFunc.ServeHTTP(w, r)
+				fmt.Println("Active session on client, no changes made")
+				fmt.Println()
+				return
+
+			}
+
+		}
+		HandlerFunc.ServeHTTP(w, r)
 	}
 }
