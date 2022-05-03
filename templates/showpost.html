@@ -10,5 +10,20 @@
     <h3>Show Post</h3>
     <h4>{{ .PostTitle }}</h4>
     <h5>{{ .PostContent }}</h5>
+
+    <div class="container" style="margin:auto;">
+        <form action="/storecomment" method="POST">
+            <H2>Create Comment</H2>
+           
+            <label for="commenttext">Content</label><br>
+            <textarea id="content" name="content" rows="4" cols="50"></textarea><br>
+            <button class="btn btn-primary" type="submit">Create Comment</button>
+        </form>
+
+        <form action="/showcomment" method="post">
+            <button class="btn btn-primary" type="submit">See Comments</button>
+        </form>
+    </div>  
+
 </body>
 </html>

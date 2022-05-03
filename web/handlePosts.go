@@ -22,6 +22,7 @@ type PostPageData struct {
 
 // type Server server.Server
 var UserIdint int
+var PostIDInt int
 
 func (s *myServer) CreatePostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -86,7 +87,7 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 		s.Db, _ = sql.Open("sqlite3", "forum.db")
 		// get the postId and display the post and its contents
 		postID := r.URL.Query().Get("postid")
-		postIDInt, _ := strconv.Atoi(postID)
-		Tpl.ExecuteTemplate(w, "showpost.html", posts.GetPostData(s.Db, postIDInt))
+		PostIDInt, _ = strconv.Atoi(postID)
+		Tpl.ExecuteTemplate(w, "showpost.html", posts.GetPostData(s.Db, PostIDInt))
 	}
 }
