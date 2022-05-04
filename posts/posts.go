@@ -72,3 +72,15 @@ func GetPostData(db *sql.DB, postID int) Post {
 	}
 	return post
 }
+
+// this func will use a join query to get the username of the person whp created the post
+func GetPostUsername(db *sql.DB, postID int) string {
+	// change from post to user if not working
+	row := db.QueryRow("SELECT username FROM post INNER JOIN users ON users.userID = post.userID WHERE post.postID = ?;", postID)
+	var username string
+	err := row.Scan(&username)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return username
+}

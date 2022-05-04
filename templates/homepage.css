@@ -90,6 +90,10 @@ body {
   }
 }
 
+.register {
+  margin-top: 5px;
+}
+
 #maincontent {
   max-width: 1100px;
   margin: 0 auto;
@@ -127,4 +131,16 @@ a.btn-link:hover {
 .post-title > a {
   color: black!important;
   text-decoration: none;
+}
+
+.post-extra-info {
+  color: gray;
+  font-size: 14px;
+}
+
+.post-stats {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  flex-direction: column;
 }
