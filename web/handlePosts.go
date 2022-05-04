@@ -14,13 +14,13 @@ import (
 )
 
 type PostPageData struct {
-	PostId      int
-	Title       string
-	Content     string
-	Comments    []string
-	Likes       int
-	Dislikes    int
-	CommentText string
+	PostId   int
+	Title    string
+	Content  string
+	Comments []string
+	Likes    int
+	Dislikes int
+	GCT      comments.Comment
 }
 
 // type Server server.Server
@@ -94,40 +94,7 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 		postID := r.URL.Query().Get("postid")
 		PostIDInt, _ = strconv.Atoi(postID)
 
-		comments.CreateComment(s.Db, GuserId, PostIDInt, ContentComment)
-
-		var commentData comments.Comment
-
-		//PostPageData{CommentText: commentData.CommentText}
-		commentData.PostID = PostIDInt
-		commentData.UserID = GuserId
-
-		fmt.Println("comment data check: ---> ", commentData.CommentText)
-		fmt.Println("comment post id check: ---> ", commentData.PostID)
-		fmt.Println("comment user id check: ---> ", commentData.UserID)
-
-		fmt.Println("checking if comments connect ---> ", commentData.CommentText)
-		if PostIDInt == CommentData.PostID {
-			CommentData.CommentText = ContentComment
-			CommentData.PostID = PostIDInt
-			CommentData.UserID = GuserId
-		}
-		fmt.Println("comment data check: ---> ", CommentData.CommentText)
-		fmt.Println("comment post id check: ---> ", CommentData.PostID)
-
 		Tpl.ExecuteTemplate(w, "showpost.html", posts.GetPostData(s.Db, PostIDInt))
-
-		// for i := 0; i < 100; i++ {
-		// 	fmt.Fprintln(w, "loop print of comments check --> ", CommentData.CommentText[i])
-
-		// }
-
-		//for i := 0; i < 100; i++ {
-
-		// fmt.Fprintln(w, "normal print of comments --> ", "<h1>"+"<pre>"+CommentData.CommentText+"</pre>"+"</h1>")
-		// fmt.Fprintln(w, "-------------------------")
-		// fmt.Fprintln(w, "struct print check ==> ", commentData.CommentText)
-		//	}
 
 		for c, v := range CommentMap {
 			if v == PostIDInt {
