@@ -76,3 +76,20 @@
     border: 1px solid #ccc;
   }
 }
+
+thead {
+  display: table-header-group;
+  vertical-align: middle;
+  border-color: inherit;
+}
+
+.topic-list {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.topic-list .topic-list-data {
+  line-height: var(--line-height-large);
+  text-align: left;
+  vertical-align: middle;
+}

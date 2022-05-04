@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"forum/categories"
-	"forum/likes"
 	"forum/posts"
 )
 
@@ -22,6 +21,7 @@ type PostPageData struct {
 
 // type Server server.Server
 var UserIdint int
+var PostIDInt int
 
 func (s *myServer) CreatePostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -29,7 +29,6 @@ func (s *myServer) CreatePostHandler() http.HandlerFunc {
 		userId := r.URL.Query().Get("userid")
 		UserIdint, _ = strconv.Atoi(userId)
 		Tpl.ExecuteTemplate(w, "createpost.html", nil)
-
 	}
 }
 
@@ -50,7 +49,6 @@ func (s *myServer) StorePostHandler() http.HandlerFunc {
 		tottenham := r.FormValue("tottenham")
 		newcastle := r.FormValue("newcastle")
 		mancity := r.FormValue("mancity")
-		like := r.FormValue("like")
 
 		// use if statements because we need to enter the cat name instead of the returned value "on"
 		if manutd == "on" {
@@ -71,9 +69,6 @@ func (s *myServer) StorePostHandler() http.HandlerFunc {
 		if mancity == "on" {
 			categories.AddCategory(s.Db, posts.LastIns, "mancity")
 		}
-		if like == "on" {
-			likes.LikeButton(s.Db, GuserId, 1)
-		}
 		fmt.Println("title:", title, "content:", content)
 
 		Tpl.ExecuteTemplate(w, "storepost.html", "Post stored!")
@@ -86,7 +81,12 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 		s.Db, _ = sql.Open("sqlite3", "forum.db")
 		// get the postId and display the post and its contents
 		postID := r.URL.Query().Get("postid")
-		postIDInt, _ := strconv.Atoi(postID)
-		Tpl.ExecuteTemplate(w, "showpost.html", posts.GetPostData(s.Db, postIDInt))
+		PostIDInt, _ := strconv.Atoi(postID)
+
+		// r.ParseForm()
+
+		// like := r.FormValue("like")
+
+		Tpl.ExecuteTemplate(w, "showpost.html", posts.GetPostData(s.Db, PostIDInt))
 	}
 }

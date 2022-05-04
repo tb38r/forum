@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,5 +11,18 @@
     <h3>Show Post</h3>
     <h4>{{ .PostTitle }}</h4>
     <h5>{{ .PostContent }}</h5>
+<div class="container" style="margin:auto;">
+        <form action="/likes" method="POST">
+        <button class="btn btn-default btn-sm" type="checkbox" name="like">
+        <span class="glyphicon glyphicon-thumbs-up"></span> Like
+        </button>
+        </form>
+        <br>
+         <form action="/dislikes" method="POST">
+        <button class="btn btn-default btn-sm" type="checkbox" name="dislike">
+        <span class="glyphicon glyphicon-thumbs-down"></span> Dislike
+        </button>
+        </form>
+</div>
 </body>
 </html>

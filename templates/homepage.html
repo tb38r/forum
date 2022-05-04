@@ -24,8 +24,36 @@
             {{end}}
         </div>
       </div>
+<table id="ember48" class="topic-list ember-view">
+<thead class="topic-list-header">
+    <tr><th data-sort-order="default" class="topic-list-data" scope="col">Posts</th>
+
+  <th data-sort-order="posters" class="topic-list-data" scope="col" aria-label="Posters"></th>
+
+<th data-sort-order="posts" class="topic-list-data" scope="col" tabindex="0" role="button" aria-pressed="false">Comments</th>
+
+<th data-sort-order="activity" class="topic-list-data" scope="col" tabindex="0" role="button" aria-pressed="false">Date Added</th>
+</tr>
+  </thead>
+
+<tr data-topic-id="9738" id="ember477" class="topic-list-item category-getting-help has-excerpt pinned closed ember-view" data-islastviewedtopic="true">
+
+
+
+</tr>
+
+  </table>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
       <div class="showposts">
-          <h3>POSTS</h3>
           {{ range $id, $title := .AllPostTitles }}
             <a href="/showpost?postid={{$id}}"><h4>{{ $title }}</h4></a>  
           {{end}}
@@ -35,3 +63,5 @@
       {{end}}
 </body>
 </html>
+
+

@@ -3,6 +3,8 @@ package web
 import (
 	"fmt"
 	"net/http"
+
+	"forum/likes"
 	//"strconv"
 )
 
@@ -14,10 +16,12 @@ func (s *myServer) LikeHandler() http.HandlerFunc {
 
 		r.ParseForm()
 
-		// postID := r.URL.Query().Get("postid")
-		// PostIdint, _ = strconv.Atoi(postID)
-
 		like := r.FormValue("like")
+
+	
+	    likes.LikeButton(s.Db, GuserId, PostIDInt)
+		
+
 		fmt.Println("what is this", like)
 		Tpl.ExecuteTemplate(w, "likes.html", nil)
 	}
