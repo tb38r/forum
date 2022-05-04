@@ -24,8 +24,26 @@
             {{end}}
         </div>
       </div>
-      <br>
-      <table class="table">
+      <div id="maincontent">
+        <h2>Posts</h2>
+        {{if .Loggedin}}
+        <p style="text-align: right;">
+          <a class="post btn-link" href="/createpost?userid={{.UserID}}">
+              New Post
+          </a>
+      </p>
+      {{end}}
+      {{ range $id, $title := .AllPostTitles }}
+      <div class="post-row">
+        <div>
+          <div class="post-title"><a href="/showpost?postid={{$id}}">{{ $title }}</a></div>
+          <div class="post-extra-info"></div>
+        </div>
+        <div class="post-stats"></div>
+      </div>
+      {{ end }}
+      </div>
+      <!-- <table class="table">
         <thead>
           <tr>
             <th scope="col">Post</th>
@@ -42,12 +60,6 @@
           </tr>
           {{end}}
         </tbody>
-      </table>
-      <br>
-      <br>
-      <br>
-      {{if .Loggedin}}
-      <a href="/createpost?userid={{.UserID}}">Create Post</a>
-      {{end}}
+      </table> -->   
 </body>
 </html>
