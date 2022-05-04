@@ -24,12 +24,28 @@
             {{end}}
         </div>
       </div>
-      <div class="showposts">
-          <h3>POSTS</h3>
+      <br>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Post</th>
+            <th scope="col">Comments</th>
+            <th scope="col">Date Added</th>
+          </tr>
+        </thead>
+        <tbody>
           {{ range $id, $title := .AllPostTitles }}
-            <a href="/showpost?postid={{$id}}"><h4>{{ $title }}</h4></a>  
+          <tr>
+            <th scope="row"><a href="/showpost?postid={{$id}}"><h4>{{ $title }}</h4></a></th>
+            <td>5</td>
+            <td>today</td>
+          </tr>
           {{end}}
-      </div>
+        </tbody>
+      </table>
+      <br>
+      <br>
+      <br>
       {{if .Loggedin}}
       <a href="/createpost?userid={{.UserID}}">Create Post</a>
       {{end}}
