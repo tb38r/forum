@@ -4,12 +4,15 @@ import (
 	"database/sql"
 	"fmt"
 	"forum/comments"
+	"forum/users"
 	"net/http"
 	"strconv"
 )
 
+var CommentData comments.Comment
 var CUserIdint int
 var ContentComment string
+var CommentMap = make(map[string]int)
 
 //var CPostIdint int
 
@@ -34,6 +37,7 @@ func (s *myServer) StoreCommentHandler() http.HandlerFunc {
 		// CPostIdint, _ = strconv.Atoi(postID)
 
 		comments.CreateComment(s.Db, GuserId, PostIDInt, ContentComment)
+		CommentMap[ContentComment] = PostIDInt
 
 		var commentData comments.Comment
 
@@ -60,16 +64,20 @@ func (s *myServer) ShowCommentHandler() http.HandlerFunc {
 		postID := r.URL.Query().Get("postid")
 		PostIDInt, _ = strconv.Atoi(postID)
 
-		var commentData comments.Comment
-
-		if PostIDInt == commentData.PostID {
-			commentData.CommentText = ContentComment
-			commentData.PostID = PostIDInt
-			commentData.UserID = GuserId
+		if PostIDInt == CommentData.PostID {
+			CommentData.CommentText = ContentComment
+			CommentData.PostID = PostIDInt
+			CommentData.UserID = GuserId
 		}
-		fmt.Println("comment data check: ---> ", commentData.CommentText)
-		fmt.Println("comment post id check: ---> ", commentData.PostID)
+		fmt.Println("comment data check: ---> ", CommentData.CommentText)
+		fmt.Println("comment post id check: ---> ", CommentData.PostID)
 
-		Tpl.ExecuteTemplate(w, "showcomment.html", commentData)
+		for i := CommentData.CommentID; i >= 0; i-- {
+			fmt.Fprintln(w, "<h1>"+CommentData.CommentText+"</h1>")
+			//fmt.Fprintln(w, "The users id is ---> ", CommentData.UserID)
+			fmt.Fprintln(w, "<h3>"+"<pre>"+users.CurrentUser+"</pre>"+"<h3>")
+			//fmt.Fprintln(w, "The post id is ---> ", CommentData.PostID)
+		}
+		//Tpl.ExecuteTemplate(w, "showcomment.html", comments.GetCommentData(s.Db, PostIDInt))
 	}
 }

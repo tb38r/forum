@@ -12,9 +12,9 @@ type Comment struct {
 	PostID       int
 	CreationDate int
 	CommentText  string
-	LikesID      int
-	DislikesID   int
-	Edited       bool
+	//LikesID      int
+	//DislikesID   int
+	//Edited       bool
 }
 
 var db *sql.DB
@@ -62,7 +62,7 @@ func GetCommentText(db *sql.DB) map[int]string {
 func GetCommentData(db *sql.DB, postID int) Comment {
 	row := db.QueryRow("SELECT * FROM comments WHERE postID = ?;", postID)
 	var comment Comment
-	err := row.Scan(&comment.PostID, &comment.UserID, &comment.CreationDate, &comment.CommentText, &comment.Edited)
+	err := row.Scan(&comment.PostID, &comment.UserID, &comment.CreationDate, &comment.CommentText)
 	if err != nil {
 		fmt.Println(err)
 	}
