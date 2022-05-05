@@ -30,3 +30,20 @@ func LikeButton(db *sql.DB, userID int, postID int) {
 	fmt.Println("rows affected:", rowsAff)
 	fmt.Println("last inserted", LastIns)
 }
+
+func GetLikeData(db *sql.DB, likeID int) Like {
+	row := db.QueryRow("SELECT * FROM like WHERE likeID = ?;", likeID)
+	var like Like
+	err := row.Scan(&like.PostID, &like.UserID, &like.PostID, &like.CommentID)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return like
+}
+
+func GetLikes(db *sql.DB) int {
+	row := db.QueryRow("SELECT Co* FROM likes WHERE likeID = ?;")
+
+
+
+}

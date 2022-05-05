@@ -5,16 +5,16 @@ import (
 	"net/http"
 	"strconv"
 
-	"forum/likes"
+	"forum/dislikes"
 )
 
 // var CUserIdint int
 
-func (s *myServer) LikeHandler() http.HandlerFunc {
+func (s *myServer) DislikeHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("like handler running")
+		fmt.Println("dislike handler running")
 
-		likes.LikeButton(s.Db, GuserId, PostIDInt)
+		dislikes.DislikeButton(s.Db, GuserId, PostIDInt)
 
 		fmt.Println(PostIDInt)
 
