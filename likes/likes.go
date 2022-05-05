@@ -3,6 +3,7 @@ package likes
 import (
 	"database/sql"
 	"fmt"
+	"log"
 )
 
 type Like struct {
@@ -41,9 +42,12 @@ func GetLikeData(db *sql.DB, likeID int) Like {
 	return like
 }
 
-// func GetLikes(db *sql.DB) int {
-// 	row := db.QueryRow("SELECT Co* FROM likes WHERE likeID = ?;")
+func GetNumLikes(db *sql.DB) int {
+	var count int
 
-
-
-// }
+	err := db.QueryRow("SELECT COUNT(*) FROM likes;").Scan(&count)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return count
+}
