@@ -10,7 +10,6 @@ import (
 	"forum/comments"
 	"forum/likes"
 	"forum/posts"
-	"forum/users"
 )
 
 type PostPageData struct {
@@ -94,29 +93,15 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 		postID := r.URL.Query().Get("postid")
 		PostIDInt, _ = strconv.Atoi(postID)
 
-		//comments.AddCommentToMap(s.Db)
-		//posts.PostsAndComments(s.Db, PostIDInt)
-
 		Tpl.ExecuteTemplate(w, "showpost.html", posts.GetPostData(s.Db, PostIDInt))
-
-		//var y comments.Comment
 
 		GcD := comments.GetCommentData(s.Db, PostIDInt)
 
 		for _, c := range GcD {
 			fmt.Fprintln(w, "<h2>"+c.CommentText+"</h2>")
-			fmt.Fprintln(w, "<h3>"+users.CurrentUser, c.CreationDate+"</h3>")
+			fmt.Fprintln(w, "<h3>"+c.CommentUserName+"</h3>"+"</h4>"+c.CreationDate+"</h4>")
 			fmt.Fprintln(w, "")
 		}
 
-		//fmt.Fprintln(w, "qwerty", posts.GetPostData(s.Db, PostIDInt))
-		//	fmt.Fprintln(w, "ytrewq", comments.GetCommentData(s.Db, PostIDInt))
-
-		// for c, v := range CommentMap {
-		// 	if v == PostIDInt {
-		// 		fmt.Fprintln(w, "<h2>"+c+"</h2>")
-		// 		fmt.Fprintln(w, "<h3>"+"<pre>"+users.CurrentUser+"</pre>"+"<h3>")
-		// 	}
-		// }
 	}
 }

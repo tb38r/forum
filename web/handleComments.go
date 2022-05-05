@@ -10,7 +10,6 @@ import (
 var CommentData comments.Comment
 var CUserIdint int
 var ContentComment string
-var CommentMap = make(map[string]int)
 
 //var CPostIdint int
 
@@ -35,7 +34,6 @@ func (s *myServer) StoreCommentHandler() http.HandlerFunc {
 		// CPostIdint, _ = strconv.Atoi(postID)
 
 		comments.CreateComment(s.Db, GuserId, PostIDInt, ContentComment)
-		CommentMap[ContentComment] = PostIDInt
 
 		var commentData comments.Comment
 

@@ -7,11 +7,12 @@ import (
 )
 
 type Comment struct {
-	CommentID    int
-	UserID       int
-	PostID       int
-	CreationDate string
-	CommentText  string
+	CommentID       int
+	UserID          int
+	PostID          int
+	CreationDate    string
+	CommentText     string
+	CommentUserName string
 	//LikesID      int
 	//DislikesID   int
 	//Edited       bool
@@ -23,7 +24,7 @@ var LastIns int64
 
 func CreateComment(db *sql.DB, userID int, postID int, commentText string) {
 	stmt, err := db.Prepare("INSERT INTO comments (userID, postID, commentText, creationDate) VALUES (?, ?, ?, strftime('%H:%M %d/%m/%Y','now', 'localtime'))")
-	// stmt, err := db.Prepare("INSERT INTO post (userID, postTitle, postContent, creationDate) VALUES (?, ?, ?, strftime('%H:%M %d/%m/%Y','now','localtime'))")
+
 	if err != nil {
 		fmt.Println("error preparing statement")
 		return
@@ -61,7 +62,11 @@ func GetCommentText(db *sql.DB) map[int]string {
 }
 
 func GetCommentData(db *sql.DB, postID int) []Comment {
-	rows, err := db.Query("SELECT commentText, comments.creationDate as cmntDate FROM comments INNER JOIN post ON post.postID = comments.postID WHERE post.postID = ?;", postID)
+	rows, err := db.Query(`SELECT commentText, comments.creationDate as cmntDate, users.username 
+	FROM comments 
+	INNER JOIN post ON post.postID = comments.postID 
+	INNER JOIN users ON users.userID = comments.userID 
+	WHERE post.postID = ?;`, postID)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -69,7 +74,7 @@ func GetCommentData(db *sql.DB, postID int) []Comment {
 	defer rows.Close()
 	for rows.Next() {
 		var c Comment
-		err2 := rows.Scan(&c.CommentText, &c.CreationDate)
+		err2 := rows.Scan(&c.CommentText, &c.CreationDate, &c.CommentUserName)
 		comment = append(comment, c)
 		if err2 != nil {
 			fmt.Println(err2)
