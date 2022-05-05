@@ -6,7 +6,6 @@ import (
 	"log"
 
 	"forum/dislikes"
-	"forum/likes"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -44,6 +43,5 @@ func CreateDB() {
 			userID integer REFERENCES users(userID), postID integer REFERENCES post(postID), 
 			commentID integer REFERENCES comments(commentID));`)
 
-	fmt.Println(likes.GetNumLikes(db))
 	fmt.Println(dislikes.GetNumDisikes(db))
 }
