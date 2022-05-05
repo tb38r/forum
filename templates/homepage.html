@@ -20,18 +20,30 @@
             <input type="password" placeholder="Password" name="password">
             <button type="submit">Login</button> 
           </form>
-          <a href="/register">Register</a>
+          <a class="register btn-link" href="/register">Register</a>
             {{end}}
         </div>
       </div>
-      <div class="showposts">
-          <h3>POSTS</h3>
-          {{ range $id, $title := .AllPostTitles }}
-            <a href="/showpost?postid={{$id}}"><h4>{{ $title }}</h4></a>  
-          {{end}}
-      </div>
-      {{if .Loggedin}}
-      <a href="/createpost?userid={{.UserID}}">Create Post</a>
+      <div id="maincontent">
+        <h2>Posts</h2>
+        {{if .Loggedin}}
+        <p style="text-align: right;">
+          <a class="post btn-link" href="/createpost?userid={{.UserID}}">
+              New Post
+          </a>
+      </p>
       {{end}}
-</body>
-</html>
+      {{ range .AllPostTitles }}
+      <div class="post-row">
+        <div>
+          <div class="post-title"><a href="/showpost?postid={{.PostID}}">{{ .PostTitle }}</a></div>
+          <div class="post-extra-info">
+            <p>Posted by {{ .PostUsername }} {{ .CreationDate }}</p> 
+          </div>
+        </div>
+        <div class="post-stats"></div>
+      </div>
+      {{ end }}
+    </div>      
+  </body>
+  </html>
