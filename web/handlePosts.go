@@ -99,7 +99,7 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 
 		for _, c := range GcD {
 			fmt.Fprintln(w, "<h2>"+c.CommentText+"</h2>")
-			fmt.Fprintln(w, "<h3>"+c.CommentUserName+"</h3>"+"</h4>"+c.CreationDate+"</h4>")
+			fmt.Fprintln(w, "<h3>"+c.CommentUserName+"</h3>"+"\t"+"<h4>"+c.CreationDate+"</h4>")
 			fmt.Fprintln(w, "")
 		}
 
