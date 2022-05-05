@@ -81,7 +81,7 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 		s.Db, _ = sql.Open("sqlite3", "forum.db")
 		// get the postId and display the post and its contents
 		postID := r.URL.Query().Get("postid")
-		PostIDInt, _ := strconv.Atoi(postID)
+		PostIDInt, _ = strconv.Atoi(postID)
 
 		// r.ParseForm()
 

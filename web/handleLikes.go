@@ -3,9 +3,9 @@ package web
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"forum/likes"
-	//"strconv"
 )
 
 // var CUserIdint int
@@ -14,15 +14,12 @@ func (s *myServer) LikeHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("like handler running")
 
-		r.ParseForm()
+		likes.LikeButton(s.Db, GuserId, PostIDInt)
 
-		like := r.FormValue("like")
+		fmt.Println(PostIDInt)
 
-	
-	    likes.LikeButton(s.Db, GuserId, PostIDInt)
-		
+		SPostID := strconv.Itoa(PostIDInt)
 
-		fmt.Println("what is this", like)
-		Tpl.ExecuteTemplate(w, "likes.html", nil)
+		http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
 	}
 }

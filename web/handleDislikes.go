@@ -3,9 +3,9 @@ package web
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"forum/dislikes"
-	//"strconv"
 )
 
 // var CUserIdint int
@@ -14,14 +14,12 @@ func (s *myServer) DislikeHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("dislike handler running")
 
-		r.ParseForm()
+		dislikes.DislikeButton(s.Db, GuserId, PostIDInt)
 
-		dislike := r.FormValue("disllike")
+		fmt.Println(PostIDInt)
 
-		if dislike == "on" {
-			dislikes.DislikeButton(s.Db, GuserId, PostIDInt)
-		}
+		SPostID := strconv.Itoa(PostIDInt)
 
-		Tpl.ExecuteTemplate(w, "dislikes.html", nil)
+		http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
 	}
 }

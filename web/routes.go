@@ -10,11 +10,10 @@ var Requests []*http.Request
 
 func Rate(a <-chan time.Time, next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		Requests = append(Requests, r)
 
 		fmt.Println("Len of Requests", len(Requests), Requests)
-		
+
 		if len(Requests) > 0 {
 			func() {
 				<-a
@@ -28,9 +27,7 @@ func Rate(a <-chan time.Time, next http.HandlerFunc) http.HandlerFunc {
 
 		fmt.Println("PART 2 Len of Requests :", len(Requests), Requests)
 		fmt.Println()
-
 	}
-
 }
 
 func (s *myServer) Routes(a <-chan time.Time) {
@@ -46,9 +43,9 @@ func (s *myServer) Routes(a <-chan time.Time) {
 	http.HandleFunc("/createcomment/", Rate(a, Auth(SessionChecker(s.CreateCommentHandler()))))
 	http.HandleFunc("/storecomment", Rate(a, Auth(SessionChecker(s.StoreCommentHandler()))))
 	http.HandleFunc("/likes", Rate(a, Auth(SessionChecker(s.LikeHandler()))))
+	http.HandleFunc("/dislikes", Rate(a, Auth(SessionChecker(s.DislikeHandler()))))
 	http.HandleFunc("/showpost/", Rate(a, s.ShowPostHandler()))
 	// http.HandleFunc("/", Rate(a,s.HomepageHandler()))
 	// this is for the template css files to run.
 	http.Handle("/templates/", http.StripPrefix("/templates/", http.FileServer(http.Dir("./templates"))))
-
 }
