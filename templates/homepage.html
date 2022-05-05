@@ -33,15 +33,17 @@
           </a>
       </p>
       {{end}}
-      {{ range $id, $title := .AllPostTitles }}
+      {{ range .AllPostTitles }}
       <div class="post-row">
         <div>
-          <div class="post-title"><a href="/showpost?postid={{$id}}">{{ $title }}</a></div>
-          <div class="post-extra-info"></div>
+          <div class="post-title"><a href="/showpost?postid={{.PostID}}">{{ .PostTitle }}</a></div>
+          <div class="post-extra-info">
+            <p>Posted by {{ .PostUsername }} {{ .CreationDate }}</p> 
+          </div>
         </div>
         <div class="post-stats"></div>
       </div>
       {{ end }}
-      </div>  
-</body>
-</html>
+    </div>      
+  </body>
+  </html>
