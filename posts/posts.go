@@ -29,7 +29,6 @@ var db *sql.DB
 var LastIns int64
 
 func CreatePosts(db *sql.DB, userID int, title string, content string) {
-	// stmt, err := db.Prepare("INSERT INTO post (userID, postTitle, postContent, creationDate) VALUES (?, ?, ?, datetime('now', 'localtime'))")
 	stmt, err := db.Prepare("INSERT INTO post (userID, postTitle, postContent, creationDate) VALUES (?, ?, ?, strftime('%H:%M %d/%m/%Y','now','localtime'))")
 
 	if err != nil {

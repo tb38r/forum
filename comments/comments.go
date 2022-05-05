@@ -9,7 +9,7 @@ type Comment struct {
 	CommentID    int
 	UserID       int
 	PostID       int
-	CreationDate int
+	CreationDate string
 	CommentText  string
 	LikesID      int
 	DislikesID   int
