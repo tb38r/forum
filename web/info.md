@@ -20,3 +20,9 @@ if not first time, check other session, delete other session&cookie and then giv
 --------------------------------------------------------------
 Got the comments stored on the DB now
 Still not catching userID even when using link that gets userid from the URL. 
+
+
+///////////////////////////////////////////////////////
+-got comments showing on the store comment page for that specific comment
+-it links user id to comment when going through create comment the first time but not after that?
+-need to pass through the comment data to display it on a display comments page but this probably needs to be incorporated into the show post handler

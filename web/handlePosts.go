@@ -3,11 +3,11 @@ package web
 import (
 	"database/sql"
 	"fmt"
+	"forum/categories"
+	"forum/comments"
+	"forum/posts"
 	"net/http"
 	"strconv"
-
-	"forum/categories"
-	"forum/posts"
 )
 
 type PostPageData struct {
@@ -17,6 +17,7 @@ type PostPageData struct {
 	Comments []string
 	Likes    int
 	Dislikes int
+	GCT      comments.Comment
 }
 
 // type Server server.Server
@@ -83,10 +84,15 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 		postID := r.URL.Query().Get("postid")
 		PostIDInt, _ = strconv.Atoi(postID)
 
-		// r.ParseForm()
-
-		// like := r.FormValue("like")
-
 		Tpl.ExecuteTemplate(w, "showpost.html", posts.GetPostData(s.Db, PostIDInt))
+
+		GcD := comments.GetCommentData(s.Db, PostIDInt)
+
+		for _, c := range GcD {
+			fmt.Fprintln(w, "<h2>"+c.CommentText+"</h2>")
+			fmt.Fprintln(w, "<h3>"+c.CommentUserName+"</h3>"+"\t"+"<h4>"+c.CreationDate+"</h4>")
+			fmt.Fprintln(w, "")
+		}
+
 	}
 }

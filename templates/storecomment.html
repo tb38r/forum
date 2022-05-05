@@ -7,9 +7,11 @@
     <title>Store Comment</title>
 </head>
 <body>
-    {{if .}}
+    
     <h2>{{.}}</h2>
-    {{end}}
+    
+   
+  
 
     <h2>COMMENT HAS BEEN STORED</h2>
 
@@ -17,8 +19,8 @@
         <button>CLICK HERE TO MAKE ANOTHER POST</button>
         </form>
 
-        <form action="/createcomment" method="post">
-            <button>CLICK HERE TO MAKE ANOTHER COMMENT</button>
+        <form action="/home" method="post">
+            <button>CLICK HERE TO GO HOME</button>
             </form>
 
             <form action="/logout" method="post">

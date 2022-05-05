@@ -7,13 +7,19 @@ import (
 	"strconv"
 )
 
+var CommentData comments.Comment
 var CUserIdint int
+var ContentComment string
+
+//var CPostIdint int
 
 func (s *myServer) CreateCommentHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
 		userID := r.URL.Query().Get("userid")
-		CUserIdint, _ = strconv.Atoi(userID)
+
+		PostIDInt, _ = strconv.Atoi(userID)
+
 		Tpl.ExecuteTemplate(w, "createcomment.html", nil)
 
 	}
@@ -23,12 +29,22 @@ func (s *myServer) StoreCommentHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		r.ParseForm()
-		contentComment := r.FormValue("content")
+		ContentComment = r.FormValue("content")
 
-		comments.CreateComment(s.Db, GuserId, contentComment)
+		comments.CreateComment(s.Db, GuserId, PostIDInt, ContentComment)
 
-		fmt.Println("content: ", contentComment)
-		Tpl.ExecuteTemplate(w, "storecomment.html", nil)
+		var commentData comments.Comment
+
+		commentData.CommentText = ContentComment
+		commentData.PostID = PostIDInt
+		commentData.UserID = GuserId
+
+		fmt.Println("comment data check: ---> ", commentData.CommentText)
+		fmt.Println("comment post id check: ---> ", commentData.PostID)
+		fmt.Println("comment user id check: ---> ", commentData.UserID)
+
+		fmt.Println("content: ", ContentComment)
+		Tpl.ExecuteTemplate(w, "storecomment.html", commentData.CommentText)
 
 	}
 }
