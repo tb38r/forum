@@ -19,7 +19,7 @@ func (s *myServer) CreateCommentHandler() http.HandlerFunc {
 		r.ParseForm()
 		userID := r.URL.Query().Get("userid")
 
-		CUserIdint, _ = strconv.Atoi(userID)
+		PostIDInt, _ = strconv.Atoi(userID)
 
 		Tpl.ExecuteTemplate(w, "createcomment.html", nil)
 

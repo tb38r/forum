@@ -40,7 +40,7 @@ func GetCommentText(db *sql.DB) map[int]string {
 	rows, err := db.Query("SELECT postID, commentText FROM comments")
 
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("gct error 1", err)
 	}
 	// AllpostTitles := []string{}
 	CommentText := make(map[int]string)
@@ -51,7 +51,7 @@ func GetCommentText(db *sql.DB) map[int]string {
 	for rows.Next() {
 		err2 := rows.Scan(&postID, &commentText)
 		if err2 != nil {
-			log.Fatal(err2)
+			log.Fatal("gct err 2", err2)
 		}
 		// AllpostTitles = append(AllpostTitles, postID, postTitle)
 		CommentText[postID] = commentText
@@ -59,12 +59,20 @@ func GetCommentText(db *sql.DB) map[int]string {
 	return CommentText
 }
 
-func GetCommentData(db *sql.DB, postID int) Comment {
-	row := db.QueryRow("SELECT * FROM comments WHERE postID = ?;", postID)
-	var comment Comment
-	err := row.Scan(&comment.PostID, &comment.UserID, &comment.CreationDate, &comment.CommentText)
+func GetCommentData(db *sql.DB, postID int) []Comment {
+	rows, err := db.Query("SELECT commentText FROM comments INNER JOIN post ON post.postID = comments.postID WHERE post.postID = ?;", postID)
 	if err != nil {
 		fmt.Println(err)
+	}
+	comment := []Comment{}
+	defer rows.Close()
+	for rows.Next() {
+		var c Comment
+		err2 := rows.Scan(&c.CommentText)
+		comment = append(comment, c)
+		if err2 != nil {
+			fmt.Println(err2)
+		}
 	}
 	return comment
 }
