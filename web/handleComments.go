@@ -34,6 +34,7 @@ func (s *myServer) StoreCommentHandler() http.HandlerFunc {
 		comments.CreateComment(s.Db, GuserId, PostIDInt, ContentComment)
 
 		var commentData comments.Comment
+		SPostID := strconv.Itoa(PostIDInt)
 
 		commentData.CommentText = ContentComment
 		commentData.PostID = PostIDInt
@@ -44,7 +45,9 @@ func (s *myServer) StoreCommentHandler() http.HandlerFunc {
 		fmt.Println("comment user id check: ---> ", commentData.UserID)
 
 		fmt.Println("content: ", ContentComment)
-		Tpl.ExecuteTemplate(w, "storecomment.html", commentData.CommentText)
+		//Tpl.ExecuteTemplate(w, "storecomment.html", commentData.CommentText)
+		http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
+		//http.Redirect(w, r, "/home", http.StatusSeeOther)
 
 	}
 }
