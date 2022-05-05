@@ -41,9 +41,9 @@ func GetLikeData(db *sql.DB, likeID int) Like {
 	return like
 }
 
-func GetLikes(db *sql.DB) int {
-	row := db.QueryRow("SELECT Co* FROM likes WHERE likeID = ?;")
+// func GetLikes(db *sql.DB) int {
+// 	row := db.QueryRow("SELECT Co* FROM likes WHERE likeID = ?;")
 
 
 
-}
+// }
