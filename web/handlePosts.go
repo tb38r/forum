@@ -105,18 +105,18 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 
 		for _, c := range GcD {
 			fmt.Fprintln(w, "<h2>"+c.CommentText+"</h2>")
-			fmt.Fprintln(w, "<h3>"+users.CurrentUser+"</h3>")
+			fmt.Fprintln(w, "<h3>"+users.CurrentUser, c.CreationDate+"</h3>")
 			fmt.Fprintln(w, "")
 		}
 
 		//fmt.Fprintln(w, "qwerty", posts.GetPostData(s.Db, PostIDInt))
 		//	fmt.Fprintln(w, "ytrewq", comments.GetCommentData(s.Db, PostIDInt))
 
-		for c, v := range CommentMap {
-			if v == PostIDInt {
-				fmt.Fprintln(w, "<h2>"+c+"</h2>")
-				fmt.Fprintln(w, "<h3>"+"<pre>"+users.CurrentUser+"</pre>"+"<h3>")
-			}
-		}
+		// for c, v := range CommentMap {
+		// 	if v == PostIDInt {
+		// 		fmt.Fprintln(w, "<h2>"+c+"</h2>")
+		// 		fmt.Fprintln(w, "<h3>"+"<pre>"+users.CurrentUser+"</pre>"+"<h3>")
+		// 	}
+		// }
 	}
 }
