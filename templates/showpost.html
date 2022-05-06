@@ -9,8 +9,11 @@
 </head>
 <body>
     <h3>Show Post</h3>
+
+    {{ range .Posts }}
     <h4>{{ .PostTitle }}</h4>
     <h5>{{ .PostContent }}</h5>
+    {{ end }}
 <div class="container" style="margin:auto;">
         <form action="/likes" method="POST">
         <button class="like-dislike-btn" type="checkbox" name="like">
@@ -36,6 +39,26 @@
 
        
     </div>  
+{{ range .Comments}}
+<h4>{{ .CommentText }}</h4>
+<h5>{{ .CommentUserName }} {{ .CreationDate }}</h5>
+<div class="container" style="margin:auto;">
+    <form action="/likes" method="POST">
+    <button class="like-dislike-btn" type="checkbox" name="like">
+    <span class="glyphicon glyphicon-thumbs-up"></span> Like
+    </button>
+    </form>
+    <br>
+     <form action="/dislikes" method="POST">
+    <button class="like-dislike-btn" type="checkbox" name="dislike">
+    <span class="glyphicon glyphicon-thumbs-down"></span> Dislike
+    </button>
+    </form>
+</div>
+{{ end }}
+
+
+
 
 </body>
 </html>

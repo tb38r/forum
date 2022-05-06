@@ -66,12 +66,20 @@ func GetHomepageData(db *sql.DB) []HomepagePosts {
 }
 
 // getting the data from one post, and storing the values in the post struct
-func GetPostData(db *sql.DB, postID int) Post {
-	row := db.QueryRow("SELECT * FROM post WHERE postID = ?;", postID)
-	var post Post
-	err := row.Scan(&post.PostID, &post.UserID, &post.CreationDate, &post.PostTitle, &post.PostContent, &post.PostImage, &post.Edited)
+func GetPostData(db *sql.DB, postID int) []Post {
+	rows, err := db.Query("SELECT * FROM post WHERE postID = ?;", postID)
 	if err != nil {
 		fmt.Println(err)
 	}
-	return post
+	postdata := []Post{}
+	defer rows.Close()
+	for rows.Next() {
+		var p Post
+		err2 := rows.Scan(&p.PostID, &p.UserID, &p.CreationDate, &p.PostTitle, &p.PostContent, &p.PostImage, &p.Edited)
+		postdata = append(postdata, p)
+		if err2 != nil {
+			fmt.Println(err2)
+		}
+	}
+	return postdata
 }
