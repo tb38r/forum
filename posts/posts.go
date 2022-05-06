@@ -78,7 +78,7 @@ func GetPostData(db *sql.DB, postID int) Post {
 
 // selects posts with the same category, based on the category name
 
-func CategoryPagePost(db *sql.DB, name string) []HomepagePosts {
+func CategoryPagePosts(db *sql.DB, name string) []HomepagePosts {
 	rows, err := db.Query(`SELECT post.postID, postTitle, username, creationDate FROM post 
 	INNER JOIN category ON category.postID = post.postID 
 	INNER JOIN users ON users.userID = post.userID
