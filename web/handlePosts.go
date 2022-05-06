@@ -11,13 +11,8 @@ import (
 )
 
 type PostPageData struct {
-	PostId   int
-	Title    string
-	Content  string
-	Comments []string
-	Likes    int
-	Dislikes int
-	GCT      comments.Comment
+	Posts    []posts.Post
+	Comments []comments.Comment
 }
 
 // type Server server.Server
@@ -84,15 +79,17 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 		postID := r.URL.Query().Get("postid")
 		PostIDInt, _ = strconv.Atoi(postID)
 
-		Tpl.ExecuteTemplate(w, "showpost.html", posts.GetPostData(s.Db, PostIDInt))
+		data := PostPageData{Posts: posts.GetPostData(s.Db, PostIDInt), Comments: comments.GetCommentData(s.Db, PostIDInt)}
 
-		GcD := comments.GetCommentData(s.Db, PostIDInt)
+		Tpl.ExecuteTemplate(w, "showpost.html", data)
 
-		for _, c := range GcD {
-			fmt.Fprintln(w, "<h2>"+c.CommentText+"</h2>")
-			fmt.Fprintln(w, "<h3>"+c.CommentUserName+"</h3>"+"\t"+"<h4>"+c.CreationDate+"</h4>")
-			fmt.Fprintln(w, "")
-		}
+		// GcD := comments.GetCommentData(s.Db, PostIDInt)
+
+		// for _, c := range GcD {
+		// 	fmt.Fprintln(w, "<h2>"+c.CommentText+"</h2>")
+		// 	fmt.Fprintln(w, "<h3>"+c.CommentUserName+"</h3>"+"\t"+"<h4>"+c.CreationDate+"</h4>")
+		// 	fmt.Fprintln(w, "")
+		// }
 
 	}
 }
