@@ -71,8 +71,9 @@ func (s *myServer) StorePostHandler() http.HandlerFunc {
 			categories.AddCategory(s.Db, posts.LastIns, "mancity")
 		}
 		fmt.Println("title:", title, "content:", content)
-
-		Tpl.ExecuteTemplate(w, "storepost.html", "Post stored!")
+		// SPostID := strconv.Itoa(PostIDInt)
+		// Tpl.ExecuteTemplate(w, "storepost.html", "Post stored!")
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}
 }
 
