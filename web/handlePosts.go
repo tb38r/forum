@@ -67,7 +67,8 @@ func (s *myServer) StorePostHandler() http.HandlerFunc {
 		}
 		fmt.Println("title:", title, "content:", content)
 
-		Tpl.ExecuteTemplate(w, "storepost.html", "Post stored!")
+		// Tpl.ExecuteTemplate(w, "storepost.html", "Post stored!")
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}
 }
 
