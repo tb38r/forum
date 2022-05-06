@@ -42,10 +42,21 @@ func GetLikeData(db *sql.DB, likeID int) Like {
 	return like
 }
 
-func GetNumLikes(db *sql.DB, postID int) int {
+
+func GetPostLikes(db *sql.DB, postID int) int {
 	var count int
 
 	err := db.QueryRow("SELECT COUNT(*) FROM likes WHERE postID = ?;", postID).Scan(&count)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return count
+}
+
+func GetCommentLikes(db *sql.DB, commentID int) int {
+	var count int
+
+	err := db.QueryRow("SELECT COUNT(*) FROM likes WHERE commentID = ?;", commentID).Scan(&count)
 	if err != nil {
 		log.Fatal(err)
 	}

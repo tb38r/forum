@@ -86,7 +86,7 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 		postID := r.URL.Query().Get("postid")
 		PostIDInt, _ = strconv.Atoi(postID)
 
-		postLikes := likes.GetNumLikes(s.Db, PostIDInt)
+		postLikes := likes.GetPostLikes(s.Db, PostIDInt)
 
 		Tpl.ExecuteTemplate(w, "showpost.html", posts.GetPostData(s.Db, PostIDInt))
 
