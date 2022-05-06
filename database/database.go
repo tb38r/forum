@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"log"
 
-	"forum/dislikes"
+	"forum/likes"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
 const dbName = "forum.db"
+
+var PostIDInt int
 
 func CreateDB() {
 	var db *sql.DB
@@ -43,5 +45,5 @@ func CreateDB() {
 			userID integer REFERENCES users(userID), postID integer REFERENCES post(postID), 
 			commentID integer REFERENCES comments(commentID));`)
 
-	fmt.Println(dislikes.GetNumDisikes(db))
+	fmt.Println(likes.HomePostLikes(db))
 }

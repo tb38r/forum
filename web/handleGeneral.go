@@ -17,7 +17,7 @@ type HomepageData struct {
 	AllPostTitles []posts.HomepagePosts
 	Loggedin      bool
 	UserID        int
-	Likes         int
+	PostLikes     map[int]int
 	// PostUsername  map[int]string
 }
 
@@ -29,11 +29,10 @@ func (s *myServer) HomepageHandler() http.HandlerFunc {
 		user := users.CurrentUser
 		s.Db, _ = sql.Open("sqlite3", "forum.db")
 		homepage := posts.GetHomepageData(s.Db)
-
-		PostLikes := likes.GetPostLikes(s.Db, PostIDInt)
+		postlikes := likes.HomePostLikes(s.Db)
 
 		// homePageData := HomepageData{user, postTitles, users.AlreadyLoggedIn(r), GuserId, posts.GetPostUsername(s.Db)}
-		homePageData := HomepageData{user, homepage, users.AlreadyLoggedIn(r), GuserId, PostLikes}
+		homePageData := HomepageData{user, homepage, users.AlreadyLoggedIn(r), GuserId, postlikes}
 		Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
 	}
 }

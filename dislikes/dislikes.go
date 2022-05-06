@@ -32,10 +32,20 @@ func DislikeButton(db *sql.DB, userID int, postID int) {
 	fmt.Println("last inserted", LastIns)
 }
 
-func GetNumDisikes(db *sql.DB) int {
+func GetPostDislikes(db *sql.DB, postID int) int {
 	var count int
 
-	err := db.QueryRow("SELECT COUNT(*) FROM dislikes;").Scan(&count)
+	err := db.QueryRow("SELECT COUNT(*) FROM dislikes WHERE postID = ?;", postID).Scan(&count)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return count
+}
+
+func GetCommentDislikes(db *sql.DB, commentID int) int {
+	var count int
+
+	err := db.QueryRow("SELECT COUNT(*) FROM dislikes WHERE commentID = ?;", commentID).Scan(&count)
 	if err != nil {
 		log.Fatal(err)
 	}

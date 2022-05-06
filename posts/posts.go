@@ -20,6 +20,7 @@ type HomepagePosts struct {
 	PostTitle    string
 	PostUsername string
 	CreationDate string
+	// Likes        int
 }
 
 var db *sql.DB
@@ -30,7 +31,6 @@ var LastIns int64
 
 func CreatePosts(db *sql.DB, userID int, title string, content string) {
 	stmt, err := db.Prepare("INSERT INTO post (userID, postTitle, postContent, creationDate) VALUES (?, ?, ?, strftime('%H:%M %d/%m/%Y','now','localtime'))")
-
 	if err != nil {
 		fmt.Println("error preparing statement:", err)
 		return
@@ -47,10 +47,14 @@ func CreatePosts(db *sql.DB, userID int, title string, content string) {
 
 // Get all the data needed for the hompage
 func GetHomepageData(db *sql.DB) []HomepagePosts {
-	rows, err := db.Query("SELECT postID, postTitle, username, creationDate FROM post INNER JOIN users ON users.userID = post.userID;")
+	rows, err := db.Query(`SELECT postID, postTitle, username, creationDate FROM post 
+	INNER JOIN users ON users.userID = post.userID;`)
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	// postLikes := likes.GetPostLikes(db, PostIDInt)
+
 	postdata := []HomepagePosts{}
 	defer rows.Close()
 	for rows.Next() {
@@ -62,7 +66,6 @@ func GetHomepageData(db *sql.DB) []HomepagePosts {
 		}
 	}
 	return postdata
-
 }
 
 // getting the data from one post, and storing the values in the post struct
