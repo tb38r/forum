@@ -8,6 +8,7 @@ import (
 	"forum/posts"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
 )
 
@@ -37,59 +38,43 @@ func (s *myServer) CreatePostHandler() http.HandlerFunc {
 func (s *myServer) StorePostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		//limits requests to 20MB
+		//limits requests to 20MB (x is the limiter where x<<20)
 		r.Body = http.MaxBytesReader(w, r.Body, 20<<20)
-		reader, err := r.MultipartReader()
+
+		err := r.ParseMultipartForm(20 << 20)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		// s.Db, _ = sql.Open("sqlite3", "forum.db")
-		//r.ParseForm()
 
-		// parse text field
-		// one more field to parse, EOF is considered as failure here
-		mptitle := make([]byte, 512)
-		p, err := reader.NextPart()
+		title := r.FormValue("title")
+		content := r.FormValue("content")
+
+		// Get handler for filename, size and headers
+		file, handler, err := r.FormFile("userimage")
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			fmt.Println("Error Retrieving the File")
+			fmt.Println(err)
 			return
 		}
-		if p.FormName() != "title" {
-			http.Error(w, "title_field is expected", http.StatusBadRequest)
-			return
-		}
-		_, err = p.Read(mptitle)
-		if err != nil && err != io.EOF {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		fmt.Println(string(mptitle))
 
-		//title := r.FormValue("title")
+		defer file.Close()
+		fmt.Printf("Uploaded File: %+v\n", handler.Filename)
+		fmt.Printf("File Size: %+v\n", handler.Size)
+		fmt.Printf("MIME Header: %+v\n", handler.Header)
 
-		mpcontent := make([]byte, 512)
-		p, err = reader.NextPart()
+		// Create a temporary file within our temp-images directory that follows
+		// a particular naming pattern
+		f, err := os.OpenFile("./forum"+handler.Filename +".jpeg", os.O_WRONLY|os.O_CREATE, 0666)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			fmt.Println(err)
 			return
 		}
-		if p.FormName() != "content" {
-			http.Error(w, "text_field is expected", http.StatusBadRequest)
-			return
-		}
-		_, err = p.Read(mpcontent)
-		if err != nil && err != io.EOF {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		fmt.Println(string(mpcontent))
+		defer f.Close()
+		io.Copy(f, file)
 
-		//content := r.FormValue("content")
-
-		// fmt.Println(UserIdint)
 		// adding the post to the database
-		posts.CreatePosts(s.Db, UserIdint, string(mptitle), string(mpcontent))
+		posts.CreatePosts(s.Db, UserIdint, title, content)
 		// formvalue for buttons. If they have been clicked, the form value returned will be "on"
 		manutd := r.FormValue("manutd")
 		arsenal := r.FormValue("arsenal")
@@ -117,7 +102,7 @@ func (s *myServer) StorePostHandler() http.HandlerFunc {
 		if mancity == "on" {
 			categories.AddCategory(s.Db, posts.LastIns, "mancity")
 		}
-		fmt.Println("title:", string(mptitle), "content:", string(mpcontent))
+		fmt.Println("title:", title, "content:", content)
 
 		Tpl.ExecuteTemplate(w, "storepost.html", "Post stored!")
 	}
