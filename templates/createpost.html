@@ -10,12 +10,14 @@
 </head>
 <body>
     <div class="container" style="margin:auto;">
-        <form action="/storepost" method="POST">
+        <form action="/storepost" method="POST"  enctype="multipart/form-data">
             <H2>Create Post</H2>
             <label for="posttitle">Title</label><br>
             <textarea id="title" name="title" rows="1" cols="50"></textarea><br>
             <label for="postcontent">Content</label><br>
             <textarea id="content" name="content" rows="4" cols="50"></textarea><br>
+
+
             <h4>Choose category?</h4><br>
             <input type="checkbox" class="btn-check" id="btncheck1" name="manutd" autocomplete="off">
             <label class="btn btn-outline-primary" for="btncheck1">Man Utd</label>
@@ -31,6 +33,11 @@
             <label class="btn btn-outline-primary" for="btncheck6">Newcastle</label>
             <br>
             <button class="btn btn-primary" type="submit">Create Post</button>
+            <form
+           
+            method="post">
+            <input type="file" name="myFile" />
+          </form>
         </form>
     </div>  
     <br>

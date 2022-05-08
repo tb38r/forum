@@ -6,6 +6,7 @@ import (
 	"forum/categories"
 	"forum/comments"
 	"forum/posts"
+	"io"
 	"net/http"
 	"strconv"
 )
@@ -35,14 +36,60 @@ func (s *myServer) CreatePostHandler() http.HandlerFunc {
 
 func (s *myServer) StorePostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// s.Db, _ = sql.Open("sqlite3", "forum.db")
-		r.ParseForm()
 
-		title := r.FormValue("title")
-		content := r.FormValue("content")
+		//limits requests to 20MB
+		r.Body = http.MaxBytesReader(w, r.Body, 20<<20)
+		reader, err := r.MultipartReader()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		// s.Db, _ = sql.Open("sqlite3", "forum.db")
+		//r.ParseForm()
+
+		// parse text field
+		// one more field to parse, EOF is considered as failure here
+		mptitle := make([]byte, 512)
+		p, err := reader.NextPart()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if p.FormName() != "title" {
+			http.Error(w, "title_field is expected", http.StatusBadRequest)
+			return
+		}
+		_, err = p.Read(mptitle)
+		if err != nil && err != io.EOF {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		fmt.Println(string(mptitle))
+
+		//title := r.FormValue("title")
+
+		mpcontent := make([]byte, 512)
+		p, err = reader.NextPart()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if p.FormName() != "content" {
+			http.Error(w, "text_field is expected", http.StatusBadRequest)
+			return
+		}
+		_, err = p.Read(mpcontent)
+		if err != nil && err != io.EOF {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		fmt.Println(string(mpcontent))
+
+		//content := r.FormValue("content")
+
 		// fmt.Println(UserIdint)
 		// adding the post to the database
-		posts.CreatePosts(s.Db, UserIdint, title, content)
+		posts.CreatePosts(s.Db, UserIdint, string(mptitle), string(mpcontent))
 		// formvalue for buttons. If they have been clicked, the form value returned will be "on"
 		manutd := r.FormValue("manutd")
 		arsenal := r.FormValue("arsenal")
@@ -70,7 +117,7 @@ func (s *myServer) StorePostHandler() http.HandlerFunc {
 		if mancity == "on" {
 			categories.AddCategory(s.Db, posts.LastIns, "mancity")
 		}
-		fmt.Println("title:", title, "content:", content)
+		fmt.Println("title:", string(mptitle), "content:", string(mpcontent))
 
 		Tpl.ExecuteTemplate(w, "storepost.html", "Post stored!")
 	}
