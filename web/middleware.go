@@ -13,11 +13,17 @@ func Auth(HandlerFunc http.HandlerFunc) http.HandlerFunc {
 
 		c, err := r.Cookie(users.CurrentUser)
 		if err != nil {
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			var errorMessage string
+			// http.Redirect(w, r, "/login", http.StatusSeeOther)
+			if r.URL.Path == "/likes" || r.URL.Path == "/dislikes" {
+				errorMessage = "To like/dislike a post, please log in/register"
+			} else if r.URL.Path == "/storecomment" {
+				errorMessage = "To comment on this post please log in/register"
+			}
+			Tpl.ExecuteTemplate(w, "login.html", errorMessage)
 			return
 		}
 		fmt.Println(c.Value)
-
 		HandlerFunc.ServeHTTP(w, r)
 	}
 }
