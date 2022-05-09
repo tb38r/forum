@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Stored</title>
+</head>
+<body>
+
+    <h5>{{ .CommentText }}</h5>
+    <h5>{{ .UserID }}</h5>
+    <h5>{{ .PostID }}</h5>
+
+    <form action="/createpost" method="post">
+        <button>CLICK HERE TO CREATE ANOTHER POST</button>
+        </form>
+
+        <br><br>
+        
+        <a href="/createcomment?userid={{.}}">Create Comment</a>
+</body>
+</html>

@@ -28,13 +28,16 @@ func (s *myServer) HomepageHandler() http.HandlerFunc {
 		user := users.CurrentUser
 		s.Db, _ = sql.Open("sqlite3", "forum.db")
 		homepage := posts.GetHomepageData(s.Db)
-		manutd := r.FormValue("manutd")
-		fmt.Println("testing here======>", manutd)
-		// category page posts will need to get the form value from the user passed into it as the category string
-		// if r.formvalue == "manutd" {
-		// categoryposts := posts.CategoryPagePosts(s.Db, "manutd")
-		// }
+		category := r.FormValue("category")
 		homePageData := HomepageData{user, homepage, users.AlreadyLoggedIn(r), GuserId}
-		Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
+
+		// Choosing which data is passed into the homepage based on the filter chosen
+		if len(category) < 1 {
+			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
+		} else {
+			categoryFilter := posts.CategoryPagePosts(s.Db, category)
+			homePageData = HomepageData{user, categoryFilter, users.AlreadyLoggedIn(r), GuserId}
+			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
+		}
 	}
 }

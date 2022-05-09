@@ -10,7 +10,7 @@
 </head>
 <body>
     <div class="topnav">
-        <a class="active" href="#home">Home</a>
+        <a class="active" href="/home">Home</a>
         <div class="login-container">
             {{if .Loggedin}}
             <h3>{{ .Username }}</h3>
@@ -36,13 +36,20 @@
       <br>
       <br>
       <br>
-      <form action="/home" method="POST">
-        <label for="cat">Category</label>
-        <select name="teams" id="cat">
-          <option value="manutd">Manutd</option>
-        </select>
-        <input type="submit" value="Submit" />
-  </form>
+      <p style="text-align: right;">
+        <form id="categoryfilter"  action="/home" method="POST">
+          <label for="categoryfilter">Sort by Category:</label>
+          <select name="category" id="categoryfilter">
+            <option value="manutd">Man Utd</option>
+            <option value="arsenal">Arsenal</option>
+            <option value="chelsea">Chelsea</option>
+            <option value="tottenham">Tottenham</option>
+            <option value="newcastle">Newcastle</option>
+            <option value="mancity">Man City</option>
+          </select>
+          <input type="submit" value="Submit" >
+        </form>
+      </p>
       {{ range .AllPosts }}
       <div class="post-row">
         <div>
