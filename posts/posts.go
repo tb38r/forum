@@ -3,6 +3,8 @@ package posts
 import (
 	"database/sql"
 	"fmt"
+
+	"forum/likes"
 )
 
 type Post struct {
@@ -13,6 +15,7 @@ type Post struct {
 	PostContent  string
 	PostImage    string
 	Edited       bool
+	Likes        int
 }
 
 type HomepagePosts struct {
@@ -20,6 +23,7 @@ type HomepagePosts struct {
 	PostTitle    string
 	PostUsername string
 	CreationDate string
+	PostLike    int
 }
 
 var db *sql.DB
@@ -30,7 +34,6 @@ var LastIns int64
 
 func CreatePosts(db *sql.DB, userID int, title string, content string) {
 	stmt, err := db.Prepare("INSERT INTO post (userID, postTitle, postContent, creationDate) VALUES (?, ?, ?, strftime('%H:%M %d/%m/%Y','now','localtime'))")
-
 	if err != nil {
 		fmt.Println("error preparing statement:", err)
 		return
@@ -47,22 +50,26 @@ func CreatePosts(db *sql.DB, userID int, title string, content string) {
 
 // Get all the data needed for the hompage
 func GetHomepageData(db *sql.DB) []HomepagePosts {
-	rows, err := db.Query("SELECT postID, postTitle, username, creationDate FROM post INNER JOIN users ON users.userID = post.userID;")
+	rows, err := db.Query(`SELECT postID, postTitle, username, creationDate FROM post 
+	INNER JOIN users ON users.userID = post.userID;`)
 	if err != nil {
 		fmt.Println(err)
 	}
+
+
 	postdata := []HomepagePosts{}
 	defer rows.Close()
 	for rows.Next() {
 		var p HomepagePosts
+		// fmt.Println(&p.PostID)
 		err2 := rows.Scan(&p.PostID, &p.PostTitle, &p.PostUsername, &p.CreationDate)
+		p.PostLike = likes.GetPostLikes(db, p.PostID)
 		postdata = append(postdata, p)
 		if err2 != nil {
 			fmt.Println(err2)
 		}
 	}
 	return postdata
-
 }
 
 // Gets data based on user's filter choice (currently displays user's created posts, //TODO : Return Liked Posts)

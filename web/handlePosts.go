@@ -31,8 +31,7 @@ func (s *myServer) CreatePostHandler() http.HandlerFunc {
 
 func (s *myServer) StorePostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
-		//limits requests to 20MB (x is the limiter where x<<20)
+		// limits requests to 20MB (x is the limiter where x<<20)
 		r.Body = http.MaxBytesReader(w, r.Body, 20<<20)
 
 		err := r.ParseMultipartForm(20 << 20)
@@ -107,6 +106,9 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 
 		Tpl.ExecuteTemplate(w, "showpost.html", data)
 
+		// postLikes := likes.GetPostLikes(s.Db, PostIDInt)
+		// fmt.Fprintln(w, postLikes)
+
 		GcD := comments.GetCommentData(s.Db, PostIDInt)
 
 		for _, c := range GcD {
@@ -114,6 +116,5 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 			fmt.Fprintln(w, "<h3>"+c.CommentUserName+"</h3>"+"\t"+"<h4>"+c.CreationDate+"</h4>")
 			fmt.Fprintln(w, "")
 		}
-
 	}
 }

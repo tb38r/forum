@@ -2,12 +2,18 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
+
+	"forum/likes"
+	"forum/posts"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
 const dbName = "forum.db"
+
+var PostIDInt int
 
 func CreateDB() {
 	var db *sql.DB
@@ -39,4 +45,7 @@ func CreateDB() {
 	db.Exec(`create table if not exists dislikes (dislikeID integer PRIMARY KEY, 
 			userID integer REFERENCES users(userID), postID integer REFERENCES post(postID), 
 			commentID integer REFERENCES comments(commentID));`)
+
+	fmt.Println(likes.HomePostLikes(db))
+	fmt.Println(posts.GetHomepageData(db))
 }

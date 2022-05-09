@@ -15,7 +15,6 @@ type HomepageData struct {
 	AllPosts []posts.HomepagePosts
 	Loggedin bool
 	UserID   int
-	// PostsByCategory []posts.CategoryPagePosts
 	// PostUsername  map[int]string
 }
 

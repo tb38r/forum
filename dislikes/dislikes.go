@@ -3,10 +3,11 @@ package dislikes
 import (
 	"database/sql"
 	"fmt"
+	"log"
 )
 
 type Disike struct {
-	DislikeID    int
+	DislikeID int
 	UserID    int
 	PostID    int
 	CommentID int
@@ -29,4 +30,24 @@ func DislikeButton(db *sql.DB, userID int, postID int) {
 	LastIns, _ = result.LastInsertId()
 	fmt.Println("rows affected:", rowsAff)
 	fmt.Println("last inserted", LastIns)
+}
+
+func GetPostDislikes(db *sql.DB, postID int) int {
+	var count int
+
+	err := db.QueryRow("SELECT COUNT(*) FROM dislikes WHERE postID = ?;", postID).Scan(&count)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return count
+}
+
+func GetCommentDislikes(db *sql.DB, commentID int) int {
+	var count int
+
+	err := db.QueryRow("SELECT COUNT(*) FROM dislikes WHERE commentID = ?;", commentID).Scan(&count)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return count
 }
