@@ -30,6 +30,7 @@ func (s *myServer) HomepageHandler() http.HandlerFunc {
 		s.Db, _ = sql.Open("sqlite3", "forum.db")
 		homepage := posts.GetHomepageData(s.Db)
 		postlikes := likes.HomePostLikes(s.Db)
+		fmt.Println(postlikes)
 
 		// homePageData := HomepageData{user, postTitles, users.AlreadyLoggedIn(r), GuserId, posts.GetPostUsername(s.Db)}
 		homePageData := HomepageData{user, homepage, users.AlreadyLoggedIn(r), GuserId, postlikes}

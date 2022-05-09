@@ -3,6 +3,8 @@ package posts
 import (
 	"database/sql"
 	"fmt"
+
+	"forum/likes"
 )
 
 type Post struct {
@@ -13,6 +15,7 @@ type Post struct {
 	PostContent  string
 	PostImage    string
 	Edited       bool
+	Likes        int
 }
 
 type HomepagePosts struct {
@@ -20,7 +23,7 @@ type HomepagePosts struct {
 	PostTitle    string
 	PostUsername string
 	CreationDate string
-	// Likes        int
+	PostLike    int
 }
 
 var db *sql.DB
@@ -53,13 +56,14 @@ func GetHomepageData(db *sql.DB) []HomepagePosts {
 		fmt.Println(err)
 	}
 
-	// postLikes := likes.GetPostLikes(db, PostIDInt)
 
 	postdata := []HomepagePosts{}
 	defer rows.Close()
 	for rows.Next() {
 		var p HomepagePosts
+		// fmt.Println(&p.PostID)
 		err2 := rows.Scan(&p.PostID, &p.PostTitle, &p.PostUsername, &p.CreationDate)
+		p.PostLike = likes.GetPostLikes(db, p.PostID)
 		postdata = append(postdata, p)
 		if err2 != nil {
 			fmt.Println(err2)

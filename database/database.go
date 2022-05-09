@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"forum/likes"
+	"forum/posts"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -46,4 +47,5 @@ func CreateDB() {
 			commentID integer REFERENCES comments(commentID));`)
 
 	fmt.Println(likes.HomePostLikes(db))
+	fmt.Println(posts.GetHomepageData(db))
 }

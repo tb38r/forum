@@ -39,13 +39,14 @@
            <div class="post-title"><a href="/showpost?postid={{.PostID}}">{{ .PostTitle }}</a></div>
            <div class="post-extra-info">
              <p>Posted by {{ .PostUsername }} {{ .CreationDate }}</p> 
+             <!--if postID == postID return number of likes per post--> 
+             <!--***************************************************--> 
            </div>
          </div>
+         <div class="post-stats">
+          <p>{{.PostLike}}</p>
+          </div>
        </div>
-       {{ end }}
-       <div class="post-stats"></div>
-         {{range $PostID, $likes := .PostLikes}}
-          <p>{{$likes}}</p>
           {{end}}
      </div>
    </body>
