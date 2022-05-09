@@ -83,6 +83,7 @@ func FilterHomepageData(db *sql.DB, userID int) []HomepagePosts {
 	for rows.Next() {
 		var p HomepagePosts
 		err2 := rows.Scan(&p.PostID, &p.PostTitle, &p.PostUsername, &p.CreationDate)
+		p.PostLike = likes.GetPostLikes(db, p.PostID)
 		postdata = append(postdata, p)
 		if err2 != nil {
 			fmt.Println(err2)
@@ -126,6 +127,7 @@ func CategoryPagePosts(db *sql.DB, name string) []HomepagePosts {
 	for rows.Next() {
 		var p HomepagePosts
 		err2 := rows.Scan(&p.PostID, &p.PostTitle, &p.PostUsername, &p.CreationDate)
+		p.PostLike = likes.GetPostLikes(db, p.PostID)
 		posts = append(posts, p)
 		if err2 != nil {
 			fmt.Println(err2)
