@@ -30,13 +30,17 @@ func (s *myServer) HomepageHandler() http.HandlerFunc {
 		homepage := posts.GetHomepageData(s.Db)
 		category := r.FormValue("category")
 		homePageData := HomepageData{user, homepage, users.AlreadyLoggedIn(r), GuserId}
-
+		homePageFilter := r.FormValue("userfilter")
 		// Choosing which data is passed into the homepage based on the filter chosen
-		if len(category) < 1 {
+		if len(category) < 1 && len(homePageFilter) < 1 {
 			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
-		} else {
+		} else if len(category) > 0 {
 			categoryFilter := posts.CategoryPagePosts(s.Db, category)
 			homePageData = HomepageData{user, categoryFilter, users.AlreadyLoggedIn(r), GuserId}
+			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
+		} else if len(homePageFilter) > 0 {
+			userFilter := posts.FilterHomepageData(s.Db, GuserId)
+			homePageData = HomepageData{user, userFilter, users.AlreadyLoggedIn(r), GuserId}
 			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
 		}
 	}

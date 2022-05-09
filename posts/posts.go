@@ -99,3 +99,23 @@ func CategoryPagePosts(db *sql.DB, name string) []HomepagePosts {
 	}
 	return posts
 }
+
+// Gets data based on user's filter choice (currently displays user's created posts, //TODO : Return Liked Posts)
+func FilterHomepageData(db *sql.DB, userID int) []HomepagePosts {
+	rows, err := db.Query("SELECT postID, postTitle, username, creationDate FROM post INNER JOIN users ON users.userID =  post.userID WHERE users.userID = ?;", userID)
+	if err != nil {
+		fmt.Println(err)
+	}
+	postdata := []HomepagePosts{}
+	defer rows.Close()
+	for rows.Next() {
+		var p HomepagePosts
+		err2 := rows.Scan(&p.PostID, &p.PostTitle, &p.PostUsername, &p.CreationDate)
+		postdata = append(postdata, p)
+		if err2 != nil {
+			fmt.Println(err2)
+		}
+	}
+	return postdata
+
+}
