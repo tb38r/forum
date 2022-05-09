@@ -44,21 +44,23 @@ func (s *myServer) StorePostHandler() http.HandlerFunc {
 		title := r.FormValue("title")
 		content := r.FormValue("content")
 
-		// Get handler for filename, size and headers
-		file, handler, err := r.FormFile("userimage")
-		if err != nil {
-			fmt.Println("Error Retrieving the File")
-			fmt.Println(err)
-			return
+		x, _, _ := r.FormFile("userimage")
+		if x != nil {
+			// Get handler for filename, size and headers
+			file, handler, err := r.FormFile("userimage")
+			if err != nil {
+				fmt.Println("Error Retrieving the File")
+				fmt.Println(err)
+				return
+			}
+
+			defer file.Close()
+			fmt.Printf("Uploaded File: %+v\n", handler.Filename)
+			fmt.Printf("File Size: %+v\n", handler.Size)
+			fmt.Printf("MIME Header: %+v\n", handler.Header)
+
+			userimages.SaveImage(file, handler.Filename)
 		}
-
-		defer file.Close()
-		fmt.Printf("Uploaded File: %+v\n", handler.Filename)
-		fmt.Printf("File Size: %+v\n", handler.Size)
-		fmt.Printf("MIME Header: %+v\n", handler.Header)
-
-		userimages.SaveImage(file, handler.Filename)
-
 		// adding the post to the database
 		posts.CreatePosts(s.Db, UserIdint, title, content)
 		// formvalue for buttons. If they have been clicked, the form value returned will be "on"
