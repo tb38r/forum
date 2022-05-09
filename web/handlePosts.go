@@ -89,8 +89,6 @@ func (s *myServer) StorePostHandler() http.HandlerFunc {
 			categories.AddCategory(s.Db, posts.LastIns, "mancity")
 		}
 		fmt.Println("title:", title, "content:", content)
-
-		// Tpl.ExecuteTemplate(w, "storepost.html", "Post stored!")
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}
 }
@@ -107,13 +105,13 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 
 		Tpl.ExecuteTemplate(w, "showpost.html", data)
 
-		// GcD := comments.GetCommentData(s.Db, PostIDInt)
+		GcD := comments.GetCommentData(s.Db, PostIDInt)
 
-		// for _, c := range GcD {
-		// 	fmt.Fprintln(w, "<h2>"+c.CommentText+"</h2>")
-		// 	fmt.Fprintln(w, "<h3>"+c.CommentUserName+"</h3>"+"\t"+"<h4>"+c.CreationDate+"</h4>")
-		// 	fmt.Fprintln(w, "")
-		// }
+		for _, c := range GcD {
+			fmt.Fprintln(w, "<h2>"+c.CommentText+"</h2>")
+			fmt.Fprintln(w, "<h3>"+c.CommentUserName+"</h3>"+"\t"+"<h4>"+c.CreationDate+"</h4>")
+			fmt.Fprintln(w, "")
+		}
 
 	}
 }

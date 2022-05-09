@@ -103,3 +103,27 @@ func GetPostData(db *sql.DB, postID int) []Post {
 	}
 	return postdata
 }
+
+// selects posts with the same category, based on the category name
+
+func CategoryPagePosts(db *sql.DB, name string) []HomepagePosts {
+	rows, err := db.Query(`SELECT post.postID, postTitle, username, creationDate FROM post 
+	INNER JOIN category ON category.postID = post.postID 
+	INNER JOIN users ON users.userID = post.userID
+	WHERE categoryname = ?;`, name)
+	if err != nil {
+		fmt.Println(err)
+	}
+	posts := []HomepagePosts{}
+	defer rows.Close()
+	for rows.Next() {
+		var p HomepagePosts
+		err2 := rows.Scan(&p.PostID, &p.PostTitle, &p.PostUsername, &p.CreationDate)
+		posts = append(posts, p)
+		if err2 != nil {
+			fmt.Println(err2)
+		}
+
+	}
+	return posts
+}
