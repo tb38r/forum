@@ -6,6 +6,7 @@ import (
 	"forum/categories"
 	"forum/comments"
 	"forum/posts"
+	userimages "forum/userImages"
 	"net/http"
 	"strconv"
 )
@@ -30,12 +31,34 @@ func (s *myServer) CreatePostHandler() http.HandlerFunc {
 
 func (s *myServer) StorePostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// s.Db, _ = sql.Open("sqlite3", "forum.db")
-		r.ParseForm()
+
+		//limits requests to 20MB (x is the limiter where x<<20)
+		r.Body = http.MaxBytesReader(w, r.Body, 20<<20)
+
+		err := r.ParseMultipartForm(20 << 20)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 
 		title := r.FormValue("title")
 		content := r.FormValue("content")
-		// fmt.Println(UserIdint)
+
+		// Get handler for filename, size and headers
+		file, handler, err := r.FormFile("userimage")
+		if err != nil {
+			fmt.Println("Error Retrieving the File")
+			fmt.Println(err)
+			return
+		}
+
+		defer file.Close()
+		fmt.Printf("Uploaded File: %+v\n", handler.Filename)
+		fmt.Printf("File Size: %+v\n", handler.Size)
+		fmt.Printf("MIME Header: %+v\n", handler.Header)
+
+		userimages.SaveImage(file, handler.Filename)
+
 		// adding the post to the database
 		posts.CreatePosts(s.Db, UserIdint, title, content)
 		// formvalue for buttons. If they have been clicked, the form value returned will be "on"

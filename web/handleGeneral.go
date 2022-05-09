@@ -22,13 +22,30 @@ type HomepageData struct {
 // in chrome this handler is being run twice on localhost:8080, on safari only once (which is what we need) *** UNLESS route is changed from / to /home
 func (s *myServer) HomepageHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("homepage handler running")
-		// checking if user is logged in
+
+		homePageFilter := r.FormValue(("userfilter"))
+
+		if len(homePageFilter) < 1 {
+			fmt.Println("homepage handler running")
+			// checking if user is logged in
+			user := users.CurrentUser
+			s.Db, _ = sql.Open("sqlite3", "forum.db")
+			homepage := posts.GetHomepageData(s.Db)
+			// homePageData := HomepageData{user, postTitles, users.AlreadyLoggedIn(r), GuserId, posts.GetPostUsername(s.Db)}
+			homePageData := HomepageData{user, homepage, users.AlreadyLoggedIn(r), GuserId}
+			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
+			return
+		}
+		fmt.Println("-----------------HHHHHHH----HBBBBBBBB-----CCCCCCCCCCCCCCCCCCCCCCCCC----------")
+
 		user := users.CurrentUser
+		UserID := GuserId
 		s.Db, _ = sql.Open("sqlite3", "forum.db")
-		homepage := posts.GetHomepageData(s.Db)
+		homepage := posts.FilterHomepageData(s.Db, UserID)
 		// homePageData := HomepageData{user, postTitles, users.AlreadyLoggedIn(r), GuserId, posts.GetPostUsername(s.Db)}
 		homePageData := HomepageData{user, homepage, users.AlreadyLoggedIn(r), GuserId}
 		Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
+		fmt.Println("-------------------------", homePageFilter, "------------------------------------")
+		return
 	}
 }
