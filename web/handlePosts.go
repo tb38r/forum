@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 )
 
@@ -63,9 +64,19 @@ func (s *myServer) StorePostHandler() http.HandlerFunc {
 		fmt.Printf("File Size: %+v\n", handler.Size)
 		fmt.Printf("MIME Header: %+v\n", handler.Header)
 
-		// Create a temporary file within our temp-images directory that follows
-		// a particular naming pattern
-		f, err := os.OpenFile("./forum"+handler.Filename +".jpeg", os.O_WRONLY|os.O_CREATE, 0666)
+		// Create a folder to store the images
+		//MkdirAll creates a directory named path, along with any necessary parents, and returns nil, or else returns an error.
+		//If path is already a directory, MkdirAll does nothing and returns nil.
+		root := filepath.Join(".", "userImages")
+		folderr := os.MkdirAll(root, os.ModePerm)
+		// folderr := os.MkdirAll("/userimages", os.ModePerm)
+		if folderr != nil {
+			fmt.Println("Cannot create requested folder")
+		}
+
+		fullPath := root + "/" + handler.Filename
+
+		f, err := os.OpenFile(fullPath, os.O_WRONLY|os.O_CREATE, 0666)
 		if err != nil {
 			fmt.Println(err)
 			return
