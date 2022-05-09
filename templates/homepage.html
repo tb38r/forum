@@ -33,7 +33,17 @@
           </a>
       </p>
       {{end}}
-      {{ range .AllPostTitles }}
+      <br>
+      <br>
+      <br>
+      <form action="/home" method="POST">
+        <label for="cat">Category</label>
+        <select name="teams" id="cat">
+          <option value="manutd">Manutd</option>
+        </select>
+        <input type="submit" value="Submit" />
+  </form>
+      {{ range .AllPosts }}
       <div class="post-row">
         <div>
           <div class="post-title"><a href="/showpost?postid={{.PostID}}">{{ .PostTitle }}</a></div>

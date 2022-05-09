@@ -12,10 +12,11 @@ import (
 // eventually need this struct to pass onto the handler with all the data within
 // struct fields need to be capitalized, to be used in the templates
 type HomepageData struct {
-	Username      string
-	AllPostTitles []posts.HomepagePosts
-	Loggedin      bool
-	UserID        int
+	Username string
+	AllPosts []posts.HomepagePosts
+	Loggedin bool
+	UserID   int
+	// PostsByCategory []posts.CategoryPagePosts
 	// PostUsername  map[int]string
 }
 
@@ -27,7 +28,12 @@ func (s *myServer) HomepageHandler() http.HandlerFunc {
 		user := users.CurrentUser
 		s.Db, _ = sql.Open("sqlite3", "forum.db")
 		homepage := posts.GetHomepageData(s.Db)
-		// homePageData := HomepageData{user, postTitles, users.AlreadyLoggedIn(r), GuserId, posts.GetPostUsername(s.Db)}
+		manutd := r.FormValue("manutd")
+		fmt.Println("testing here======>", manutd)
+		// category page posts will need to get the form value from the user passed into it as the category string
+		// if r.formvalue == "manutd" {
+		// categoryposts := posts.CategoryPagePosts(s.Db, "manutd")
+		// }
 		homePageData := HomepageData{user, homepage, users.AlreadyLoggedIn(r), GuserId}
 		Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
 	}
