@@ -24,6 +24,7 @@ func LikeButton(db *sql.DB, userID int, postID int) {
 		return
 	}
 
+
 	result, _ := stmt.Exec(userID, postID)
 
 	rowsAff, _ := result.RowsAffected()
@@ -62,26 +63,27 @@ func GetCommentLikes(db *sql.DB, commentID int) int {
 	return count
 }
 
-func HomePostLikes(db *sql.DB) map[int]int {
-	rows, err := db.Query(`SELECT post.postID, count(*) FROM likes 
-					INNER JOIN post ON likes.postID = post.postID
-					GROUP BY likes.postID;`)
-	if err != nil {
-		fmt.Println("HomePostLikes error", err)
-	}
+// func HomePostLikes(db *sql.DB) map[int]int {
+// 	rows, err := db.Query(`SELECT post.postID, count(*) FROM likes 
+// 					INNER JOIN post ON likes.postID = post.postID
+// 					GROUP BY likes.postID;`)
+// 	if err != nil {
+// 		fmt.Println("HomePostLikes error", err)
+// 	}
 
-	PostLikes := make(map[int]int)
+// 	PostLikes := make(map[int]int)
 
-	var postID int
-	var likes int
+// 	var postID int
+// 	var likes int
 
-	defer rows.Close()
-	for rows.Next() {
-		err2 := rows.Scan(&postID, &likes)
-		if err2 != nil {
-			log.Fatal("HomePostLikers err2", err2)
-		}
-		PostLikes[postID] = likes
-	}
-	return PostLikes
-}
+// 	defer rows.Close()
+// 	for rows.Next() {
+// 		err2 := rows.Scan(&postID, &likes)
+// 		if err2 != nil {
+// 			log.Fatal("HomePostLikers err2", err2)
+// 		}
+// 		PostLikes[postID] = likes
+// 	}
+// 	return PostLikes
+// }
+
