@@ -6,7 +6,7 @@ import (
 	"forum/categories"
 	"forum/comments"
 	"forum/posts"
-	userimages "forum/userImages"
+	userimages "forum/templates/userImages"
 	"net/http"
 	"strconv"
 )
@@ -31,12 +31,15 @@ func (s *myServer) CreatePostHandler() http.HandlerFunc {
 
 func (s *myServer) StorePostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		var imagename string
+
 		// limits requests to 20MB (x is the limiter where x<<20)
 		r.Body = http.MaxBytesReader(w, r.Body, 20<<20)
 
 		err := r.ParseMultipartForm(20 << 20)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			http.Error(w, "Images must be less than 20MB!!", http.StatusBadRequest)
 			return
 		}
 
@@ -54,14 +57,16 @@ func (s *myServer) StorePostHandler() http.HandlerFunc {
 			}
 
 			defer file.Close()
-			fmt.Printf("Uploaded File: %+v\n", handler.Filename)
+
+			imagename = handler.Filename
+			fmt.Printf("Uploaded Image: %+v\n", handler.Filename)
 			fmt.Printf("File Size: %+v\n", handler.Size)
 			fmt.Printf("MIME Header: %+v\n", handler.Header)
 
 			userimages.SaveImage(file, handler.Filename)
 		}
 		// adding the post to the database
-		posts.CreatePosts(s.Db, UserIdint, title, content)
+		posts.CreatePosts(s.Db, UserIdint, title, content, imagename)
 		// formvalue for buttons. If they have been clicked, the form value returned will be "on"
 		manutd := r.FormValue("manutd")
 		arsenal := r.FormValue("arsenal")

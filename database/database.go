@@ -29,7 +29,7 @@ func CreateDB() {
 		creationDate integer,
 		postTitle CHAR(50),
 		postContent CHAR(250), 
-		postImages text, 
+		image CHAR(100), 
 		edited integer);`)
 	db.Exec("create table if not exists category (categoryID integer PRIMARY KEY, postID integer REFERENCES post(postID), categoryname text)")
 	db.Exec(`create table if not exists comments (
