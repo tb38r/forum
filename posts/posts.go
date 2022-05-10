@@ -23,7 +23,7 @@ type HomepagePosts struct {
 	PostTitle    string
 	PostUsername string
 	CreationDate string
-	PostLike    int
+	PostLike     int
 }
 
 var db *sql.DB
@@ -32,14 +32,14 @@ var db *sql.DB
 
 var LastIns int64
 
-func CreatePosts(db *sql.DB, userID int, title string, content string) {
-	stmt, err := db.Prepare("INSERT INTO post (userID, postTitle, postContent, creationDate) VALUES (?, ?, ?, strftime('%H:%M %d/%m/%Y','now','localtime'))")
+func CreatePosts(db *sql.DB, userID int, title string, content string, image string) {
+	stmt, err := db.Prepare("INSERT INTO post (userID, postTitle, postContent, image, creationDate) VALUES (?, ?, ?, ?, strftime('%H:%M %d/%m/%Y','now','localtime'))")
 	if err != nil {
 		fmt.Println("error preparing statement:", err)
 		return
 	}
 	// defer stmt.Close()
-	result, _ := stmt.Exec(userID, title, content)
+	result, _ := stmt.Exec(userID, title, content, image)
 
 	// checking if the result has been added and the last inserted row
 	rowsAff, _ := result.RowsAffected()
@@ -55,7 +55,6 @@ func GetHomepageData(db *sql.DB) []HomepagePosts {
 	if err != nil {
 		fmt.Println(err)
 	}
-
 
 	postdata := []HomepagePosts{}
 	defer rows.Close()
