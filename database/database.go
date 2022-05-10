@@ -48,4 +48,5 @@ func CreateDB() {
 
 	fmt.Println(likes.HomePostLikes(db))
 	fmt.Println(posts.GetHomepageData(db))
+	(posts.GetPostData(db, 1))
 }

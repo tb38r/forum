@@ -6,7 +6,7 @@ import (
 	"forum/categories"
 	"forum/comments"
 	"forum/posts"
-	userimages "forum/userImages"
+	userimages "forum/templates/userImages"
 	"net/http"
 	"strconv"
 )

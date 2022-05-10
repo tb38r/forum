@@ -13,7 +13,7 @@ type Post struct {
 	CreationDate string
 	PostTitle    string
 	PostContent  string
-	PostImage    string
+	Image    string
 	Edited       bool
 	Likes        int
 }
@@ -102,7 +102,7 @@ func GetPostData(db *sql.DB, postID int) []Post {
 	defer rows.Close()
 	for rows.Next() {
 		var p Post
-		err2 := rows.Scan(&p.PostID, &p.UserID, &p.CreationDate, &p.PostTitle, &p.PostContent, &p.PostImage, &p.Edited)
+		err2 := rows.Scan(&p.PostID, &p.UserID, &p.CreationDate, &p.PostTitle, &p.PostContent, &p.Image, &p.Edited)
 		postdata = append(postdata, p)
 		if err2 != nil {
 			fmt.Println(err2)
