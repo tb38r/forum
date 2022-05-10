@@ -39,7 +39,7 @@ func (s *myServer) StorePostHandler() http.HandlerFunc {
 
 		err := r.ParseMultipartForm(20 << 20)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			http.Error(w, "Images must be less than 20MB!!", http.StatusBadRequest)
 			return
 		}
 
