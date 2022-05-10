@@ -7,6 +7,7 @@ import (
 	"forum/comments"
 	"forum/posts"
 	userimages "forum/templates/userImages"
+	"forum/users"
 	"net/http"
 	"strconv"
 )
@@ -14,6 +15,7 @@ import (
 type PostPageData struct {
 	Posts    []posts.Post
 	Comments []comments.Comment
+	Loggedin bool
 }
 
 // type Server server.Server
@@ -115,19 +117,19 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 		postID := r.URL.Query().Get("postid")
 		PostIDInt, _ = strconv.Atoi(postID)
 
-		data := PostPageData{Posts: posts.GetPostData(s.Db, PostIDInt), Comments: comments.GetCommentData(s.Db, PostIDInt)}
+		data := PostPageData{Posts: posts.GetPostData(s.Db, PostIDInt), Comments: comments.GetCommentData(s.Db, PostIDInt), Loggedin: users.AlreadyLoggedIn(r)}
 
 		Tpl.ExecuteTemplate(w, "showpost.html", data)
 
 		// postLikes := likes.GetPostLikes(s.Db, PostIDInt)
 		// fmt.Fprintln(w, postLikes)
 
-		GcD := comments.GetCommentData(s.Db, PostIDInt)
+		// GcD := comments.GetCommentData(s.Db, PostIDInt)
 
-		for _, c := range GcD {
-			fmt.Fprintln(w, "<h2>"+c.CommentText+"</h2>")
-			fmt.Fprintln(w, "<h3>"+c.CommentUserName+"</h3>"+"\t"+"<h4>"+c.CreationDate+"</h4>")
-			fmt.Fprintln(w, "")
-		}
+		// for _, c := range GcD {
+		// 	fmt.Fprintln(w, "<h2>"+c.CommentText+"</h2>")
+		// 	fmt.Fprintln(w, "<h3>"+c.CommentUserName+"</h3>"+"\t"+"<h4>"+c.CreationDate+"</h4>")
+		// 	fmt.Fprintln(w, "")
+		// }
 	}
 }
