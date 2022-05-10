@@ -31,23 +31,28 @@ func (s *myServer) StoreCommentHandler() http.HandlerFunc {
 		r.ParseForm()
 		ContentComment = r.FormValue("content")
 
-		comments.CreateComment(s.Db, GuserId, PostIDInt, ContentComment)
+		if ContentComment != "" {
 
-		var commentData comments.Comment
+			comments.CreateComment(s.Db, GuserId, PostIDInt, ContentComment)
+
+			var commentData comments.Comment
+			SPostID := strconv.Itoa(PostIDInt)
+
+			commentData.CommentText = ContentComment
+			commentData.PostID = PostIDInt
+			commentData.UserID = GuserId
+
+			fmt.Println("comment data check: ---> ", commentData.CommentText)
+			fmt.Println("comment post id check: ---> ", commentData.PostID)
+			fmt.Println("comment user id check: ---> ", commentData.UserID)
+
+			fmt.Println("content: ", ContentComment)
+			//Tpl.ExecuteTemplate(w, "storecomment.html", commentData.CommentText)
+			http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
+			//http.Redirect(w, r, "/home", http.StatusSeeOther)
+		}
 		SPostID := strconv.Itoa(PostIDInt)
-
-		commentData.CommentText = ContentComment
-		commentData.PostID = PostIDInt
-		commentData.UserID = GuserId
-
-		fmt.Println("comment data check: ---> ", commentData.CommentText)
-		fmt.Println("comment post id check: ---> ", commentData.PostID)
-		fmt.Println("comment user id check: ---> ", commentData.UserID)
-
-		fmt.Println("content: ", ContentComment)
-		//Tpl.ExecuteTemplate(w, "storecomment.html", commentData.CommentText)
 		http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
-		//http.Redirect(w, r, "/home", http.StatusSeeOther)
-
+		fmt.Fprintln(w, "Can't create an empty comment!")
 	}
 }
