@@ -45,11 +45,11 @@
 {{end}}
 
     </div>
+    {{if .Loggedin}}
     {{ range .Comments}}
     <h4>{{ .CommentText }}</h4>
     <h5>{{ .CommentUserName }} {{ .CreationDate }}</h5>
-    {{ end }}
-    {{if .Loggedin}}
+
     <div class="container" style="margin:auto;">
         <form action="/likes" method="POST">
             <button class="like-dislike-btn" type="checkbox" name="like">
@@ -63,9 +63,17 @@
             </button>
         </form>
     </div>
+    {{ end }}
     
-    {{end}}
+    
+    
 
+    {{else}}
+    {{ range .Comments}}
+    <h4>{{ .CommentText }}</h4>
+    <h5>{{ .CommentUserName }} {{ .CreationDate }}</h5>
+    {{ end }}
+    {{end}}
 
 
 
