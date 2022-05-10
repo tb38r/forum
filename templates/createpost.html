@@ -9,6 +9,7 @@
     <title>Create Post</title>
 </head>
 <body>
+    {{ template "header.html" . }}
     <div class="container" style="margin:auto;">
         <form action="/storepost" method="POST"  enctype="multipart/form-data">
             <H2>Create Post</H2>
