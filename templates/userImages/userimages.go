@@ -12,7 +12,7 @@ import (
 func SaveImage(file multipart.File, filename string) {
 
 	// Create the directory to store the images
-	root := filepath.Join(".", "userImages")
+	root := filepath.Join(".", "/templates/userImages")
 
 	//MkdirAll creates a directory named path, along with any necessary parents, and returns nil, or else returns an error.
 	//If path is already a directory, MkdirAll does nothing and returns nil.

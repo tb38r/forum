@@ -18,7 +18,7 @@
     <img src="/templates/userImages/{{.Image}}" width="500" height="200" alt="">
     {{ end }}
 
-
+{{if .Loggedin}}
     <div class="container" style="margin:auto;">
         <form action="/likes" method="POST">
             <button class="like-dislike-btn" type="checkbox" name="like">
@@ -32,7 +32,8 @@
             </button>
         </form>
     </div>
-
+    {{end}}
+{{if .Loggedin}}
     <div class="container" style="margin:auto;">
         <form action="/storecomment" method="POST">
             <H2>Create Comment</H2>
@@ -41,12 +42,14 @@
             <textarea id="content" name="content" rows="4" cols="50"></textarea><br>
             <button class="btn btn-primary" type="submit">Create Comment</button>
         </form>
-
+{{end}}
 
     </div>
+    {{if .Loggedin}}
     {{ range .Comments}}
     <h4>{{ .CommentText }}</h4>
     <h5>{{ .CommentUserName }} {{ .CreationDate }}</h5>
+
     <div class="container" style="margin:auto;">
         <form action="/likes" method="POST">
             <button class="like-dislike-btn" type="checkbox" name="like">
@@ -61,7 +64,16 @@
         </form>
     </div>
     {{ end }}
+    
+    
+    
 
+    {{else}}
+    {{ range .Comments}}
+    <h4>{{ .CommentText }}</h4>
+    <h5>{{ .CommentUserName }} {{ .CreationDate }}</h5>
+    {{ end }}
+    {{end}}
 
 
 

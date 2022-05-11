@@ -13,9 +13,9 @@ type Comment struct {
 	CreationDate    string
 	CommentText     string
 	CommentUserName string
-	//LikesID      int
-	//DislikesID   int
-	//Edited       bool
+	LikesID         int
+	DislikesID      int
+	Edited          bool
 }
 
 var db *sql.DB

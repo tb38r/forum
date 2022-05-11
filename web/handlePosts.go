@@ -7,6 +7,7 @@ import (
 	"forum/comments"
 	"forum/posts"
 	userimages "forum/templates/userImages"
+	"forum/users"
 	"net/http"
 	"strconv"
 )
@@ -14,6 +15,7 @@ import (
 type PostPageData struct {
 	Posts    []posts.Post
 	Comments []comments.Comment
+	Loggedin bool
 }
 
 // type Server server.Server
@@ -46,57 +48,66 @@ func (s *myServer) StorePostHandler() http.HandlerFunc {
 		title := r.FormValue("title")
 		content := r.FormValue("content")
 
-		x, _, _ := r.FormFile("userimage")
-		if x != nil {
-			// Get handler for filename, size and headers
-			file, handler, err := r.FormFile("userimage")
-			if err != nil {
-				fmt.Println("Error Retrieving the File")
-				fmt.Println(err)
-				return
+		if title != "" && content != "" {
+
+			x, _, _ := r.FormFile("userimage")
+			if x != nil {
+				// Get handler for filename, size and headers
+				file, handler, err := r.FormFile("userimage")
+				if err != nil {
+					fmt.Println("Error Retrieving the File")
+					fmt.Println(err)
+					return
+				}
+
+				defer file.Close()
+
+				imagename = handler.Filename
+				fmt.Printf("Uploaded Image: %+v\n", handler.Filename)
+				fmt.Printf("File Size: %+v\n", handler.Size)
+				fmt.Printf("MIME Header: %+v\n", handler.Header)
+
+				userimages.SaveImage(file, handler.Filename)
 			}
+			// adding the post to the database
 
-			defer file.Close()
+			posts.CreatePosts(s.Db, UserIdint, title, content, imagename)
+			// formvalue for buttons. If they have been clicked, the form value returned will be "on"
+			manutd := r.FormValue("manutd")
+			arsenal := r.FormValue("arsenal")
+			chelsea := r.FormValue("chelsea")
+			tottenham := r.FormValue("tottenham")
+			newcastle := r.FormValue("newcastle")
+			mancity := r.FormValue("mancity")
 
-			imagename = handler.Filename
-			fmt.Printf("Uploaded Image: %+v\n", handler.Filename)
-			fmt.Printf("File Size: %+v\n", handler.Size)
-			fmt.Printf("MIME Header: %+v\n", handler.Header)
+			// use if statements because we need to enter the cat name instead of the returned value "on"
+			if manutd == "on" {
+				categories.AddCategory(s.Db, posts.LastIns, "manutd")
+			}
+			if arsenal == "on" {
+				categories.AddCategory(s.Db, posts.LastIns, "arsenal")
+			}
+			if chelsea == "on" {
+				categories.AddCategory(s.Db, posts.LastIns, "chelsea")
+			}
+			if newcastle == "on" {
+				categories.AddCategory(s.Db, posts.LastIns, "newcastle")
+			}
+			if tottenham == "on" {
+				categories.AddCategory(s.Db, posts.LastIns, "tottenham")
+			}
+			if mancity == "on" {
+				categories.AddCategory(s.Db, posts.LastIns, "mancity")
+			}
+			fmt.Println("title:", title, "content:", content)
+			http.Redirect(w, r, "/home", http.StatusSeeOther)
+		}
 
-			userimages.SaveImage(file, handler.Filename)
-		}
-		// adding the post to the database
-		posts.CreatePosts(s.Db, UserIdint, title, content, imagename)
-		// formvalue for buttons. If they have been clicked, the form value returned will be "on"
-		manutd := r.FormValue("manutd")
-		arsenal := r.FormValue("arsenal")
-		chelsea := r.FormValue("chelsea")
-		tottenham := r.FormValue("tottenham")
-		newcastle := r.FormValue("newcastle")
-		mancity := r.FormValue("mancity")
+		http.Redirect(w, r, r.Header.Get("Referer"), 302)
+		return
 
-		// use if statements because we need to enter the cat name instead of the returned value "on"
-		if manutd == "on" {
-			categories.AddCategory(s.Db, posts.LastIns, "manutd")
-		}
-		if arsenal == "on" {
-			categories.AddCategory(s.Db, posts.LastIns, "arsenal")
-		}
-		if chelsea == "on" {
-			categories.AddCategory(s.Db, posts.LastIns, "chelsea")
-		}
-		if newcastle == "on" {
-			categories.AddCategory(s.Db, posts.LastIns, "newcastle")
-		}
-		if tottenham == "on" {
-			categories.AddCategory(s.Db, posts.LastIns, "tottenham")
-		}
-		if mancity == "on" {
-			categories.AddCategory(s.Db, posts.LastIns, "mancity")
-		}
-		fmt.Println("title:", title, "content:", content)
-		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}
+
 }
 
 func (s *myServer) ShowPostHandler() http.HandlerFunc {
@@ -107,19 +118,19 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 		postID := r.URL.Query().Get("postid")
 		PostIDInt, _ = strconv.Atoi(postID)
 
-		data := PostPageData{Posts: posts.GetPostData(s.Db, PostIDInt), Comments: comments.GetCommentData(s.Db, PostIDInt)}
+		data := PostPageData{Posts: posts.GetPostData(s.Db, PostIDInt), Comments: comments.GetCommentData(s.Db, PostIDInt), Loggedin: users.AlreadyLoggedIn(r)}
 
 		Tpl.ExecuteTemplate(w, "showpost.html", data)
 
-		// postLikes := likes.GetPostLikes(s.Db, PostIDInt)
-		// fmt.Fprintln(w, postLikes)
-
-		GcD := comments.GetCommentData(s.Db, PostIDInt)
-
-		for _, c := range GcD {
-			fmt.Fprintln(w, "<h2>"+c.CommentText+"</h2>")
-			fmt.Fprintln(w, "<h3>"+c.CommentUserName+"</h3>"+"\t"+"<h4>"+c.CreationDate+"</h4>")
-			fmt.Fprintln(w, "")
-		}
 	}
 }
+
+// func (s *myServer) EmptyCommentPost() http.HandlerFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
+// 		SGuserId := strconv.Itoa(GuserId)
+
+// 		fmt.Fprint(w, "Can't create an empty post!")
+// 		//Tpl.ExecuteTemplate(w, "emptycommentpost.html", nil)
+// 		http.Redirect(w, r, "/createpost/?userid="+SGuserId, http.StatusSeeOther)
+// 	}
+// }
