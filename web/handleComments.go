@@ -52,7 +52,7 @@ func (s *myServer) StoreCommentHandler() http.HandlerFunc {
 			//http.Redirect(w, r, "/home", http.StatusSeeOther)
 		}
 		SPostID := strconv.Itoa(PostIDInt)
-		fmt.Fprintln(w, "Can't create an empty comment!")
+
 		http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
 	}
 }
