@@ -30,8 +30,8 @@ func (s *myServer) DislikeHandler() http.HandlerFunc {
 
 func UserDisliked(db *sql.DB) bool {
 	// check if post already liked by user
-	userStmt := "SELECT userID FROM dislikes WHERE postID = ?"
-	row := db.QueryRow(userStmt, PostIDInt)
+	userStmt := "SELECT userID FROM dislikes WHERE userID = ? AND postID = ?"
+	row := db.QueryRow(userStmt, GuserId, PostIDInt)
 
 	var uID string
 	var pID string

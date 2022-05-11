@@ -30,7 +30,7 @@ func (s *myServer) LikeHandler() http.HandlerFunc {
 
 func UserLiked(db *sql.DB) bool {
 	// check if post already liked by user
-	userStmt := "SELECT userID FROM likes WHERE userID = 1 AND postID = 4"
+	userStmt := "SELECT userID FROM likes WHERE userID = ? AND postID = ?"
 	row := db.QueryRow(userStmt, GuserId, PostIDInt)
 
 	var uID string 
