@@ -107,11 +107,10 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 		postID := r.URL.Query().Get("postid")
 		PostIDInt, _ = strconv.Atoi(postID)
 
-		data := PostPageData{Posts: posts.GetPostData(s.Db, PostIDInt), Comments: comments.GetCommentData(s.Db, PostIDInt), LoggedIn: users.AlreadyLoggedIn(r), Liked: userLiked(s.Db, GuserId, PostIDInt), Disliked: userDisliked(s.Db)}
+		data := PostPageData{Posts: posts.GetPostData(s.Db, PostIDInt), Comments: comments.GetCommentData(s.Db, PostIDInt), LoggedIn: users.AlreadyLoggedIn(r), Liked: UserLiked(s.Db), Disliked: UserDisliked(s.Db)}
 
 		fmt.Println(data.Comments)
 		fmt.Println(data.Liked)
-
 
 		Tpl.ExecuteTemplate(w, "showpost.html", data)
 

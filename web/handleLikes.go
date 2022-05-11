@@ -17,20 +17,28 @@ func (s *myServer) LikeHandler() http.HandlerFunc {
 
 		SPostID := strconv.Itoa(PostIDInt)
 
-		//if !userLiked(s.Db, GuserId, PostIDInt) {
+		if !UserLiked(s.Db) {
 			likes.LikeButton(s.Db, GuserId, PostIDInt)
-		//}
-		fmt.Println(PostIDInt)
-
-		http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
+			fmt.Println("Like added to database----------------------")
+			http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
+		} else {
+			fmt.Println("Like not added to database-----------------------")
+			http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
+		}
 	}
 }
 
-func userLiked(db *sql.DB, userID int, postID int) bool {
+func UserLiked(db *sql.DB) bool {
 	// check if post already liked by user
-	err := db.QueryRow("SELECT userID FROM likes WHERE userID = ? AND postID = ?", GuserId, PostIDInt)
+	userStmt := "SELECT userID FROM likes WHERE userID = 1 AND postID = 4"
+	row := db.QueryRow(userStmt, GuserId, PostIDInt)
 
-	fmt.Println("user liked------------------------------", err)
-
-	return err != nil
+	var uID string 
+	var pID string
+	err := row.Scan(&uID, &pID)
+	if err != sql.ErrNoRows {
+		return true
+	}
+	fmt.Println("User has already liked this post", err)
+	return false
 }

@@ -24,7 +24,6 @@ func LikeButton(db *sql.DB, userID int, postID int) {
 		return
 	}
 
-
 	result, _ := stmt.Exec(userID, postID)
 
 	rowsAff, _ := result.RowsAffected()
@@ -33,15 +32,15 @@ func LikeButton(db *sql.DB, userID int, postID int) {
 	fmt.Println("last inserted", LastIns)
 }
 
-func GetLikeData(db *sql.DB, likeID int) Like {
-	row := db.QueryRow("SELECT * FROM like WHERE likeID = ?;", likeID)
-	var like Like
-	err := row.Scan(&like.PostID, &like.UserID, &like.PostID, &like.CommentID)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return like
-}
+// func GetLikeData(db *sql.DB, likeID int) Like {
+// 	row := db.QueryRow("SELECT * FROM like WHERE likeID = ?;", likeID)
+// 	var like Like
+// 	err := row.Scan(&like.PostID, &like.UserID, &like.PostID, &like.CommentID)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+// 	return like
+// }
 
 func GetPostLikes(db *sql.DB, postID int) int {
 	var count int
@@ -64,7 +63,7 @@ func GetCommentLikes(db *sql.DB, commentID int) int {
 }
 
 // func HomePostLikes(db *sql.DB) map[int]int {
-// 	rows, err := db.Query(`SELECT post.postID, count(*) FROM likes 
+// 	rows, err := db.Query(`SELECT post.postID, count(*) FROM likes
 // 					INNER JOIN post ON likes.postID = post.postID
 // 					GROUP BY likes.postID;`)
 // 	if err != nil {
@@ -86,4 +85,3 @@ func GetCommentLikes(db *sql.DB, commentID int) int {
 // 	}
 // 	return PostLikes
 // }
-
