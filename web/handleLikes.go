@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"forum/dislikes"
 	"forum/likes"
 )
 
@@ -17,8 +18,9 @@ func (s *myServer) LikeHandler() http.HandlerFunc {
 
 		SPostID := strconv.Itoa(PostIDInt)
 
-		if !UserLiked(s.Db) {
+		if !UserLiked(s.Db) || UserDisliked(s.Db) {
 			likes.LikeButton(s.Db, GuserId, PostIDInt)
+			dislikes.DeleteDislike(s.Db, GuserId, PostIDInt)
 			fmt.Println("Like added to database----------------------")
 			http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
 		} else {
@@ -33,7 +35,7 @@ func UserLiked(db *sql.DB) bool {
 	userStmt := "SELECT userID FROM likes WHERE userID = ? AND postID = ?"
 	row := db.QueryRow(userStmt, GuserId, PostIDInt)
 
-	var uID string 
+	var uID string
 	var pID string
 	err := row.Scan(&uID, &pID)
 	if err != sql.ErrNoRows {

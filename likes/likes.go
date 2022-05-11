@@ -32,6 +32,20 @@ func LikeButton(db *sql.DB, userID int, postID int) {
 	fmt.Println("last inserted", LastIns)
 }
 
+func DeleteLike(db *sql.DB, userID int, postID int) {
+	stmt, err := db.Prepare("DELETE FROM likes WHERE userID = ? AND postID = ?")
+	if err != nil {
+		fmt.Println("error preparing statement:", err)
+		return
+	}
+	result, _ := stmt.Exec(userID, postID)
+
+	rowsAff, _ := result.RowsAffected()
+	LastIns, _ = result.LastInsertId()
+	fmt.Println("rows affected:", rowsAff)
+	fmt.Println("last inserted", LastIns)
+}
+
 // func GetLikeData(db *sql.DB, likeID int) Like {
 // 	row := db.QueryRow("SELECT * FROM like WHERE likeID = ?;", likeID)
 // 	var like Like
