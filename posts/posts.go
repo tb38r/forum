@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	"forum/dislikes"
 	"forum/likes"
 )
 
@@ -15,7 +16,6 @@ type Post struct {
 	PostContent  string
 	Image    string
 	Edited       bool
-	Likes        int
 }
 
 type HomepagePosts struct {
@@ -24,6 +24,7 @@ type HomepagePosts struct {
 	PostUsername string
 	CreationDate string
 	PostLike     int
+	PostDislike  int
 }
 
 var db *sql.DB
@@ -63,6 +64,7 @@ func GetHomepageData(db *sql.DB) []HomepagePosts {
 		// fmt.Println(&p.PostID)
 		err2 := rows.Scan(&p.PostID, &p.PostTitle, &p.PostUsername, &p.CreationDate)
 		p.PostLike = likes.GetPostLikes(db, p.PostID)
+		p.PostDislike = dislikes.GetPostDislikes(db, p.PostID)
 		postdata = append(postdata, p)
 		if err2 != nil {
 			fmt.Println(err2)
@@ -83,13 +85,13 @@ func FilterHomepageData(db *sql.DB, userID int) []HomepagePosts {
 		var p HomepagePosts
 		err2 := rows.Scan(&p.PostID, &p.PostTitle, &p.PostUsername, &p.CreationDate)
 		p.PostLike = likes.GetPostLikes(db, p.PostID)
+		p.PostDislike = dislikes.GetPostDislikes(db, p.PostID)
 		postdata = append(postdata, p)
 		if err2 != nil {
 			fmt.Println(err2)
 		}
 	}
 	return postdata
-
 }
 
 // getting the data from one post, and storing the values in the post struct

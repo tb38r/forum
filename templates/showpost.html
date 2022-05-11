@@ -15,25 +15,35 @@
     {{ range .Posts }}
     <h4>{{ .PostTitle }}</h4>
     <h5>{{ .PostContent }}</h5>
-    <img src="/templates/userImages/{{.Image}}" width="500" height="200" alt="">
-    {{ end }}
-
-{{if .Loggedin}}
+        {{ end }}
     <div class="container" style="margin:auto;">
         <form action="/likes" method="POST">
-            <button class="like-dislike-btn" type="checkbox" name="like">
-                <span class="glyphicon glyphicon-thumbs-up"></span> Like
-            </button>
+        {{if and .Liked .LoggedIn}}
+        <button class="like-dislike-btn" style="background-color:#89CFF0;"type="checkbox" name="like">
+        <span class="glyphicon glyphicon-thumbs-up"></span> Liked
+        </button>
+        {{else}}
+           <button class="like-dislike-btn" type="checkbox" name="like">
+        <span class="glyphicon glyphicon-thumbs-up"></span> Like
+        </button>
+        {{end}}
         </form>
         <br>
-        <form action="/dislikes" method="POST">
-            <button class="like-dislike-btn" type="checkbox" name="dislike">
-                <span class="glyphicon glyphicon-thumbs-down"></span> Dislike
-            </button>
+         <form action="/dislikes" method="POST">
+         {{if .Disliked}}
+        <button class="like-dislike-btn" style="background-color:#CD5C5C;" type="checkbox" name="dislike">
+        <span class="glyphicon glyphicon-thumbs-down"></span> Disliked
+        </button>
+         {{else}}
+           <button class="like-dislike-btn" type="checkbox" name="dislike">
+        <span class="glyphicon glyphicon-thumbs-up"></span> Dislike
+        </button>
+        {{end}}
         </form>
-    </div>
-    {{end}}
-{{if .Loggedin}}
+        <br>
+</div>
+<div>
+</div>
     <div class="container" style="margin:auto;">
         <form action="/storecomment" method="POST">
             <H2>Create Comment</H2>
@@ -42,8 +52,6 @@
             <textarea id="content" name="content" rows="4" cols="50"></textarea><br>
             <button class="btn btn-primary" type="submit">Create Comment</button>
         </form>
-{{end}}
-
     </div>
     {{if .Loggedin}}
     {{ range .Comments}}

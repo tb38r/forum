@@ -15,7 +15,9 @@ import (
 type PostPageData struct {
 	Posts    []posts.Post
 	Comments []comments.Comment
-	Loggedin bool
+	LoggedIn bool
+	Liked    bool
+	Disliked bool
 }
 
 // type Server server.Server
@@ -33,7 +35,6 @@ func (s *myServer) CreatePostHandler() http.HandlerFunc {
 
 func (s *myServer) StorePostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		var imagename string
 
 		// limits requests to 20MB (x is the limiter where x<<20)
@@ -72,7 +73,7 @@ func (s *myServer) StorePostHandler() http.HandlerFunc {
 			// adding the post to the database
 
 			posts.CreatePosts(s.Db, UserIdint, title, content, imagename)
-			
+
 			// formvalue for buttons. If they have been clicked, the form value returned will be "on"
 			manutd := r.FormValue("manutd")
 			arsenal := r.FormValue("arsenal")
@@ -106,9 +107,7 @@ func (s *myServer) StorePostHandler() http.HandlerFunc {
 
 		http.Redirect(w, r, r.Header.Get("Referer"), 302)
 		return
-
 	}
-
 }
 
 func (s *myServer) ShowPostHandler() http.HandlerFunc {
@@ -119,10 +118,23 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 		postID := r.URL.Query().Get("postid")
 		PostIDInt, _ = strconv.Atoi(postID)
 
-		data := PostPageData{Posts: posts.GetPostData(s.Db, PostIDInt), Comments: comments.GetCommentData(s.Db, PostIDInt), Loggedin: users.AlreadyLoggedIn(r)}
+		data := PostPageData{Posts: posts.GetPostData(s.Db, PostIDInt), Comments: comments.GetCommentData(s.Db, PostIDInt), LoggedIn: users.AlreadyLoggedIn(r), Liked: UserLiked(s.Db), Disliked: UserDisliked(s.Db)}
+
+		fmt.Println(data.Comments)
+		fmt.Println(data.Liked)
 
 		Tpl.ExecuteTemplate(w, "showpost.html", data)
 
+		// postLikes := likes.GetPostLikes(s.Db, PostIDInt)
+		// fmt.Fprintln(w, postLikes)
+
+		// GcD := comments.GetCommentData(s.Db, PostIDInt)
+
+		// for _, c := range GcD {
+		// 	fmt.Fprintln(w, "<h2>"+c.CommentText+"</h2>")
+		// 	fmt.Fprintln(w, "<h3>"+c.CommentUserName+"</h3>"+"\t"+"<h4>"+c.CreationDate+"</h4>")
+		// 	fmt.Fprintln(w, "")
+		// }
 	}
 }
 
