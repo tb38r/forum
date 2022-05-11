@@ -63,15 +63,16 @@ func (s *myServer) StorePostHandler() http.HandlerFunc {
 				defer file.Close()
 
 				imagename = handler.Filename
-				fmt.Printf("Uploaded Image: %+v\n", handler.Filename)
-				fmt.Printf("File Size: %+v\n", handler.Size)
-				fmt.Printf("MIME Header: %+v\n", handler.Header)
+				// fmt.Printf("Uploaded Image: %+v\n", handler.Filename)
+				// fmt.Printf("File Size: %+v\n", handler.Size)
+				// fmt.Printf("MIME Header: %+v\n", handler.Header)
 
 				userimages.SaveImage(file, handler.Filename)
 			}
 			// adding the post to the database
 
 			posts.CreatePosts(s.Db, UserIdint, title, content, imagename)
+			
 			// formvalue for buttons. If they have been clicked, the form value returned will be "on"
 			manutd := r.FormValue("manutd")
 			arsenal := r.FormValue("arsenal")

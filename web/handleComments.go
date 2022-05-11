@@ -1,7 +1,6 @@
 package web
 
 import (
-	"fmt"
 	"forum/comments"
 	"net/http"
 	"strconv"
@@ -42,11 +41,11 @@ func (s *myServer) StoreCommentHandler() http.HandlerFunc {
 			commentData.PostID = PostIDInt
 			commentData.UserID = GuserId
 
-			fmt.Println("comment data check: ---> ", commentData.CommentText)
-			fmt.Println("comment post id check: ---> ", commentData.PostID)
-			fmt.Println("comment user id check: ---> ", commentData.UserID)
+			// fmt.Println("comment data check: ---> ", commentData.CommentText)
+			// fmt.Println("comment post id check: ---> ", commentData.PostID)
+			// fmt.Println("comment user id check: ---> ", commentData.UserID)
 
-			fmt.Println("content: ", ContentComment)
+			// fmt.Println("content: ", ContentComment)
 			//Tpl.ExecuteTemplate(w, "storecomment.html", commentData.CommentText)
 			http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
 			//http.Redirect(w, r, "/home", http.StatusSeeOther)
