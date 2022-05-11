@@ -102,8 +102,9 @@ func (s *myServer) StorePostHandler() http.HandlerFunc {
 			fmt.Println("title:", title, "content:", content)
 			http.Redirect(w, r, "/home", http.StatusSeeOther)
 		}
-		http.Redirect(w, r, "/createpost", http.StatusSeeOther)
-		fmt.Fprintln(w, "Can't create an empty post!")
+
+		http.Redirect(w, r, r.Header.Get("Referer"), 302)
+		return
 
 	}
 
@@ -121,15 +122,15 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 
 		Tpl.ExecuteTemplate(w, "showpost.html", data)
 
-		// postLikes := likes.GetPostLikes(s.Db, PostIDInt)
-		// fmt.Fprintln(w, postLikes)
-
-		// GcD := comments.GetCommentData(s.Db, PostIDInt)
-
-		// for _, c := range GcD {
-		// 	fmt.Fprintln(w, "<h2>"+c.CommentText+"</h2>")
-		// 	fmt.Fprintln(w, "<h3>"+c.CommentUserName+"</h3>"+"\t"+"<h4>"+c.CreationDate+"</h4>")
-		// 	fmt.Fprintln(w, "")
-		// }
 	}
 }
+
+// func (s *myServer) EmptyCommentPost() http.HandlerFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
+// 		SGuserId := strconv.Itoa(GuserId)
+
+// 		fmt.Fprint(w, "Can't create an empty post!")
+// 		//Tpl.ExecuteTemplate(w, "emptycommentpost.html", nil)
+// 		http.Redirect(w, r, "/createpost/?userid="+SGuserId, http.StatusSeeOther)
+// 	}
+// }
