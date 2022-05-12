@@ -22,7 +22,7 @@
 
 
   <div class="page" id="posts">
-    POSTS
+    <h1>CREATED POSTS</h1>
 
     {{ range .Posts }}
     <div class="activity-title">
@@ -36,10 +36,11 @@
   <br>
 
   <div class="page" id="comments">
-    COMMENTS
+    <h1>YOUR COMMENTS</h1>
     {{range .CWP}}
-
-    <p>{{ .PostTitle }}</p>
+    <div class="activity-title">
+      <p> <a href="/showpost?postid={{.PostID}}">{{ .PostTitle }}</a></p>
+    </div>
     <p>{{ .CommentText}}</p>
 
     {{end}}

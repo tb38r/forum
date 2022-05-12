@@ -27,9 +27,10 @@ type HomepagePosts struct {
 }
 
 type ActPage struct {
-	PostID       int
+	UserID       int
 	PostTitle    string
 	CommentText  string
+	PostID       int
 	CreationDate string
 	PostLike     int
 }
@@ -81,7 +82,7 @@ func GetHomepageData(db *sql.DB) []HomepagePosts {
 
 // Gets data based on user's filter choice (currently displays user's created posts, //TODO : Return Liked Posts)
 func ActivityComments(db *sql.DB, userid int) []ActPage {
-	rows, err := db.Query(`SELECT post.userID, post.postTitle, comments.commentText 
+	rows, err := db.Query(`SELECT post.userID, post.postTitle, comments.commentText, post.postID 
 	FROM post, comments
 	WHERE post.userID = ?
 	AND post.postID = comments.postID
@@ -93,7 +94,7 @@ func ActivityComments(db *sql.DB, userid int) []ActPage {
 	defer rows.Close()
 	for rows.Next() {
 		var p ActPage
-		err2 := rows.Scan(&p.PostID, &p.PostTitle, &p.CommentText)
+		err2 := rows.Scan(&p.PostID, &p.PostTitle, &p.CommentText, &p.PostID)
 		p.PostLike = likes.GetPostLikes(db, p.PostID)
 		pac = append(pac, p)
 		if err2 != nil {

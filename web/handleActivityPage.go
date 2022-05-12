@@ -1,7 +1,6 @@
 package web
 
 import (
-	"fmt"
 	"forum/posts"
 	"net/http"
 )
@@ -23,7 +22,6 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 		data.Posts = userFilter
 
 		data.CWP = posts.ActivityComments(s.Db, GuserId)
-		fmt.Println(data.CWP)
 
 		Tpl.ExecuteTemplate(w, "activitypage.html", data)
 
