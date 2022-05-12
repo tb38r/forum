@@ -36,7 +36,7 @@ func (s *myServer) Routes(a <-chan time.Time) {
 	http.HandleFunc("/register/", Rate(a, s.RegisterUserHandler()))
 	http.HandleFunc("/registerauth", Rate(a, s.RegisterAuthHandler()))
 	http.HandleFunc("/login", Rate(a, s.LoginHandler()))
-	http.HandleFunc("/activitypage", Rate(a, s.ActivityPage()))
+	http.HandleFunc("/activitypage", Rate(a, Auth(s.ActivityPage())))
 	http.HandleFunc("/loginauth", Rate(a, s.LoginAuthHandler()))
 	http.HandleFunc("/logout", Rate(a, s.LogoutHandler()))
 	http.HandleFunc("/createpost/", Rate(a, Auth(SessionChecker(s.CreatePostHandler()))))
@@ -48,7 +48,6 @@ func (s *myServer) Routes(a <-chan time.Time) {
 	http.HandleFunc("/showpost/", Rate(a, s.ShowPostHandler()))
 	//http.HandleFunc("/emptycommentpost/", Rate(a, Auth(SessionChecker(s.EmptyCommentPost()))))
 	//http.HandleFunc("/showcomment/", Rate(a, Auth(SessionChecker(s.ShowCommentHandler()))))
-	// http.HandleFunc("/", Rate(a,s.HomepageHandler()))
 	// this is for the template css files to run.
 	http.Handle("/templates/", http.StripPrefix("/templates/", http.FileServer(http.Dir("./templates"))))
 }

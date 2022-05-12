@@ -1,7 +1,6 @@
 package web
 
 import (
-	"fmt"
 	"forum/posts"
 	"net/http"
 )
@@ -15,7 +14,7 @@ type ActivityPage struct {
 
 func (s *myServer) ActivityPage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "PLACEHOLDER")
+		Tpl.ExecuteTemplate(w, "activitypage.html", nil)
 
 	}
 }
