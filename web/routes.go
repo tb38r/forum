@@ -12,20 +12,16 @@ func Rate(a <-chan time.Time, next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Requests = append(Requests, r)
 
-		fmt.Println("Len of Requests", len(Requests), Requests)
-
 		if len(Requests) > 0 {
 			func() {
 				<-a
 			}()
 
 			next.ServeHTTP(w, Requests[0])
-			fmt.Println(Requests, "\n", "Request sent at ----> ", time.Now())
 			Requests = Requests[1:]
 
 		}
 
-		fmt.Println("PART 2 Len of Requests :", len(Requests), Requests)
 		fmt.Println()
 	}
 }
@@ -36,6 +32,7 @@ func (s *myServer) Routes(a <-chan time.Time) {
 	http.HandleFunc("/register/", Rate(a, s.RegisterUserHandler()))
 	http.HandleFunc("/registerauth", Rate(a, s.RegisterAuthHandler()))
 	http.HandleFunc("/login", Rate(a, s.LoginHandler()))
+	http.HandleFunc("/activitypage", Rate(a, Auth(s.ActivityPage())))
 	http.HandleFunc("/loginauth", Rate(a, s.LoginAuthHandler()))
 	http.HandleFunc("/logout", Rate(a, s.LogoutHandler()))
 	http.HandleFunc("/createpost/", Rate(a, Auth(SessionChecker(s.CreatePostHandler()))))
@@ -47,7 +44,6 @@ func (s *myServer) Routes(a <-chan time.Time) {
 	http.HandleFunc("/showpost/", Rate(a, s.ShowPostHandler()))
 	//http.HandleFunc("/emptycommentpost/", Rate(a, Auth(SessionChecker(s.EmptyCommentPost()))))
 	//http.HandleFunc("/showcomment/", Rate(a, Auth(SessionChecker(s.ShowCommentHandler()))))
-	// http.HandleFunc("/", Rate(a,s.HomepageHandler()))
 	// this is for the template css files to run.
 	http.Handle("/templates/", http.StripPrefix("/templates/", http.FileServer(http.Dir("./templates"))))
 }

@@ -14,7 +14,7 @@ type Post struct {
 	CreationDate string
 	PostTitle    string
 	PostContent  string
-	Image    string
+	Image        string
 	Edited       bool
 }
 
@@ -25,6 +25,15 @@ type HomepagePosts struct {
 	CreationDate string
 	PostLike     int
 	PostDislike  int
+}
+
+type ActPage struct {
+	UserID       int
+	PostTitle    string
+	CommentText  string
+	PostID       int
+	CreationDate string
+	PostLike     int
 }
 
 var db *sql.DB
@@ -73,7 +82,31 @@ func GetHomepageData(db *sql.DB) []HomepagePosts {
 	return postdata
 }
 
-// Gets data based on user's filter choice (currently displays user's created posts, //TODO : Return Liked Posts)
+//returns user's comments with their corresponding posts
+func ActivityComments(db *sql.DB, userid int) []ActPage {
+	rows, err := db.Query(`SELECT post.userID, post.postTitle, comments.commentText, post.postID 
+	FROM post, comments
+	WHERE post.userID = ?
+	AND post.postID = comments.postID
+	;`, userid)
+	if err != nil {
+		fmt.Println(err)
+	}
+	pac := []ActPage{}
+	defer rows.Close()
+	for rows.Next() {
+		var p ActPage
+		err2 := rows.Scan(&p.PostID, &p.PostTitle, &p.CommentText, &p.PostID)
+		p.PostLike = likes.GetPostLikes(db, p.PostID)
+		pac = append(pac, p)
+		if err2 != nil {
+			fmt.Println(err2)
+		}
+
+	}
+	return pac
+
+}
 func FilterHomepageData(db *sql.DB, userID int) []HomepagePosts {
 	rows, err := db.Query("SELECT postID, postTitle, username, creationDate FROM post INNER JOIN users ON users.userID =  post.userID WHERE users.userID = ?;", userID)
 	if err != nil {

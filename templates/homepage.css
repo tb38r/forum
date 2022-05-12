@@ -61,3 +61,11 @@ a.btn-link:hover {
   justify-content: center;
   flex-direction: column;
 }
+
+
+.activity-title {
+  color: rgb(13, 32, 202);
+  font-size: 18px;
+  font-weight: bold;
+  text-transform: uppercase;
+}

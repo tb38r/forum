@@ -20,6 +20,7 @@ type PostPageData struct {
 	Disliked bool
 	Username string
 	Image    string
+	UserID   int
 }
 
 // type Server server.Server
@@ -32,7 +33,7 @@ func (s *myServer) CreatePostHandler() http.HandlerFunc {
 		// getting the user id from the url
 		userId := r.URL.Query().Get("userid")
 		UserIdint, _ = strconv.Atoi(userId)
-		Tpl.ExecuteTemplate(w, "createpost.html", PostPageData{LoggedIn: users.AlreadyLoggedIn(r), Username: users.CurrentUser})
+		Tpl.ExecuteTemplate(w, "createpost.html", PostPageData{LoggedIn: users.AlreadyLoggedIn(r), Username: users.CurrentUser, UserID: UserIdint})
 	}
 }
 
@@ -127,6 +128,7 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 			Disliked: UserDisliked(s.Db),
 			Username: users.CurrentUser,
 			Image:    Imagename,
+			UserID:   UserIdint,
 		}
 
 		fmt.Println(data.Comments)
