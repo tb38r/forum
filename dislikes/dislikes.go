@@ -32,6 +32,21 @@ func DislikeButton(db *sql.DB, userID int, postID int) {
 	fmt.Println("last inserted", LastIns)
 }
 
+func CommentDislikeButton(db *sql.DB, userID int, commentID int) {
+	stmt, err := db.Prepare("INSERT INTO dislikes(userID, commentID) VALUES(?, ?) ")
+	if err != nil {
+		fmt.Println("error preparing statement:", err)
+		return
+	}
+
+	result, _ := stmt.Exec(userID, commentID)
+
+	rowsAff, _ := result.RowsAffected()
+	LastIns, _ = result.LastInsertId()
+	fmt.Println("rows affected:", rowsAff)
+	fmt.Println("last inserted", LastIns)
+}
+
 func DeleteDislike(db *sql.DB, userID int, postID int) {
 	stmt, err := db.Prepare("DELETE FROM dislikes WHERE userID = ? AND postID = ?")
 	if err != nil {
@@ -39,6 +54,20 @@ func DeleteDislike(db *sql.DB, userID int, postID int) {
 		return
 	}
 	result, _ := stmt.Exec(userID, postID)
+
+	rowsAff, _ := result.RowsAffected()
+	LastIns, _ = result.LastInsertId()
+	fmt.Println("rows affected:", rowsAff)
+	fmt.Println("last inserted", LastIns)
+}
+
+func DeleteCommentDislike(db *sql.DB, userID int, commentID int) {
+	stmt, err := db.Prepare("DELETE FROM dislikes WHERE userID = ? AND commentID = ?")
+	if err != nil {
+		fmt.Println("error preparing statement:", err)
+		return
+	}
+	result, _ := stmt.Exec(userID, commentID)
 
 	rowsAff, _ := result.RowsAffected()
 	LastIns, _ = result.LastInsertId()

@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"forum/comments"
 	"net/http"
 	"strconv"
@@ -9,6 +10,7 @@ import (
 var CommentData comments.Comment
 var CUserIdint int
 var ContentComment string
+var CommentId int
 
 //var CPostIdint int
 
@@ -41,6 +43,10 @@ func (s *myServer) StoreCommentHandler() http.HandlerFunc {
 			commentData.PostID = PostIDInt
 			commentData.UserID = GuserId
 
+			CommentId = comments.GetCommentID(s.Db)
+
+			fmt.Println("testing method to get comment id", CommentId)
+			fmt.Println("testing cd id ************************8", CommentId)
 			// fmt.Println("comment data check: ---> ", commentData.CommentText)
 			// fmt.Println("comment post id check: ---> ", commentData.PostID)
 			// fmt.Println("comment user id check: ---> ", commentData.UserID)
@@ -51,7 +57,7 @@ func (s *myServer) StoreCommentHandler() http.HandlerFunc {
 			//http.Redirect(w, r, "/home", http.StatusSeeOther)
 		}
 		SPostID := strconv.Itoa(PostIDInt)
-
+		fmt.Println("testing cd id ************************9", CommentData.CommentID)
 		http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
 	}
 }
