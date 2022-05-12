@@ -3,6 +3,7 @@
 
 <head>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/templates/showpost.css" />
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,69 +12,81 @@
 
 <body>
     {{ template "header.html" . }}
-    <h3>Show Post</h3>
+    <div id="maincontent">
+        {{ range .Posts }}
+        <h2>{{ .PostTitle }}</h2>
+        <p>{{ .PostContent }}</p>
+        <img src="/templates/userImages/{{.Image}}" width="500" height="200" alt="">
+        {{ end }}
+        <div class="container" style="margin:auto;">
+            <form action="/likes" method="POST">
+                {{if and .Liked .LoggedIn}}
+                <button class="like-dislike-btn" style="background-color:#89CFF0;" type="checkbox" name="like">
+                    <span class="glyphicon glyphicon-thumbs-up"></span> Liked
+                </button>
+                {{else}}
+                <button class="like-dislike-btn" type="checkbox" name="like">
+                    <span class="glyphicon glyphicon-thumbs-up"></span> Like
+                </button>
+                {{end}}
+            </form>
+            <br>
+            <form action="/dislikes" method="POST">
+                {{if .Disliked}}
+                <button class="like-dislike-btn" style="background-color:#CD5C5C;" type="checkbox" name="dislike">
+                    <span class="glyphicon glyphicon-thumbs-down"></span> Disliked
+                </button>
+                {{else}}
+                <button class="like-dislike-btn" type="checkbox" name="dislike">
+                    <span class="glyphicon glyphicon-thumbs-up"></span> Dislike
+                </button>
+                {{end}}
+            </form>
+            <br>
+        </div>
+        <div>
+        </div>
+        <div class="container" style="margin:auto;">
+            <form action="/storecomment" method="POST">
+                <H2>Create Comment</H2>
 
-    {{ range .Posts }}
-    <h4>{{ .PostTitle }}</h4>
-    <h5>{{ .PostContent }}</h5>
-    <img src="/templates/userImages/{{.Image}}" width="500" height="200" alt="">
-    {{ end }}
-    <div class="container" style="margin:auto;">
-        <form action="/likes" method="POST">
-        {{if and .Liked .LoggedIn}}
-        <button class="like-dislike-btn" style="background-color:#89CFF0;"type="checkbox" name="like">
-        <span class="glyphicon glyphicon-thumbs-up"></span> Liked
-        </button>
-        {{else}}
-           <button class="like-dislike-btn" type="checkbox" name="like">
-        <span class="glyphicon glyphicon-thumbs-up"></span> Like
-        </button>
-        {{end}}
-        </form>
-        <br>
-         <form action="/dislikes" method="POST">
-         {{if .Disliked}}
-        <button class="like-dislike-btn" style="background-color:#CD5C5C;" type="checkbox" name="dislike">
-        <span class="glyphicon glyphicon-thumbs-down"></span> Disliked
-        </button>
-         {{else}}
-           <button class="like-dislike-btn" type="checkbox" name="dislike">
-        <span class="glyphicon glyphicon-thumbs-up"></span> Dislike
-        </button>
-        {{end}}
-        </form>
-        <br>
-</div>
-<div>
-</div>
-    <div class="container" style="margin:auto;">
-        <form action="/storecomment" method="POST">
-            <H2>Create Comment</H2>
-
-            <label for="commenttext">Content</label><br>
-            <textarea id="content" name="content" rows="4" cols="50"></textarea><br>
-            <button class="btn btn-primary" type="submit">Create Comment</button>
-        </form>
+                <label for="commenttext">Content</label><br>
+                <textarea id="content" name="content" rows="4" cols="50"></textarea><br>
+                <button class="btn btn-primary" type="submit">Create Comment</button>
+            </form>
+        </div>
+        {{ range .Comments}}
+        <div class="comment-row">
+            <div class="comment-body">
+                <div class="comment-body-top">
+                    <div class="comment-author">
+                        <p>{{ .CommentUserName }} </p>
+                    </div>
+                    <div class="comment-date">
+                        {{ .CreationDate }}
+                    </div>
+                </div>
+                <div class="comment-body-content">
+                    <p>{{ .CommentText }}</p>
+                </div>
+                <div class="comment-body-actions">
+                    <div class="like-button">
+                        <form action="/likes" method="POST">
+                            <button class="like-dislike-btn" type="checkbox" name="like">
+                                <span class="glyphicon glyphicon-thumbs-up"></span> Like
+                            </button>
+                        </form>
+                    </div>
+                    <form action="/dislikes" method="POST">
+                        <button class="like-dislike-btn" type="checkbox" name="dislike">
+                            <span class="glyphicon glyphicon-thumbs-down"></span> Dislike
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {{ end }}
     </div>
-    {{ range .Comments}}
-    <h4>{{ .CommentText }}</h4>
-    <h5>{{ .CommentUserName }} {{ .CreationDate }}</h5>
-
-    <div class="container" style="margin:auto;">
-        <form action="/likes" method="POST">
-            <button class="like-dislike-btn" type="checkbox" name="like">
-                <span class="glyphicon glyphicon-thumbs-up"></span> Like
-            </button>
-        </form>
-        <br>
-        <form action="/dislikes" method="POST">
-            <button class="like-dislike-btn" type="checkbox" name="dislike">
-                <span class="glyphicon glyphicon-thumbs-down"></span> Dislike
-            </button>
-        </form>
-    </div>
-    {{ end }}
-
 </body>
 
 </html>

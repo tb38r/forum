@@ -1,4 +1,6 @@
-* {box-sizing: border-box;}
+* {
+  box-sizing: border-box;
+}
 
 body {
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
@@ -25,6 +27,7 @@ a.btn-link {
 .post {
   margin-right: 10px;
 }
+
 a.btn-link:hover {
   background-color: #069;
   color: white;
@@ -42,8 +45,8 @@ a.btn-link:hover {
   font-size: 18px;
 }
 
-.post-title > a {
-  color: black!important;
+.post-title>a {
+  color: black !important;
   text-decoration: none;
 }
 
