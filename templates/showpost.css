@@ -10,6 +10,32 @@ body {
     margin-bottom: 100px;
 }
 
+.post-content {
+    margin-bottom: 80px;
+}
+
+.post-text {
+    background-color: #fafafa;
+    border: 1px solid;
+    border-radius: 7px;
+    padding: 3px 10px;
+    width: fit-content;
+}
+
+.post-likes-dislikes {
+    display: flex;
+    justify-content: right;
+    margin-top: 10px;
+}
+
+.post-like {
+    margin-right: 10px;
+}
+
+.post-title {
+    font-size: 16.5pt;
+}
+
 #maincontent {
     max-width: 1100px;
     margin: 0 auto;
@@ -51,4 +77,8 @@ body {
 
 .like-button {
     margin-right: 10px;
+}
+
+.post-img {
+    margin-top: 15px;
 }

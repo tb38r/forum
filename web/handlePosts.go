@@ -19,11 +19,13 @@ type PostPageData struct {
 	Liked    bool
 	Disliked bool
 	Username string
+	Image    string
 }
 
 // type Server server.Server
 var UserIdint int
 var PostIDInt int
+var Imagename string
 
 func (s *myServer) CreatePostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -36,7 +38,6 @@ func (s *myServer) CreatePostHandler() http.HandlerFunc {
 
 func (s *myServer) StorePostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var imagename string
 
 		// limits requests to 20MB (x is the limiter where x<<20)
 		r.Body = http.MaxBytesReader(w, r.Body, 20<<20)
@@ -64,7 +65,7 @@ func (s *myServer) StorePostHandler() http.HandlerFunc {
 
 				defer file.Close()
 
-				imagename = handler.Filename
+				Imagename = handler.Filename
 				// fmt.Printf("Uploaded Image: %+v\n", handler.Filename)
 				// fmt.Printf("File Size: %+v\n", handler.Size)
 				// fmt.Printf("MIME Header: %+v\n", handler.Header)
@@ -73,7 +74,7 @@ func (s *myServer) StorePostHandler() http.HandlerFunc {
 			}
 			// adding the post to the database
 
-			posts.CreatePosts(s.Db, UserIdint, title, content, imagename)
+			posts.CreatePosts(s.Db, UserIdint, title, content, Imagename)
 
 			// formvalue for buttons. If they have been clicked, the form value returned will be "on"
 			manutd := r.FormValue("manutd")
@@ -124,7 +125,9 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 			Comments: comments.GetCommentData(s.Db, PostIDInt),
 			LoggedIn: users.AlreadyLoggedIn(r), Liked: UserLiked(s.Db),
 			Disliked: UserDisliked(s.Db),
-			Username: users.CurrentUser}
+			Username: users.CurrentUser,
+			Image:    Imagename,
+		}
 
 		fmt.Println(data.Comments)
 		fmt.Println(data.Liked)
