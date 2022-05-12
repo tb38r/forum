@@ -18,7 +18,6 @@ func Rate(a <-chan time.Time, next http.HandlerFunc) http.HandlerFunc {
 			}()
 
 			next.ServeHTTP(w, Requests[0])
-			fmt.Println(Requests, "\n", "Request sent at ----> ", time.Now())
 			Requests = Requests[1:]
 
 		}

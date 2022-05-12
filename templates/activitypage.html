@@ -13,15 +13,16 @@
 
 <body>
   <nav class="navbar sticky-top navbar-light bg-light">
-    <a class="navbar-brand" href="#posts">Posts</a>
-    <a class="navbar-brand" href="#comments">Comments</a>
-    <a class="navbar-brand" href="#three">Reactions</a>
-    <a class="navbar-brand">Edit</a>
+    <a class="navbar-brand" href="#posts">POSTS</a>
+    <a class="navbar-brand" href="#comments">COMMENTS</a>
+    <a class="navbar-brand" href="#three">REACTIONS</a>
+    <a class="navbar-brand" href="#">EDIT</a>
+    <a class="navbar-brand" href="/home">HOME</a>
   </nav>
 
 
   <div class="page" id="posts">
-
+    POSTS
 
     {{ range .Posts }}
     <div class="activity-title">
@@ -35,19 +36,21 @@
   <br>
 
   <div class="page" id="comments">
-    Comments goes here.
+    COMMENTS
+    {{range .CWP}}
 
-    <ul>
-      <li><a href="#">Back</a></li>
-      <li><a href="#one">Page 1</a></li>
-    </ul>
+    <p>{{ .PostTitle }}</p>
+    <p>{{ .CommentText}}</p>
+
+    {{end}}
+
   </div>
 
+  <br>
+  <br>
+
   <div class="page" id="three">
-    Likes & Dislikes go here
-    <ul>
-      <li><a href="#">Back</a></li>
-      <li><a href="#one">Page 1</a></li>
-    </ul>
+    LIKES/DISLIKES
+
   </div>
 </body>

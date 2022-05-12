@@ -6,6 +6,14 @@ import (
 	"strconv"
 )
 
+type ActPage struct {
+	PostID       int
+	PostTitle    string
+	CommentText  string
+	CreationDate string
+	PostLike     int
+}
+
 var CommentData comments.Comment
 var CUserIdint int
 var ContentComment string
