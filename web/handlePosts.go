@@ -18,6 +18,7 @@ type PostPageData struct {
 	LoggedIn bool
 	Liked    bool
 	Disliked bool
+	Username string
 }
 
 // type Server server.Server
@@ -29,7 +30,7 @@ func (s *myServer) CreatePostHandler() http.HandlerFunc {
 		// getting the user id from the url
 		userId := r.URL.Query().Get("userid")
 		UserIdint, _ = strconv.Atoi(userId)
-		Tpl.ExecuteTemplate(w, "createpost.html", nil)
+		Tpl.ExecuteTemplate(w, "createpost.html", PostPageData{LoggedIn: users.AlreadyLoggedIn(r), Username: users.CurrentUser})
 	}
 }
 
@@ -118,23 +119,17 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 		postID := r.URL.Query().Get("postid")
 		PostIDInt, _ = strconv.Atoi(postID)
 
-		data := PostPageData{Posts: posts.GetPostData(s.Db, PostIDInt), Comments: comments.GetCommentData(s.Db, PostIDInt), LoggedIn: users.AlreadyLoggedIn(r), Liked: UserLiked(s.Db), Disliked: UserDisliked(s.Db)}
+		data := PostPageData{
+			Posts:    posts.GetPostData(s.Db, PostIDInt),
+			Comments: comments.GetCommentData(s.Db, PostIDInt),
+			LoggedIn: users.AlreadyLoggedIn(r), Liked: UserLiked(s.Db),
+			Disliked: UserDisliked(s.Db),
+			Username: users.CurrentUser}
 
 		fmt.Println(data.Comments)
 		fmt.Println(data.Liked)
 
 		Tpl.ExecuteTemplate(w, "showpost.html", data)
-
-		// postLikes := likes.GetPostLikes(s.Db, PostIDInt)
-		// fmt.Fprintln(w, postLikes)
-
-		// GcD := comments.GetCommentData(s.Db, PostIDInt)
-
-		// for _, c := range GcD {
-		// 	fmt.Fprintln(w, "<h2>"+c.CommentText+"</h2>")
-		// 	fmt.Fprintln(w, "<h3>"+c.CommentUserName+"</h3>"+"\t"+"<h4>"+c.CreationDate+"</h4>")
-		// 	fmt.Fprintln(w, "")
-		// }
 	}
 }
 

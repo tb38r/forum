@@ -10,12 +10,14 @@
 </head>
 
 <body>
+    {{ template "header.html" . }}
     <h3>Show Post</h3>
 
     {{ range .Posts }}
     <h4>{{ .PostTitle }}</h4>
     <h5>{{ .PostContent }}</h5>
-        {{ end }}
+    <img src="/templates/userImages/{{.Image}}" width="500" height="200" alt="">
+    {{ end }}
     <div class="container" style="margin:auto;">
         <form action="/likes" method="POST">
         {{if and .Liked .LoggedIn}}
@@ -53,7 +55,6 @@
             <button class="btn btn-primary" type="submit">Create Comment</button>
         </form>
     </div>
-    {{if .Loggedin}}
     {{ range .Comments}}
     <h4>{{ .CommentText }}</h4>
     <h5>{{ .CommentUserName }} {{ .CreationDate }}</h5>
@@ -72,18 +73,6 @@
         </form>
     </div>
     {{ end }}
-    
-    
-    
-
-    {{else}}
-    {{ range .Comments}}
-    <h4>{{ .CommentText }}</h4>
-    <h5>{{ .CommentUserName }} {{ .CreationDate }}</h5>
-    {{ end }}
-    {{end}}
-
-
 
 </body>
 

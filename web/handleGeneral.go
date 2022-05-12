@@ -13,7 +13,7 @@ import (
 type HomepageData struct {
 	Username string
 	AllPosts []posts.HomepagePosts
-	Loggedin bool
+	LoggedIn bool
 	UserID   int
 	// PostUsername  map[int]string
 }
