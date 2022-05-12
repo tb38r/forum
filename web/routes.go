@@ -12,8 +12,6 @@ func Rate(a <-chan time.Time, next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Requests = append(Requests, r)
 
-		fmt.Println("Len of Requests", len(Requests), Requests)
-
 		if len(Requests) > 0 {
 			func() {
 				<-a
@@ -25,7 +23,6 @@ func Rate(a <-chan time.Time, next http.HandlerFunc) http.HandlerFunc {
 
 		}
 
-		fmt.Println("PART 2 Len of Requests :", len(Requests), Requests)
 		fmt.Println()
 	}
 }

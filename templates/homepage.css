@@ -171,3 +171,10 @@ a.btn-link:hover {
   left: 0vw;
   z-index: 1;
 }
+
+.activity-title {
+  color: rgb(13, 32, 202);
+  font-size: 18px;
+  font-weight: bold;
+  text-transform: uppercase;
+}

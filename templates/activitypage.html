@@ -13,28 +13,29 @@
 
 <body>
   <nav class="navbar sticky-top navbar-light bg-light">
-    <a class="navbar-brand" href="#one">Posts</a>
-    <a class="navbar-brand" href="#two">Comments</a>
+    <a class="navbar-brand" href="#posts">Posts</a>
+    <a class="navbar-brand" href="#comments">Comments</a>
     <a class="navbar-brand" href="#three">Reactions</a>
     <a class="navbar-brand">Edit</a>
-
-
-
   </nav>
 
 
-  <div class="page" id="one">
-    Content of page 1 goes here.
+  <div class="page" id="posts">
 
-    <ul>
-      <li><a href="#">Back</a></li>
-      <li><a href="#two">Page 2</a></li>
-    </ul>
+
+    {{ range .Posts }}
+    <div class="activity-title">
+      <p> <a href="/showpost?postid={{.PostID}}">{{ .PostTitle }}</a></p>
+    </div>
+
+    {{end}}
   </div>
 
+  <br>
+  <br>
 
-  <div class="page" id="two">
-    Content of page 2 goes here.
+  <div class="page" id="comments">
+    Comments goes here.
 
     <ul>
       <li><a href="#">Back</a></li>
