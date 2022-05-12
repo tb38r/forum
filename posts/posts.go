@@ -80,7 +80,7 @@ func GetHomepageData(db *sql.DB) []HomepagePosts {
 	return postdata
 }
 
-// Gets data based on user's filter choice (currently displays user's created posts, //TODO : Return Liked Posts)
+//returns user's comments with their corresponding posts
 func ActivityComments(db *sql.DB, userid int) []ActPage {
 	rows, err := db.Query(`SELECT post.userID, post.postTitle, comments.commentText, post.postID 
 	FROM post, comments
