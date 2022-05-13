@@ -12,6 +12,7 @@ type ActivityPage struct {
 	LikedPosts        []posts.ActPage
 	DislikedPosts     []posts.ActPage
 	LikedComments     []posts.ActPage
+	DislikedComments  []posts.ActPage
 	Comments          []posts.Post
 }
 
@@ -38,6 +39,8 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 		data.DislikedPosts = posts.ActivityPostDislikes(s.Db, GuserId)
 
 		data.LikedComments = posts.ActivityCommentLikes(s.Db, GuserId)
+
+		data.DislikedComments = posts.ActivityCommentDislikes(s.Db, GuserId)
 
 		Tpl.ExecuteTemplate(w, "activitypage.html", data)
 

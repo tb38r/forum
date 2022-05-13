@@ -75,7 +75,13 @@
       <p> <a href="/showpost?postid={{.PostID}}">{{ .PostTitle }}</a></p>
     </div>
     {{end}}
-
+    <br>
+    <h1>DISLIKED COMMENTS</h1>
+    {{range .DislikedComments}}
+    <div class="activity-title">
+      <p> {{ .CommentText}}</p>
+    </div>
+    {{end}}
 
 
   </div>

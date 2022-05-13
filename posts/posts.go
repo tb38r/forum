@@ -159,11 +159,11 @@ func ActivityPostDislikes(db *sql.DB, userid int) []ActPage {
 
 }
 
-//retruns user's liked comments
+//returns user's liked comments
 func ActivityCommentLikes(db *sql.DB, userid int) []ActPage {
 	rows, err := db.Query(`SELECT DISTINCT likes.userID, likes.commentID, comments.commentText
 	FROM likes, comments
-	WHERE likes.userID = 2
+	WHERE likes.userID = ?
 	AND likes.commentID = comments.commentID 
 	;`, userid)
 	if err != nil {
@@ -183,6 +183,32 @@ func ActivityCommentLikes(db *sql.DB, userid int) []ActPage {
 	return actcommentlikes
 
 }
+
+//returns user's disliked comments
+func ActivityCommentDislikes(db *sql.DB, userid int) []ActPage {
+	rows, err := db.Query(`SELECT DISTINCT dislikes.userID, dislikes.commentID, comments.commentText
+	FROM dislikes, comments
+	WHERE dislikes.userID = 2
+	AND dislikes.commentID = comments.commentID 
+	;`, userid)
+	if err != nil {
+		fmt.Println(err)
+	}
+	actcommentdislikes := []ActPage{}
+	defer rows.Close()
+	for rows.Next() {
+		var p ActPage
+		err2 := rows.Scan(&p.UserID, &p.CommentID, &p.CommentText)
+		actcommentdislikes = append(actcommentdislikes, p)
+		if err2 != nil {
+			fmt.Println(err2)
+		}
+
+	}
+	return actcommentdislikes
+
+}
+
 
 func FilterHomepageData(db *sql.DB, userID int) []HomepagePosts {
 	rows, err := db.Query("SELECT postID, postTitle, username, creationDate FROM post INNER JOIN users ON users.userID =  post.userID WHERE users.userID = ?;", userID)
