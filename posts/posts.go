@@ -26,6 +26,7 @@ type HomepagePosts struct {
 	PostLike     int
 	PostDislike  int
 	NetLikes     int
+	CommentNum   int
 }
 
 type ActPage struct {
@@ -76,6 +77,7 @@ func GetHomepageData(db *sql.DB) []HomepagePosts {
 		p.PostLike = likes.GetPostLikes(db, p.PostID)
 		p.PostDislike = dislikes.GetPostDislikes(db, p.PostID)
 		p.NetLikes = NetLikes(db, p.PostID)
+		p.CommentNum = likes.GetNumComment(db, p.PostID)
 		postdata = append(postdata, p)
 		if err2 != nil {
 			fmt.Println(err2)
@@ -89,6 +91,12 @@ func NetLikes(db *sql.DB, PostID int) int {
 
 	return NetLikes
 }
+
+// func CommentLikes(db *sql.DB, PostID int) int {
+// 	CommentLikes := likes.PCLikes(db, PostID)
+
+// 	return CommentLikes
+// }
 
 // returns user's comments with their corresponding posts
 func ActivityComments(db *sql.DB, userid int) []ActPage {

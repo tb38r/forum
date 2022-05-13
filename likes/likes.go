@@ -105,6 +105,15 @@ func GetCommentLikes(db *sql.DB, commentID int) int {
 	return count
 }
 
+func GetNumComment(db *sql.DB, postID int) int {
+	var count int
+
+	err := db.QueryRow("SELECT COUNT(*) FROM comments WHERE postID =?;", postID).Scan(&count)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return count
+}
 
 // func HomePostLikes(db *sql.DB) map[int]int {
 // 	rows, err := db.Query(`SELECT post.postID, count(*) FROM likes
