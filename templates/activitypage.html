@@ -15,7 +15,8 @@
   <nav class="navbar sticky-top navbar-light bg-light">
     <a class="navbar-brand" href="#posts">POSTS</a>
     <a class="navbar-brand" href="#comments">COMMENTS</a>
-    <a class="navbar-brand" href="#three">LIKES/DISLIKES</a>
+    <a class="navbar-brand" href="#likes">LIKES</a>
+    <a class="navbar-brand" href="#dislikes">DISLIKES</a>
     <a class="navbar-brand" href="#">EDIT</a>
     <a class="navbar-brand" href="/home">HOME</a>
   </nav>
@@ -50,21 +51,23 @@
   <br>
   <br>
 
-  <div class="page" id="three">
+  <div class="page" id="likes">
     <h1>LIKED POSTS</h1>
     {{range .APL}}
     <div class="activity-title">
       <p> <a href="/showpost?postid={{.PostID}}">{{ .PostTitle }}</a></p>
     </div>
     {{end}}
-<br>
-<br>
-<h1>DISLIKED POSTS</h1>
-{{range .APD}}
-<div class="activity-title">
-  <p> <a href="/showpost?postid={{.PostID}}">{{ .PostTitle }}</a></p>
-</div>
-{{end}}
+  </div>
+  <br>
+  <br>
+  <div class="page" id="dislikes">
+  <h1>DISLIKED POSTS</h1>
+  {{range .APD}}
+  <div class="activity-title">
+    <p> <a href="/showpost?postid={{.PostID}}">{{ .PostTitle }}</a></p>
+  </div>
+  {{end}}
 
 
 
