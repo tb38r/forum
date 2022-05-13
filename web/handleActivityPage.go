@@ -9,6 +9,7 @@ type ActivityPage struct {
 	Posts    []posts.HomepagePosts
 	CWP      []posts.ActPage //commentswithposts
 	APL      []posts.ActPage //activity post likes
+	APD      []posts.ActPage //activity post dislikes
 	Comments []posts.Post
 }
 
@@ -17,9 +18,7 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 
 		var data ActivityPage
 
-		userFilter := posts.FilterHomepageData(s.Db, GuserId)
-
-		data.Posts = userFilter
+		data.Posts = posts.FilterHomepageData(s.Db, GuserId)
 
 		data.CWP = posts.ActivityComments(s.Db, GuserId)
 
@@ -33,6 +32,8 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 		// }
 
 		data.APL = posts.ActivityPostLikes(s.Db, GuserId)
+
+		data.APD = posts.ActivityPostDislikes(s.Db, GuserId)
 
 		Tpl.ExecuteTemplate(w, "activitypage.html", data)
 

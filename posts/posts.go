@@ -136,11 +136,10 @@ func ActivityPostLikes(db *sql.DB, userid int) []ActPage {
 
 //returns user's disliked posts
 func ActivityPostDislikes(db *sql.DB, userid int) []ActPage {
-	rows, err := db.Query(`SELECT DISTINCT dislikes.postID, post.postID, post.postTitle
-	FROM dislikes
-	INNER JOIN post
-	ON dislikes.userID = post.userID 
-	WHERE dislikes.userID = 2
+	rows, err := db.Query(`SELECT DISTINCT dislikes.userID, dislikes.postID, post.postTitle
+	FROM dislikes, post
+	WHERE dislikes.userID = ?
+	AND dislikes.postID = post.postID 
 	;`, userid)
 	if err != nil {
 		fmt.Println(err)
