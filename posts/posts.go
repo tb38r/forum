@@ -25,6 +25,7 @@ type HomepagePosts struct {
 	CreationDate string
 	PostLike     int
 	PostDislike  int
+	NetLikes     int
 }
 
 type ActPage struct {
@@ -74,6 +75,7 @@ func GetHomepageData(db *sql.DB) []HomepagePosts {
 		err2 := rows.Scan(&p.PostID, &p.PostTitle, &p.PostUsername, &p.CreationDate)
 		p.PostLike = likes.GetPostLikes(db, p.PostID)
 		p.PostDislike = dislikes.GetPostDislikes(db, p.PostID)
+		p.NetLikes = NetLikes(db, p.PostID)
 		postdata = append(postdata, p)
 		if err2 != nil {
 			fmt.Println(err2)
@@ -82,7 +84,13 @@ func GetHomepageData(db *sql.DB) []HomepagePosts {
 	return postdata
 }
 
-//returns user's comments with their corresponding posts
+func NetLikes(db *sql.DB, PostID int) int {
+	NetLikes := likes.GetPostLikes(db, PostID) - dislikes.GetPostDislikes(db, PostID)
+
+	return NetLikes
+}
+
+// returns user's comments with their corresponding posts
 func ActivityComments(db *sql.DB, userid int) []ActPage {
 	rows, err := db.Query(`SELECT post.userID, post.postTitle, comments.commentText, post.postID 
 	FROM post, comments
@@ -105,8 +113,8 @@ func ActivityComments(db *sql.DB, userid int) []ActPage {
 
 	}
 	return pac
-
 }
+
 func FilterHomepageData(db *sql.DB, userID int) []HomepagePosts {
 	rows, err := db.Query("SELECT postID, postTitle, username, creationDate FROM post INNER JOIN users ON users.userID =  post.userID WHERE users.userID = ?;", userID)
 	if err != nil {

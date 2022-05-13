@@ -105,6 +105,7 @@ func GetCommentLikes(db *sql.DB, commentID int) int {
 	return count
 }
 
+
 // func HomePostLikes(db *sql.DB) map[int]int {
 // 	rows, err := db.Query(`SELECT post.postID, count(*) FROM likes
 // 					INNER JOIN post ON likes.postID = post.postID
