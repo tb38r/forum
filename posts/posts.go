@@ -107,6 +107,33 @@ func ActivityComments(db *sql.DB, userid int) []ActPage {
 	return pac
 
 }
+
+//returns user's comments with their corresponding posts
+func ActivityPostLikes(db *sql.DB, userid int) []ActPage {
+	rows, err := db.Query(`SELECT DISTINCT likes.userID, post.postID, post.postTitle
+	FROM likes
+	INNER JOIN post
+	ON likes.userID = post.userID 
+	WHERE likes.userID = ?
+	;`, userid)
+	if err != nil {
+		fmt.Println(err)
+	}
+	actlikes := []ActPage{}
+	defer rows.Close()
+	for rows.Next() {
+		var p ActPage
+		err2 := rows.Scan(&p.UserID, &p.PostID, &p.PostTitle)
+		actlikes = append(actlikes, p)
+		if err2 != nil {
+			fmt.Println(err2)
+		}
+
+	}
+	return actlikes
+
+}
+
 func FilterHomepageData(db *sql.DB, userID int) []HomepagePosts {
 	rows, err := db.Query("SELECT postID, postTitle, username, creationDate FROM post INNER JOIN users ON users.userID =  post.userID WHERE users.userID = ?;", userID)
 	if err != nil {

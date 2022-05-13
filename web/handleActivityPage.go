@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"forum/posts"
 	"net/http"
 )
@@ -8,7 +9,7 @@ import (
 type ActivityPage struct {
 	Posts    []posts.HomepagePosts
 	CWP      []posts.ActPage //commentswithposts
-	Dislikes []posts.Post
+	APL      []posts.ActPage //activity post likes
 	Comments []posts.Post
 }
 
@@ -22,6 +23,10 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 		data.Posts = userFilter
 
 		data.CWP = posts.ActivityComments(s.Db, GuserId)
+
+		fmt.Println(posts.ActivityPostLikes(s.Db, GuserId))
+		
+		data.APL = posts.ActivityPostLikes(s.Db, GuserId)
 
 		Tpl.ExecuteTemplate(w, "activitypage.html", data)
 
