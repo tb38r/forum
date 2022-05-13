@@ -89,17 +89,68 @@
             </div>
         </div>
         {{ end }}
-        <div class="comment-box">
-            <div class="container" style="margin:auto;">
-                <form action="/storecomment" method="POST">
-                    <H2>Create Comment</H2>
-                    <label for="commenttext">Content</label><br>
-                    <textarea id="content" name="content" rows="4" cols="50"></textarea><br>
-                    <button class="btn btn-primary" type="submit">Create Comment</button>
-                </form>
-            </div>
-        </div>
+    <div class="container" style="margin:auto;">
+        <form action="/likes" method="POST">
+        {{if and .Liked .LoggedIn}}
+        <button class="like-dislike-btn" style="background-color:#89CFF0;"type="checkbox" name="like">
+        <span class="glyphicon glyphicon-thumbs-up"></span> Liked
+        </button>
+        {{else}}
+           <button class="like-dislike-btn" type="checkbox" name="like">
+        <span class="glyphicon glyphicon-thumbs-up"></span> Like
+        </button>
+        {{end}}
+        </form>
+        <br>
+         <form action="/dislikes" method="POST">
+         {{if .Disliked}}
+        <button class="like-dislike-btn" style="background-color:#CD5C5C;" type="checkbox" name="dislike">
+        <span class="glyphicon glyphicon-thumbs-down"></span> Disliked
+        </button>
+         {{else}}
+           <button class="like-dislike-btn" type="checkbox" name="dislike">
+        <span class="glyphicon glyphicon-thumbs-up"></span> Dislike
+        </button>
+        {{end}}
+        </form>
+        <br>
+</div>
+<div>
+</div>
+    <div class="container" style="margin:auto;">
+        <form action="/storecomment" method="POST">
+            <H2>Create Comment</H2>
+
+            <label for="commenttext">Content</label><br>
+            <textarea id="content" name="content" rows="4" cols="50"></textarea><br>
+            <button class="btn btn-primary" type="submit">Create Comment</button>
+        </form>
     </div>
+    
+    {{ range .Comments}}
+    <h4>{{ .CommentText }}</h4>
+    <h5>{{ .CommentUserName }} {{ .CreationDate }}</h5>
+
+    <div class="container" style="margin:auto;">
+        <form action="/commentlikes" method="POST">
+            <button class="like-dislike-btn" type="checkbox" name="like">
+                <span class="glyphicon glyphicon-thumbs-up"></span> Like
+            </button>
+        </form>
+        <br>
+        <form action="/commentdislikes" method="POST">
+            <button class="like-dislike-btn" type="checkbox" name="dislike">
+                <span class="glyphicon glyphicon-thumbs-down"></span> Dislike
+            </button>
+        </form>
+    </div>
+    {{ end }}
+    
+    
+    
+
+   
+
 </body>
 
 </html>

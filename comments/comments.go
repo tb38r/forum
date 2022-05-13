@@ -62,7 +62,7 @@ func GetCommentText(db *sql.DB) map[int]string {
 }
 
 func GetCommentData(db *sql.DB, postID int) []Comment {
-	rows, err := db.Query(`SELECT commentText, comments.creationDate as cmntDate, users.username 
+	rows, err := db.Query(`SELECT commentID, commentText, comments.creationDate as cmntDate, users.username 
 	FROM comments 
 	INNER JOIN post ON post.postID = comments.postID 
 	INNER JOIN users ON users.userID = comments.userID 
@@ -74,11 +74,29 @@ func GetCommentData(db *sql.DB, postID int) []Comment {
 	defer rows.Close()
 	for rows.Next() {
 		var c Comment
-		err2 := rows.Scan(&c.CommentText, &c.CreationDate, &c.CommentUserName)
+		err2 := rows.Scan(&c.CommentID, &c.CommentText, &c.CreationDate, &c.CommentUserName)
 		comment = append(comment, c)
 		if err2 != nil {
 			fmt.Println(err2)
 		}
 	}
 	return comment
+}
+
+func GetCommentID(db *sql.DB) int {
+	rows, err := db.Query(`SELECT commentID from comments;`)
+	if err != nil {
+		fmt.Println(err)
+	}
+	var cmt Comment
+	defer rows.Close()
+	for rows.Next() {
+		var c Comment
+		err2 := rows.Scan(&c.CommentID)
+		cmt = c
+		if err2 != nil {
+			fmt.Println(err2)
+		}
+	}
+	return cmt.CommentID
 }
