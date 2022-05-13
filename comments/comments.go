@@ -3,6 +3,8 @@ package comments
 import (
 	"database/sql"
 	"fmt"
+	"forum/dislikes"
+	"forum/likes"
 	"log"
 )
 
@@ -13,8 +15,8 @@ type Comment struct {
 	CreationDate    string
 	CommentText     string
 	CommentUserName string
-	LikesID         int
-	DislikesID      int
+	Likes           int
+	Dislikes        int
 	Edited          bool
 }
 
@@ -75,6 +77,8 @@ func GetCommentData(db *sql.DB, postID int) []Comment {
 	for rows.Next() {
 		var c Comment
 		err2 := rows.Scan(&c.CommentID, &c.CommentText, &c.CreationDate, &c.CommentUserName)
+		c.Likes = likes.GetCommentLikes(db, c.CommentID)
+		c.Dislikes = dislikes.GetCommentDislikes(db, c.CommentID)
 		comment = append(comment, c)
 		if err2 != nil {
 			fmt.Println(err2)
