@@ -30,6 +30,7 @@ type HomepagePosts struct {
 type ActPage struct {
 	UserID       int
 	PostTitle    string
+	CommentID    int
 	CommentText  string
 	PostID       int
 	CreationDate string
@@ -133,7 +134,6 @@ func ActivityPostLikes(db *sql.DB, userid int) []ActPage {
 
 }
 
-
 //returns user's disliked posts
 func ActivityPostDislikes(db *sql.DB, userid int) []ActPage {
 	rows, err := db.Query(`SELECT DISTINCT dislikes.userID, dislikes.postID, post.postTitle
@@ -144,18 +144,43 @@ func ActivityPostDislikes(db *sql.DB, userid int) []ActPage {
 	if err != nil {
 		fmt.Println(err)
 	}
-	actdislikes := []ActPage{}
+	actpostdislikes := []ActPage{}
 	defer rows.Close()
 	for rows.Next() {
 		var p ActPage
 		err2 := rows.Scan(&p.UserID, &p.PostID, &p.PostTitle)
-		actdislikes = append(actdislikes, p)
+		actpostdislikes = append(actpostdislikes, p)
 		if err2 != nil {
 			fmt.Println(err2)
 		}
 
 	}
-	return actdislikes
+	return actpostdislikes
+
+}
+
+//retruns user's liked comments
+func ActivityCommentLikes(db *sql.DB, userid int) []ActPage {
+	rows, err := db.Query(`SELECT DISTINCT likes.userID, likes.commentID, comments.commentText
+	FROM likes, comments
+	WHERE likes.userID = 2
+	AND likes.commentID = comments.commentID 
+	;`, userid)
+	if err != nil {
+		fmt.Println(err)
+	}
+	actcommentlikes := []ActPage{}
+	defer rows.Close()
+	for rows.Next() {
+		var p ActPage
+		err2 := rows.Scan(&p.UserID, &p.CommentID, &p.CommentText)
+		actcommentlikes = append(actcommentlikes, p)
+		if err2 != nil {
+			fmt.Println(err2)
+		}
+
+	}
+	return actcommentlikes
 
 }
 
