@@ -11,6 +11,7 @@ import (
 )
 
 // var CUserIdint int
+var CMNTID int
 
 func (s *myServer) LikeHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -32,13 +33,23 @@ func (s *myServer) LikeHandler() http.HandlerFunc {
 
 func (s *myServer) CommentLikeHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		for k, v := range r.Form {
+			fmt.Println(k, v)
+		}
+
+		CMNTID, _ = strconv.Atoi(r.FormValue("commentlike"))
 		fmt.Println("comment like handler running")
 
 		SPostID := strconv.Itoa(PostIDInt)
+		//cid := cmt.GetCID()
+		//fmt.Println("checking if id is in struct", cmt.CommentID)
+		fmt.Println("Checking what CommentID is in like handler", CommentId)
+		//fmt.Println("Checking what cID method is in like handler", cid)
 
 		if !CommentUserLiked(s.Db) || CommentUserDisliked(s.Db) {
-			likes.CommentLikeButton(s.Db, GuserId, CommentId)
-			dislikes.DeleteCommentDislike(s.Db, GuserId, CommentId)
+			likes.CommentLikeButton(s.Db, GuserId, CMNTID)
+			dislikes.DeleteCommentDislike(s.Db, GuserId, CMNTID)
 			fmt.Println("Like added to database----------------------")
 			http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
 		} else {
@@ -57,24 +68,25 @@ func UserLiked(db *sql.DB) bool {
 	var pID string
 	err := row.Scan(&uID, &pID)
 	if err != sql.ErrNoRows {
+		fmt.Println("User has already liked this post", err)
 		return true
 	}
-	fmt.Println("User has already liked this post", err)
 	return false
 }
 
 func CommentUserLiked(db *sql.DB) bool {
 	// check if post already liked by user
 	userStmt := "SELECT userID FROM likes WHERE userID = ? AND commentID = ?"
-	row := db.QueryRow(userStmt, GuserId, CommentId)
-	fmt.Println("----------***********************----------- checking if commentData.CommentID works", CommentData.CommentID)
+
+	row := db.QueryRow(userStmt, GuserId, CMNTID)
+	fmt.Println("----------***********************----------- checking if commentData.CommentID works", CMNTID)
 
 	var uID string
 	var cID string
 	err := row.Scan(&uID, &cID)
 	if err != sql.ErrNoRows {
+		fmt.Println("User has already liked this comment", err)
 		return true
 	}
-	fmt.Println("User has already liked this comment", err)
 	return false
 }

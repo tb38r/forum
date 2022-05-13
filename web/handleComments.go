@@ -51,10 +51,10 @@ func (s *myServer) StoreCommentHandler() http.HandlerFunc {
 			commentData.PostID = PostIDInt
 			commentData.UserID = GuserId
 
-			CommentId = comments.GetCommentID(s.Db)
+			CommentId = comments.GetCommentID(s.Db, PostIDInt)
 
 			fmt.Println("testing method to get comment id", CommentId)
-			fmt.Println("testing cd id ************************8", CommentId)
+			fmt.Println("testing cd id ************************8", commentData.CommentID)
 			// fmt.Println("comment data check: ---> ", commentData.CommentText)
 			// fmt.Println("comment post id check: ---> ", commentData.PostID)
 			// fmt.Println("comment user id check: ---> ", commentData.UserID)

@@ -13,14 +13,16 @@ import (
 )
 
 type PostPageData struct {
-	Posts    []posts.Post
-	Comments []comments.Comment
-	LoggedIn bool
-	Liked    bool
-	Disliked bool
-	Username string
-	Image    string
-	UserID   int
+	Posts           []posts.Post
+	Comments        []comments.Comment
+	LoggedIn        bool
+	Liked           bool
+	Disliked        bool
+	CommentLiked    bool
+	CommentDisliked bool
+	Username        string
+	Image           string
+	UserID          int
 }
 
 // type Server server.Server
@@ -115,6 +117,11 @@ func (s *myServer) StorePostHandler() http.HandlerFunc {
 
 func (s *myServer) ShowPostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		r.ParseForm()
+		for k, v := range r.Form {
+			fmt.Println(k, v)
+		}
 		// had to open the database here as it wasnt picking the correct post everytime without this.
 		s.Db, _ = sql.Open("sqlite3", "forum.db")
 		// get the postId and display the post and its contents
@@ -122,16 +129,22 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 		PostIDInt, _ = strconv.Atoi(postID)
 
 		data := PostPageData{
-			Posts:    posts.GetPostData(s.Db, PostIDInt),
-			Comments: comments.GetCommentData(s.Db, PostIDInt),
-			LoggedIn: users.AlreadyLoggedIn(r), Liked: UserLiked(s.Db),
-			Disliked: UserDisliked(s.Db),
-			Username: users.CurrentUser,
-			Image:    Imagename,
-			UserID:   UserIdint,
+			Posts:           posts.GetPostData(s.Db, PostIDInt),
+			Comments:        comments.GetCommentData(s.Db, PostIDInt),
+			LoggedIn:        users.AlreadyLoggedIn(r),
+			Liked:           UserLiked(s.Db),
+			Disliked:        UserDisliked(s.Db),
+			CommentLiked:    CommentUserLiked(s.Db),
+			CommentDisliked: CommentUserDisliked(s.Db),
+			Username:        users.CurrentUser,
+			Image:           Imagename,
+			UserID:          UserIdint,
 		}
 
 		fmt.Println(data.Comments)
+		for _, v := range data.Comments {
+			fmt.Println(v.CommentID)
+		}
 		fmt.Println(data.Liked)
 
 		Tpl.ExecuteTemplate(w, "showpost.html", data)
