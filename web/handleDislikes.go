@@ -30,6 +30,27 @@ func (s *myServer) DislikeHandler() http.HandlerFunc {
 	}
 }
 
+func (s *myServer) CommentDislikeHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("comment dislike handler running")
+
+		SPostID := strconv.Itoa(PostIDInt)
+
+		//	CommentId = comments.GetCommentID(s.Db, PostIDInt)
+		fmt.Println("Checking what CommentID is in like handler", CMNTID)
+
+		if !CommentUserDisliked(s.Db) || UserLiked(s.Db) {
+			dislikes.CommentDislikeButton(s.Db, GuserId, CMNTID)
+			likes.DeleteCommentLike(s.Db, GuserId, CMNTID)
+			fmt.Println(" Comment Dislike added to database----------------------")
+			http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
+		} else {
+			fmt.Println("Comment Disike not added to database-----------------------")
+			http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
+		}
+	}
+}
+
 func UserDisliked(db *sql.DB) bool {
 	// check if post already disliked by user
 	userStmt := "SELECT userID FROM dislikes WHERE userID = ? AND postID = ?"
@@ -39,8 +60,23 @@ func UserDisliked(db *sql.DB) bool {
 	var pID string
 	err := row.Scan(&uID, &pID)
 	if err != sql.ErrNoRows {
+		fmt.Println("User has already disliked this post", err)
 		return true
 	}
-	fmt.Println("User has already disliked this post", err)
+	return false
+}
+
+func CommentUserDisliked(db *sql.DB) bool {
+	// check if comment already disliked by user
+	userStmt := "SELECT userID FROM dislikes WHERE userID = ? AND commentID = ?"
+	row := db.QueryRow(userStmt, GuserId, CMNTID)
+
+	var uID string
+	var cID string
+	err := row.Scan(&uID, &cID)
+	if err != sql.ErrNoRows {
+		fmt.Println("User has already disliked this comment", err)
+		return true
+	}
 	return false
 }

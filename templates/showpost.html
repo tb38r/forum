@@ -66,7 +66,7 @@
                         <p>{{ .CommentUserName }} </p>
                     </div>
                     <div class="comment-date">
-                        {{ .CreationDate }}
+                        {{ .CreationDate }} {{ .CommentID }}
                     </div>
                 </div>
                 <div class="comment-body-content">
@@ -74,14 +74,14 @@
                 </div>
                 <div class="comment-body-actions">
                     <div class="like-button">
-                        <form action="/likes" method="POST">
-                            <button class="like-dislike-btn" type="checkbox" name="like">
+                        <form action="/commentlikes" method="POST">
+                            <button class="like-dislike-btn" type="checkbox" name="commentlike" value="{{ .CommentID }}">
                                 <span class="glyphicon glyphicon-thumbs-up"></span> Like
                             </button>
                         </form>
                     </div>
-                    <form action="/dislikes" method="POST">
-                        <button class="like-dislike-btn" type="checkbox" name="dislike">
+                    <form action="/commentdislikes" method="POST">
+                        <button class="like-dislike-btn" type="checkbox" name="commentdislike">
                             <span class="glyphicon glyphicon-thumbs-down"></span> Dislike
                         </button>
                     </form>
@@ -89,17 +89,24 @@
             </div>
         </div>
         {{ end }}
-        <div class="comment-box">
-            <div class="container" style="margin:auto;">
-                <form action="/storecomment" method="POST">
-                    <H2>Create Comment</H2>
-                    <label for="commenttext">Content</label><br>
-                    <textarea id="content" name="content" rows="4" cols="50"></textarea><br>
-                    <button class="btn btn-primary" type="submit">Create Comment</button>
-                </form>
-            </div>
-        </div>
+    
+    <div class="container" style="margin:auto;">
+        <form action="/storecomment" method="POST">
+            <H2>Create Comment</H2>
+
+            <label for="commenttext">Content</label><br>
+            <textarea id="content" name="content" rows="4" cols="50"></textarea><br>
+            <button class="btn btn-primary" type="submit">Create Comment</button>
+        </form>
     </div>
+    
+   
+    
+    
+    
+
+   
+
 </body>
 
 </html>
