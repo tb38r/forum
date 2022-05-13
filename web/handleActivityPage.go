@@ -1,7 +1,6 @@
 package web
 
 import (
-	"fmt"
 	"forum/posts"
 	"net/http"
 )
@@ -24,8 +23,15 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 
 		data.CWP = posts.ActivityComments(s.Db, GuserId)
 
-		fmt.Println(posts.ActivityPostLikes(s.Db, GuserId))
-		
+		//value := posts.ActivityPostLikes(s.Db, GuserId)
+		// for _, item := range value {
+		// 	fmt.Print("UserID: ", item.UserID, "\t")
+		// 	fmt.Print("Title: ", item.PostTitle, "\t")
+		// 	fmt.Print("Comment: ", item.CommentText, "\t")
+		// 	fmt.Println()
+
+		// }
+
 		data.APL = posts.ActivityPostLikes(s.Db, GuserId)
 
 		Tpl.ExecuteTemplate(w, "activitypage.html", data)

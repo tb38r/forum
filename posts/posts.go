@@ -108,13 +108,12 @@ func ActivityComments(db *sql.DB, userid int) []ActPage {
 
 }
 
-//returns user's comments with their corresponding posts
+//returns user's liked posts
 func ActivityPostLikes(db *sql.DB, userid int) []ActPage {
-	rows, err := db.Query(`SELECT DISTINCT likes.userID, post.postID, post.postTitle
-	FROM likes
-	INNER JOIN post
-	ON likes.userID = post.userID 
+	rows, err := db.Query(`SELECT DISTINCT likes.userID, likes.postID, post.postTitle
+	FROM likes, post
 	WHERE likes.userID = ?
+	AND likes.postID = post.postID 
 	;`, userid)
 	if err != nil {
 		fmt.Println(err)
@@ -131,6 +130,33 @@ func ActivityPostLikes(db *sql.DB, userid int) []ActPage {
 
 	}
 	return actlikes
+
+}
+
+
+//returns user's disliked posts
+func ActivityPostDislikes(db *sql.DB, userid int) []ActPage {
+	rows, err := db.Query(`SELECT DISTINCT dislikes.postID, post.postID, post.postTitle
+	FROM dislikes
+	INNER JOIN post
+	ON dislikes.userID = post.userID 
+	WHERE dislikes.userID = 2
+	;`, userid)
+	if err != nil {
+		fmt.Println(err)
+	}
+	actdislikes := []ActPage{}
+	defer rows.Close()
+	for rows.Next() {
+		var p ActPage
+		err2 := rows.Scan(&p.UserID, &p.PostID, &p.PostTitle)
+		actdislikes = append(actdislikes, p)
+		if err2 != nil {
+			fmt.Println(err2)
+		}
+
+	}
+	return actdislikes
 
 }
 
