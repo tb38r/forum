@@ -203,7 +203,7 @@ func ActivityCommentLikes(db *sql.DB, userid int) []ActPage {
 func ActivityCommentDislikes(db *sql.DB, userid int) []ActPage {
 	rows, err := db.Query(`SELECT DISTINCT dislikes.userID, dislikes.commentID, comments.commentText
 	FROM dislikes, comments
-	WHERE dislikes.userID = 2
+	WHERE dislikes.userID = ?
 	AND dislikes.commentID = comments.commentID 
 	;`, userid)
 	if err != nil {
@@ -223,7 +223,6 @@ func ActivityCommentDislikes(db *sql.DB, userid int) []ActPage {
 	return actcommentdislikes
 
 }
-
 
 func FilterHomepageData(db *sql.DB, userID int) []HomepagePosts {
 	rows, err := db.Query("SELECT postID, postTitle, username, creationDate FROM post INNER JOIN users ON users.userID =  post.userID WHERE users.userID = ?;", userID)

@@ -3,7 +3,6 @@ package web
 import (
 	"forum/posts"
 	"net/http"
-
 )
 
 type ActivityPage struct {
