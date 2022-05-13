@@ -11,7 +11,7 @@ import (
 )
 
 // var CUserIdint int
-var CMNTID int
+var CommentLikeID int
 
 func (s *myServer) LikeHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -38,18 +38,18 @@ func (s *myServer) CommentLikeHandler() http.HandlerFunc {
 			fmt.Println(k, v)
 		}
 
-		CMNTID, _ = strconv.Atoi(r.FormValue("commentlike"))
+		CommentLikeID, _ = strconv.Atoi(r.FormValue("commentlike"))
 		fmt.Println("comment like handler running")
 
 		SPostID := strconv.Itoa(PostIDInt)
 		//cid := cmt.GetCID()
 		//fmt.Println("checking if id is in struct", cmt.CommentID)
-		fmt.Println("Checking what CommentID is in like handler", CommentId)
+		fmt.Println("Checking what CommentID is in like handler", CommentLikeID)
 		//fmt.Println("Checking what cID method is in like handler", cid)
 
 		if !CommentUserLiked(s.Db) || CommentUserDisliked(s.Db) {
-			likes.CommentLikeButton(s.Db, GuserId, CMNTID)
-			dislikes.DeleteCommentDislike(s.Db, GuserId, CMNTID)
+			likes.CommentLikeButton(s.Db, GuserId, CommentLikeID)
+			dislikes.DeleteCommentDislike(s.Db, GuserId, CommentLikeID)
 			fmt.Println("Like added to database----------------------")
 			http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
 		} else {
@@ -78,8 +78,8 @@ func CommentUserLiked(db *sql.DB) bool {
 	// check if post already liked by user
 	userStmt := "SELECT userID FROM likes WHERE userID = ? AND commentID = ?"
 
-	row := db.QueryRow(userStmt, GuserId, CMNTID)
-	fmt.Println("----------***********************----------- checking if commentData.CommentID works", CMNTID)
+	row := db.QueryRow(userStmt, GuserId, CommentLikeID)
+	fmt.Println("----------***********************----------- checking if commentData.CommentID works", CommentLikeID)
 
 	var uID string
 	var cID string

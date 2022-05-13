@@ -12,6 +12,8 @@ import (
 
 // var CUserIdint int
 
+var CommentDislikeID int
+
 func (s *myServer) DislikeHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("dislike handler running")
@@ -32,16 +34,18 @@ func (s *myServer) DislikeHandler() http.HandlerFunc {
 
 func (s *myServer) CommentDislikeHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		CommentDislikeID, _ = strconv.Atoi(r.FormValue("commentdislike"))
 		fmt.Println("comment dislike handler running")
 
 		SPostID := strconv.Itoa(PostIDInt)
 
 		//	CommentId = comments.GetCommentID(s.Db, PostIDInt)
-		fmt.Println("Checking what CommentID is in like handler", CMNTID)
+		fmt.Println("Checking what CommentID is in like handler", CommentDislikeID)
 
 		if !CommentUserDisliked(s.Db) || UserLiked(s.Db) {
-			dislikes.CommentDislikeButton(s.Db, GuserId, CMNTID)
-			likes.DeleteCommentLike(s.Db, GuserId, CMNTID)
+			dislikes.CommentDislikeButton(s.Db, GuserId, CommentDislikeID)
+			likes.DeleteCommentLike(s.Db, GuserId, CommentDislikeID)
 			fmt.Println(" Comment Dislike added to database----------------------")
 			http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
 		} else {
@@ -69,7 +73,7 @@ func UserDisliked(db *sql.DB) bool {
 func CommentUserDisliked(db *sql.DB) bool {
 	// check if comment already disliked by user
 	userStmt := "SELECT userID FROM dislikes WHERE userID = ? AND commentID = ?"
-	row := db.QueryRow(userStmt, GuserId, CMNTID)
+	row := db.QueryRow(userStmt, GuserId, CommentDislikeID)
 
 	var uID string
 	var cID string

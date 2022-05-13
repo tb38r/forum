@@ -81,7 +81,7 @@
                         </form>
                     </div>
                     <form action="/commentdislikes" method="POST">
-                        <button class="like-dislike-btn" type="checkbox" name="commentdislike">
+                        <button class="like-dislike-btn" type="checkbox" name="commentdislike" value="{{ .CommentID }}">
                             <span class="glyphicon glyphicon-thumbs-down"></span> Dislike
                         </button>
                     </form>
