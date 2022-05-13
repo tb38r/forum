@@ -26,6 +26,7 @@ func (s *myServer) LikeHandler() http.HandlerFunc {
 			http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
 		} else {
 			fmt.Println("Like not added to database-----------------------")
+			likes.DeleteLike(s.Db, GuserId, PostIDInt)
 			http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
 		}
 	}
@@ -42,10 +43,10 @@ func (s *myServer) CommentLikeHandler() http.HandlerFunc {
 		fmt.Println("comment like handler running")
 
 		SPostID := strconv.Itoa(PostIDInt)
-		//cid := cmt.GetCID()
-		//fmt.Println("checking if id is in struct", cmt.CommentID)
+		// cid := cmt.GetCID()
+		// fmt.Println("checking if id is in struct", cmt.CommentID)
 		fmt.Println("Checking what CommentID is in like handler", CommentLikeID)
-		//fmt.Println("Checking what cID method is in like handler", cid)
+		// fmt.Println("Checking what cID method is in like handler", cid)
 
 		if !CommentUserLiked(s.Db) || CommentUserDisliked(s.Db) {
 			likes.CommentLikeButton(s.Db, GuserId, CommentLikeID)
@@ -54,6 +55,7 @@ func (s *myServer) CommentLikeHandler() http.HandlerFunc {
 			http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
 		} else {
 			fmt.Println("Like not added to database-----------------------")
+			likes.DeleteCommentLike(s.Db, GuserId, CommentLikeID)
 			http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
 		}
 	}

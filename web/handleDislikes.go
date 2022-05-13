@@ -27,6 +27,7 @@ func (s *myServer) DislikeHandler() http.HandlerFunc {
 			http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
 		} else {
 			fmt.Println("Disike not added to database-----------------------")
+			dislikes.DeleteDislike(s.Db, GuserId, PostIDInt)
 			http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
 		}
 	}
@@ -50,6 +51,7 @@ func (s *myServer) CommentDislikeHandler() http.HandlerFunc {
 			http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
 		} else {
 			fmt.Println("Comment Disike not added to database-----------------------")
+			dislikes.DeleteCommentDislike(s.Db, GuserId, CommentDislikeID)
 			http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
 		}
 	}
