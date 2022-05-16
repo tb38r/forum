@@ -2,7 +2,6 @@ package web
 
 import (
 	"database/sql"
-	"fmt"
 	"net/http"
 
 	"forum/posts"
@@ -28,7 +27,6 @@ func (s *myServer) HomepageHandler() http.HandlerFunc {
 		category := r.FormValue("category")
 		homePageData := HomepageData{user, homepage, users.AlreadyLoggedIn(r), GuserId}
 		homePageFilter := r.FormValue("userfilter")
-		fmt.Println("--------------------", homePageFilter)
 
 		// Choosing which data is passed into the homepage based on the filter chosen
 		if len(category) < 1 && len(homePageFilter) < 1 {

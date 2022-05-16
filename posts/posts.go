@@ -249,7 +249,12 @@ func UsersPostsHomepageData(db *sql.DB, userID int) []HomepagePosts {
 }
 
 func UsersLikesHomepageData(db *sql.DB, userID int) []HomepagePosts {
-	rows, err := db.Query("SELECT DISTINCT post.postID, post.postTitle, post.creationDate FROM post INNER JOIN likes ON likes.userID = post.userID WHERE likes.userID = ?;", userID)
+	rows, err := db.Query(`SELECT DISTINCT post.postID, post.postTitle, post.creationDate, username
+	FROM likes, post, users
+	WHERE likes.userID = ?
+	AND likes.postID = post.postID 
+	AND post.userID = users.userID
+	;`, userID)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -257,7 +262,7 @@ func UsersLikesHomepageData(db *sql.DB, userID int) []HomepagePosts {
 	defer rows.Close()
 	for rows.Next() {
 		var p HomepagePosts
-		err2 := rows.Scan(&p.PostID, &p.PostTitle, &p.CreationDate)
+		err2 := rows.Scan(&p.PostID, &p.PostTitle, &p.CreationDate, &p.PostUsername)
 		p.PostLike = likes.GetPostLikes(db, p.PostID)
 		p.PostDislike = dislikes.GetPostDislikes(db, p.PostID)
 		p.NetLikes = NetLikes(db, p.PostID)
