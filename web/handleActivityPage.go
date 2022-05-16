@@ -19,7 +19,7 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var data ActivityPage
 
-		data.Posts = posts.FilterHomepageData(s.Db, GuserId)
+		data.Posts = posts.UsersPostsHomepageData(s.Db, GuserId)
 
 		data.CommentsWithPosts = posts.ActivityComments(s.Db, GuserId)
 
