@@ -20,8 +20,8 @@
             <a class="active" href="/logout">Logout</a>
             {{else}}
             <form action="/loginauth" method="POST">
-                <input type="text" placeholder="Username" name="username">
-                <input type="password" placeholder="Password" name="password">
+                <input type="text" placeholder="Username" name="username" required>
+                <input type="password" placeholder="Password" name="password" required>
                 <button type="submit">Login</button>
             </form>
             <a class="register btn-link" href="/register">Register</a>
