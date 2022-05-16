@@ -84,6 +84,7 @@ func GetHomepageData(db *sql.DB) []HomepagePosts {
 			fmt.Println(err2)
 		}
 	}
+
 	return postdata
 }
 
@@ -224,7 +225,7 @@ func ActivityCommentDislikes(db *sql.DB, userid int) []ActPage {
 
 }
 
-func FilterHomepageData(db *sql.DB, userID int) []HomepagePosts {
+func UsersPostsHomepageData(db *sql.DB, userID int) []HomepagePosts {
 	rows, err := db.Query("SELECT postID, postTitle, username, creationDate FROM post INNER JOIN users ON users.userID =  post.userID WHERE users.userID = ?;", userID)
 	if err != nil {
 		fmt.Println(err)
@@ -243,6 +244,30 @@ func FilterHomepageData(db *sql.DB, userID int) []HomepagePosts {
 			fmt.Println(err2)
 		}
 	}
+
+	return postdata
+}
+
+func UsersLikesHomepageData(db *sql.DB, userID int) []HomepagePosts {
+	rows, err := db.Query("SELECT DISTINCT post.postID, post.postTitle, post.creationDate FROM post INNER JOIN likes ON likes.userID = post.userID WHERE likes.userID = ?;", userID)
+	if err != nil {
+		fmt.Println(err)
+	}
+	postdata := []HomepagePosts{}
+	defer rows.Close()
+	for rows.Next() {
+		var p HomepagePosts
+		err2 := rows.Scan(&p.PostID, &p.PostTitle, &p.CreationDate)
+		p.PostLike = likes.GetPostLikes(db, p.PostID)
+		p.PostDislike = dislikes.GetPostDislikes(db, p.PostID)
+		p.NetLikes = NetLikes(db, p.PostID)
+		p.CommentNum = likes.GetNumComment(db, p.PostID)
+		postdata = append(postdata, p)
+		if err2 != nil {
+			fmt.Println(err2)
+		}
+	}
+
 	return postdata
 }
 
