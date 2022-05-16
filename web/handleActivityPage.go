@@ -4,6 +4,7 @@ import (
 	"forum/posts"
 	"forum/users"
 	"net/http"
+	"strconv"
 )
 
 type ActivityPage struct {
@@ -46,6 +47,22 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 		data.Username = users.CurrentUser
 		data.LoggedIn = users.AlreadyLoggedIn(r)
 		data.UserID = GuserId
+		SuserID := strconv.Itoa(GuserId)
+
+		if string(r.URL.RawQuery[len(r.URL.RawQuery)-1]) != SuserID {
+			http.Error(w, "Incorrect user request made!", http.StatusBadRequest)
+			w.WriteHeader(http.StatusBadRequest)
+			// fmt.Fprintln(w, r.URL.Path)
+			// fmt.Fprintln(w, r.URL.RawQuery)
+			return
+		}
+
+		// if r.URL.Path != "/activitypage/"+r.URL.RawQuery {
+		// 	//	http.Error(w, "Incorrect user request made!", http.StatusBadRequest)
+		// 	fmt.Fprintln(w, r.URL.Path)
+		// 	fmt.Fprintln(w, r.URL.RawQuery)
+		// 	return
+		// }
 		Tpl.ExecuteTemplate(w, "activitypage.html", data)
 	}
 }

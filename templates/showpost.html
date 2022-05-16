@@ -18,9 +18,12 @@
             <div class="post-title">
                 <p>{{ .PostTitle }}</p>
             </div>
+            {{ if not .PostContent }}
+            {{ else }}
             <div class="post-text">
                 <p>{{ .PostContent }}</p>
             </div>
+            {{ end }}
             {{ if not .Image }}
             {{ else }}
             <div class="post-img">

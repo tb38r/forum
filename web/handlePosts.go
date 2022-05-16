@@ -32,6 +32,7 @@ var Imagename string
 
 func (s *myServer) CreatePostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
 		// getting the user id from the url
 		userId := r.URL.Query().Get("userid")
 		UserIdint, _ = strconv.Atoi(userId)
@@ -54,64 +55,64 @@ func (s *myServer) StorePostHandler() http.HandlerFunc {
 		title := r.FormValue("title")
 		content := r.FormValue("content")
 
-		if title != "" && content != "" {
-
-			x, _, _ := r.FormFile("userimage")
-			if x != nil {
-				// Get handler for filename, size and headers
-				file, handler, err := r.FormFile("userimage")
-				if err != nil {
-					fmt.Println("Error Retrieving the File")
-					fmt.Println(err)
-					return
-				}
-
-				defer file.Close()
-
-				Imagename = handler.Filename
-				// fmt.Printf("Uploaded Image: %+v\n", handler.Filename)
-				// fmt.Printf("File Size: %+v\n", handler.Size)
-				// fmt.Printf("MIME Header: %+v\n", handler.Header)
-
-				userimages.SaveImage(file, handler.Filename)
+		x, _, _ := r.FormFile("userimage")
+		if x != nil {
+			// Get handler for filename, size and headers
+			//file, handler, err := r.FormFile("userimage2") //Change it to this to test internal error.
+			file, handler, err := r.FormFile("userimage")
+			if err != nil {
+				//	Tpl.ExecuteTemplate(w, "error.html", nil)
+				w.WriteHeader(http.StatusInternalServerError)
+				fmt.Fprintln(w, " An internal server error has occurred: ", http.StatusInternalServerError)
+				return
+				// fmt.Println("Error Retrieving the File")
+				// fmt.Println(err)
+				// return
 			}
-			// adding the post to the database
 
-			posts.CreatePosts(s.Db, UserIdint, title, content, Imagename)
+			defer file.Close()
 
-			// formvalue for buttons. If they have been clicked, the form value returned will be "on"
-			manutd := r.FormValue("manutd")
-			arsenal := r.FormValue("arsenal")
-			chelsea := r.FormValue("chelsea")
-			tottenham := r.FormValue("tottenham")
-			newcastle := r.FormValue("newcastle")
-			mancity := r.FormValue("mancity")
+			Imagename = handler.Filename
+			// fmt.Printf("Uploaded Image: %+v\n", handler.Filename)
+			// fmt.Printf("File Size: %+v\n", handler.Size)
+			// fmt.Printf("MIME Header: %+v\n", handler.Header)
 
-			// use if statements because we need to enter the cat name instead of the returned value "on"
-			if manutd == "on" {
-				categories.AddCategory(s.Db, posts.LastIns, "manutd")
-			}
-			if arsenal == "on" {
-				categories.AddCategory(s.Db, posts.LastIns, "arsenal")
-			}
-			if chelsea == "on" {
-				categories.AddCategory(s.Db, posts.LastIns, "chelsea")
-			}
-			if newcastle == "on" {
-				categories.AddCategory(s.Db, posts.LastIns, "newcastle")
-			}
-			if tottenham == "on" {
-				categories.AddCategory(s.Db, posts.LastIns, "tottenham")
-			}
-			if mancity == "on" {
-				categories.AddCategory(s.Db, posts.LastIns, "mancity")
-			}
-			fmt.Println("title:", title, "content:", content)
-			http.Redirect(w, r, "/home", http.StatusSeeOther)
+			userimages.SaveImage(file, handler.Filename)
 		}
+		// adding the post to the database
 
-		http.Redirect(w, r, r.Header.Get("Referer"), 302)
-		return
+		posts.CreatePosts(s.Db, UserIdint, title, content, Imagename)
+
+		// formvalue for buttons. If they have been clicked, the form value returned will be "on"
+		manutd := r.FormValue("manutd")
+		arsenal := r.FormValue("arsenal")
+		chelsea := r.FormValue("chelsea")
+		tottenham := r.FormValue("tottenham")
+		newcastle := r.FormValue("newcastle")
+		mancity := r.FormValue("mancity")
+
+		// use if statements because we need to enter the cat name instead of the returned value "on"
+		if manutd == "on" {
+			categories.AddCategory(s.Db, posts.LastIns, "manutd")
+		}
+		if arsenal == "on" {
+			categories.AddCategory(s.Db, posts.LastIns, "arsenal")
+		}
+		if chelsea == "on" {
+			categories.AddCategory(s.Db, posts.LastIns, "chelsea")
+		}
+		if newcastle == "on" {
+			categories.AddCategory(s.Db, posts.LastIns, "newcastle")
+		}
+		if tottenham == "on" {
+			categories.AddCategory(s.Db, posts.LastIns, "tottenham")
+		}
+		if mancity == "on" {
+			categories.AddCategory(s.Db, posts.LastIns, "mancity")
+		}
+		fmt.Println("title:", title, "content:", content)
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
+
 	}
 }
 
