@@ -19,6 +19,8 @@ func Auth(HandlerFunc http.HandlerFunc) http.HandlerFunc {
 				errorMessage = "To like/dislike a post, please log in/register"
 			} else if r.URL.Path == "/storecomment" {
 				errorMessage = "To comment on this post please log in/register"
+			} else if r.URL.Path == "/commentlikes" || r.URL.Path == "/commentdislikes" {
+				errorMessage = "To like/dislike this comment, please log in/register"
 			}
 			Tpl.ExecuteTemplate(w, "login.html", errorMessage)
 			return

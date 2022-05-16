@@ -58,10 +58,11 @@ func (s *myServer) StorePostHandler() http.HandlerFunc {
 		x, _, _ := r.FormFile("userimage")
 		if x != nil {
 			// Get handler for filename, size and headers
-			//file, handler, err := r.FormFile("userimage2") Change it to this to test internal error.
+			//file, handler, err := r.FormFile("userimage2") //Change it to this to test internal error.
 			file, handler, err := r.FormFile("userimage")
 			if err != nil {
-				Tpl.ExecuteTemplate(w, "error.html", nil)
+				//	Tpl.ExecuteTemplate(w, "error.html", nil)
+				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Fprintln(w, " An internal server error has occurred: ", http.StatusInternalServerError)
 				return
 				// fmt.Println("Error Retrieving the File")
