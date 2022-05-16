@@ -1,0 +1,12 @@
+.create-post-content {
+    margin: auto;
+    display: flex;
+    justify-content: center;
+
+}
+
+.bottom-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
