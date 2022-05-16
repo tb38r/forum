@@ -66,7 +66,7 @@
                         <p>{{ .CommentUserName }} </p>
                     </div>
                     <div class="comment-date">
-                        {{ .CreationDate }} 
+                        {{ .CreationDate }}
                     </div>
                 </div>
                 <div class="comment-body-content">
@@ -75,7 +75,8 @@
                 <div class="comment-body-actions">
                     <div class="like-button">
                         <form action="/commentlikes" method="POST">
-                            <button class="like-dislike-btn" type="checkbox" name="commentlike" value="{{ .CommentID }}">
+                            <button class="like-dislike-btn" type="checkbox" name="commentlike"
+                                value="{{ .CommentID }}">
                                 <span class="glyphicon glyphicon-thumbs-up"></span> Like
                             </button>
                             {{ .Likes }}
@@ -91,23 +92,22 @@
             </div>
         </div>
         {{ end }}
-    
-    <div class="container" style="margin:auto;">
-        <form action="/storecomment" method="POST">
-            <H2>Create Comment</H2>
 
-            <label for="commenttext">Content</label><br>
-            <textarea id="content" name="content" rows="4" cols="50"></textarea><br>
-            <button class="btn btn-primary" type="submit">Create Comment</button>
-        </form>
-    </div>
-    
-   
-    
-    
-    
+        <div class="add-comment" style="margin:auto;">
+            <form action="/storecomment" method="POST">
+                <div class="comment-items">
+                    <textarea id="content" name="content"></textarea>
+                    <button class="btn btn-primary" type="submit">Comment</button>
+                </div>
+            </form>
+        </div>
 
-   
+
+
+
+
+
+
 
 </body>
 

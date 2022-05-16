@@ -82,3 +82,16 @@ body {
 .post-img {
     margin-top: 15px;
 }
+
+.comment-items {
+    display: flex;
+    justify-content: center;
+    position: fixed;
+    bottom: 0;
+    margin-bottom: 10px;
+}
+
+#content {
+    width: 500px;
+    height: 55px;
+}
