@@ -2,6 +2,7 @@ package web
 
 import (
 	"forum/posts"
+	"forum/users"
 	"net/http"
 )
 
@@ -13,6 +14,9 @@ type ActivityPage struct {
 	LikedComments     []posts.ActPage
 	DislikedComments  []posts.ActPage
 	Comments          []posts.Post
+	Username          string
+	LoggedIn          bool
+	UserID            int
 }
 
 func (s *myServer) ActivityPage() http.HandlerFunc {
@@ -39,7 +43,9 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 		data.LikedComments = posts.ActivityCommentLikes(s.Db, GuserId)
 
 		data.DislikedComments = posts.ActivityCommentDislikes(s.Db, GuserId)
-
+		data.Username = users.CurrentUser
+		data.LoggedIn = users.AlreadyLoggedIn(r)
+		data.UserID = GuserId
 		Tpl.ExecuteTemplate(w, "activitypage.html", data)
 	}
 }
