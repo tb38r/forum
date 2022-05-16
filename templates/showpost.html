@@ -93,6 +93,7 @@
         </div>
         {{ end }}
 
+        {{ if .LoggedIn }}
         <div class="add-comment" style="margin:auto;">
             <form action="/storecomment" method="POST">
                 <div class="comment-items">
@@ -101,13 +102,8 @@
                 </div>
             </form>
         </div>
-
-
-
-
-
-
-
+        {{ else }}
+        {{ end }}
 
 </body>
 
