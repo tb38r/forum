@@ -9,6 +9,10 @@
 </head>
 
 <body>
+    {{if .}}
+    {{.}}
+    {{end}}
+    <br><br>
     <h2>Login</h2>
 
     <form action="/loginauth" method="POST">
@@ -18,14 +22,6 @@
         <input type="password" id="password" name="password"><br><br>
         <input type="submit" value="Submit">
     </form>
-
-    <br><br>
-    {{if .}}
-    {{.}}
-    {{end}}
-
-
-
 </body>
 
 </html>

@@ -123,8 +123,8 @@ func (s *myServer) RegisterAuthHandler() http.HandlerFunc {
 		fmt.Println("hash:", hash)
 		fmt.Println("string(hash)", string(hash))
 		users.RegisterUser(s.Db, username, hash, email)
-		fmt.Fprintf(w, "congrats your account has been successfully created")
-
+		// fmt.Fprintf(w, "congrats your account has been successfully created")
+		Tpl.ExecuteTemplate(w, "login.html", "User succesfully registered. Login to forum")
 	}
 }
 

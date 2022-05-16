@@ -138,7 +138,7 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 			CommentDisliked: CommentUserDisliked(s.Db),
 			Username:        users.CurrentUser,
 			Image:           Imagename,
-			UserID:          UserIdint,
+			UserID:          GuserId,
 		}
 
 		fmt.Println(data.Comments)
