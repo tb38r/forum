@@ -41,7 +41,8 @@ func CreateDB() {
 	db.Exec(`create table if not exists dislikes (dislikeID integer PRIMARY KEY, 
 			userID integer REFERENCES users(userID), postID integer REFERENCES post(postID), 
 			commentID integer REFERENCES comments(commentID));`)
-
+	db.Exec(`create table if not exists report(reportID integer PRIMARY KEY, 
+			userID REFERENCES users(userID), postID integer REFERENCES post(postID));`)
 	// fmt.Println(likes.HomePostLikes(db))
 	// fmt.Println(posts.GetHomepageData(db))
 }
