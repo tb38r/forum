@@ -44,7 +44,7 @@ func (s *myServer) CommentDislikeHandler() http.HandlerFunc {
 		//	CommentId = comments.GetCommentID(s.Db, PostIDInt)
 		fmt.Println("Checking what CommentID is in like handler", CommentDislikeID)
 
-		if !CommentUserDisliked(s.Db) || UserLiked(s.Db) {
+		if !CommentUserDisliked(s.Db) || CommentUserLiked(s.Db) {
 			dislikes.CommentDislikeButton(s.Db, GuserId, CommentDislikeID)
 			likes.DeleteCommentLike(s.Db, GuserId, CommentDislikeID)
 			fmt.Println(" Comment Dislike added to database----------------------")

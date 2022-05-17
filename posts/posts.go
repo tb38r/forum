@@ -104,7 +104,7 @@ func NetLikes(db *sql.DB, PostID int) int {
 func ActivityComments(db *sql.DB, userid int) []ActPage {
 	rows, err := db.Query(`SELECT post.userID, post.postTitle, comments.commentText, post.postID 
 	FROM post, comments
-	WHERE post.userID = ?
+	WHERE comments.userID = ?
 	AND post.postID = comments.postID
 	;`, userid)
 	if err != nil {
