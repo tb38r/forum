@@ -14,6 +14,7 @@ type RateLimiter struct {
 }
 
 func main() {
+	//t
 	rate := RateLimiter{}
 
 	rate.seconds = 2
