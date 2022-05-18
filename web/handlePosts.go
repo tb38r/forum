@@ -23,6 +23,7 @@ type PostPageData struct {
 	Username        string
 	Image           string
 	UserID          int
+	UserType        string
 }
 
 // type Server server.Server
@@ -140,6 +141,7 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 			Username:        users.CurrentUser,
 			Image:           Imagename,
 			UserID:          GuserId,
+			UserType:        users.GetUserType(s.Db, GuserId),
 		}
 
 		fmt.Println(data.Comments)

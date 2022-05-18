@@ -3,6 +3,7 @@ package users
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"net"
 	"net/http"
 
@@ -37,7 +38,7 @@ var DbSessions = make(map[string]string)
 // this func registers a users username, password(as a hash) and email
 func RegisterUser(db *sql.DB, username string, hash []byte, email string) {
 	// db, _ = sql.Open("sqlite3", "forum.db")
-	stmt, err := db.Prepare("INSERT INTO users (username, hash, email) VALUES (?, ?, ?)")
+	stmt, err := db.Prepare("INSERT INTO users (username, hash, email, usertype) VALUES (?, ?, ?, 'user')")
 	if err != nil {
 		fmt.Println("error preparing statement:", err)
 		return
@@ -86,4 +87,13 @@ func SessionExists(s string) bool {
 		return true
 	}
 	return false
+}
+
+func GetUserType(db *sql.DB, userId int) string {
+	var userType string
+	err := db.QueryRow("SELECT userType FROM users WHERE userId= ?;", userId).Scan(&userType)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return userType
 }

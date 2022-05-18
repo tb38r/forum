@@ -44,6 +44,9 @@
                             <span class="glyphicon glyphicon-thumbs-up"></span> Like
                         </button>
                         {{end}}
+                        {{ if eq .UserType "admin" }}
+                        <p>You are an admin</p>
+                        {{ end }}
                     </form>
                 </div>
                 <form action="/dislikes" method="POST">
@@ -107,7 +110,6 @@
         </div>
         {{ else }}
         {{ end }}
-
 </body>
 
 </html>
