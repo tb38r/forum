@@ -13,18 +13,48 @@ type Like struct {
 	CommentID int
 }
 
-var db *sql.DB
+type Notifier struct {
+	CID int
+}
 
-var LastIns int64
+var (
+	db      *sql.DB
+	LastIns int64
+	ID      Notifier
+)
 
-func LikeButton(db *sql.DB, userID int, postID int) {
-	stmt, err := db.Prepare("INSERT INTO likes(userID, postID) VALUES(?, ?) ")
+func PostCreatorID(db *sql.DB, postID int) int {
+
+	rows, err := db.Query(`SELECT post.userID 
+	FROM post 
+	WHERE post.postID = ?
+	;`, postID)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		err2 := rows.Scan(&ID.CID)
+		if err2 != nil {
+			fmt.Println(err2)
+		}
+
+	}
+	return ID.CID
+}
+
+//POST LIKE BUTTON
+func LikeButton(db *sql.DB, userID int, postID int, creator int) {
+
+	fmt.Println("------POSTCREATORID", creator)
+
+	stmt, err := db.Prepare("INSERT INTO likes(userID, postID, notified, creatorID) VALUES(?, ?, 0, ?) ")
 	if err != nil {
 		fmt.Println("error preparing statement:", err)
 		return
 	}
 
-	result, _ := stmt.Exec(userID, postID)
+	result, _ := stmt.Exec(userID, postID, creator)
 
 	rowsAff, _ := result.RowsAffected()
 	LastIns, _ = result.LastInsertId()
@@ -83,6 +113,16 @@ func DeleteCommentLike(db *sql.DB, userID int, commentID int) {
 // 		fmt.Println(err)
 // 	}
 // 	return like
+// }
+
+// func NotifyPostLikes(db *sql.DB, userID int) int {
+// 	var count int
+
+// 	err := db.QueryRow("SELECT COUNT(*) FROM likes WHERE postID = ?;", postID).Scan(&count)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	return count
 // }
 
 func GetPostLikes(db *sql.DB, postID int) int {

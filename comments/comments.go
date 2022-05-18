@@ -25,7 +25,7 @@ var db *sql.DB
 var LastIns int64
 
 func CreateComment(db *sql.DB, userID int, postID int, commentText string) {
-	stmt, err := db.Prepare("INSERT INTO comments (userID, postID, commentText, creationDate) VALUES (?, ?, ?, strftime('%H:%M %d/%m/%Y','now', 'localtime'))")
+	stmt, err := db.Prepare("INSERT INTO comments (userID, postID, commentText, creationDate, notified) VALUES (?, ?, ?, strftime('%H:%M %d/%m/%Y','now', 'localtime'), 0)")
 
 	if err != nil {
 		fmt.Println("error preparing statement")

@@ -20,7 +20,11 @@ func (s *myServer) LikeHandler() http.HandlerFunc {
 		SPostID := strconv.Itoa(PostIDInt)
 
 		if !UserLiked(s.Db) || UserDisliked(s.Db) {
-			likes.LikeButton(s.Db, GuserId, PostIDInt)
+			//updating table to reflect liked comment's creator 
+			CreatorsID := likes.PostCreatorID(s.Db, PostIDInt)
+
+
+			likes.LikeButton(s.Db, GuserId, PostIDInt, CreatorsID)
 			dislikes.DeleteDislike(s.Db, GuserId, PostIDInt)
 			fmt.Println("Like added to database----------------------")
 			http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
