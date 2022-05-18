@@ -3,8 +3,10 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"forum/users"
 	"log"
+
+	"forum/posts"
+	"forum/users"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -46,6 +48,7 @@ func CreateDB() {
 	db.Exec(`create table if not exists report(reportID integer PRIMARY KEY, 
 				userID integer REFERENCES users(userID), postID integer REFERENCES post(postID));`)
 	fmt.Println(users.GetUserType(db, 1))
+	posts.DeletePost(db, 1)
 	// fmt.Println(likes.HomePostLikes(db))
 	// fmt.Println(posts.GetHomepageData(db))
 }

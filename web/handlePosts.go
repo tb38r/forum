@@ -164,3 +164,16 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 // 		http.Redirect(w, r, "/createpost/?userid="+SGuserId, http.StatusSeeOther)
 // 	}
 // }
+
+func (s *myServer) DeletePost() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+
+		delete := r.FormValue("delete")
+		fmt.Println(delete)
+
+		if delete == "delete" {
+			posts.DeletePost(s.Db, PostIDInt)
+		}
+	}
+}

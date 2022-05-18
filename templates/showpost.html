@@ -34,6 +34,10 @@
 
             {{ end }}
             <div class="post-likes-dislikes">
+            <form action = "/delete" method = "POST" >
+            <button class="like-dislike-btn" type="checkbox" name="delete">Delete
+            </button>
+                 </form>
                     <button class="fa-solid fa-flag" type="checkbox" name="report">
                      </button>
                 <div class="post-like">
