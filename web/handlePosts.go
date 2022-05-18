@@ -170,10 +170,11 @@ func (s *myServer) DeletePost() http.HandlerFunc {
 		r.ParseForm()
 
 		delete := r.FormValue("delete")
-		fmt.Println(delete)
+		fmt.Println("what is this", delete)
 
 		if delete == "delete" {
 			posts.DeletePost(s.Db, PostIDInt)
 		}
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}
 }
