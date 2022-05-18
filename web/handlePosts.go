@@ -169,6 +169,7 @@ func (s *myServer) DeletePost() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
 
+
 		delete := r.FormValue("delete")
 		fmt.Println("what is this", delete)
 
