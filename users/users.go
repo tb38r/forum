@@ -3,7 +3,6 @@ package users
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"net"
 	"net/http"
 
@@ -25,15 +24,15 @@ type AuthUser struct {
 	PasswordHash string
 }
 
-//var tpl *template.Template
+// var tpl *template.Template
 var CurrentUser string
 
-//var dbUsers = map[string]User{}
+// var dbUsers = map[string]User{}
 var DbSessions = make(map[string]string)
 
-//dbUsers["yonas@hotmail.com"] = User{Username: "yonas123", Email: "yonas@hotmail.com"}
+// dbUsers["yonas@hotmail.com"] = User{Username: "yonas123", Email: "yonas@hotmail.com"}
 
-//nil
+// nil
 
 // this func registers a users username, password(as a hash) and email
 func RegisterUser(db *sql.DB, username string, hash []byte, email string) {
@@ -72,7 +71,6 @@ func ValidEmail(email string) bool {
 }
 
 func AlreadyLoggedIn(r *http.Request) bool {
-
 	c, err := r.Cookie(CurrentUser)
 	if err != nil {
 		return false
@@ -82,7 +80,6 @@ func AlreadyLoggedIn(r *http.Request) bool {
 }
 
 func SessionExists(s string) bool {
-
 	if _, user := DbSessions[s]; user {
 		return true
 	}
@@ -93,7 +90,7 @@ func GetUserType(db *sql.DB, userId int) string {
 	var userType string
 	err := db.QueryRow("SELECT userType FROM users WHERE userId= ?;", userId).Scan(&userType)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("error from get user", err)
 	}
 	return userType
 }
