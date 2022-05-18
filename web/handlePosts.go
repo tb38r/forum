@@ -3,13 +3,14 @@ package web
 import (
 	"database/sql"
 	"fmt"
+	"net/http"
+	"strconv"
+
 	"forum/categories"
 	"forum/comments"
 	"forum/posts"
 	userimages "forum/templates/userImages"
 	"forum/users"
-	"net/http"
-	"strconv"
 )
 
 type PostPageData struct {
@@ -23,16 +24,20 @@ type PostPageData struct {
 	Username        string
 	Image           string
 	UserID          int
+	UserType        string
+	Reported        bool
 }
 
 // type Server server.Server
 var UserIdint int
-var PostIDInt int
-var Imagename string
+
+var (
+	PostIDInt int
+	Imagename string
+)
 
 func (s *myServer) CreatePostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		// getting the user id from the url
 		userId := r.URL.Query().Get("userid")
 		UserIdint, _ = strconv.Atoi(userId)
@@ -42,7 +47,6 @@ func (s *myServer) CreatePostHandler() http.HandlerFunc {
 
 func (s *myServer) StorePostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		// limits requests to 20MB (x is the limiter where x<<20)
 		r.Body = http.MaxBytesReader(w, r.Body, 20<<20)
 
@@ -112,13 +116,11 @@ func (s *myServer) StorePostHandler() http.HandlerFunc {
 		}
 		fmt.Println("title:", title, "content:", content)
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
-
 	}
 }
 
 func (s *myServer) ShowPostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		r.ParseForm()
 		for k, v := range r.Form {
 			fmt.Println(k, v)
@@ -140,6 +142,7 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 			Username:        users.CurrentUser,
 			Image:           Imagename,
 			UserID:          GuserId,
+			UserType:        users.GetUserType(s.Db, GuserId),
 		}
 
 		fmt.Println(data.Comments)
@@ -161,3 +164,16 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 // 		http.Redirect(w, r, "/createpost/?userid="+SGuserId, http.StatusSeeOther)
 // 	}
 // }
+
+func (s *myServer) DeletePost() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+
+		delete := r.FormValue("delete")
+		fmt.Println(delete)
+
+		if delete == "delete" {
+			posts.DeletePost(s.Db, PostIDInt)
+		}
+	}
+}

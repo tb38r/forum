@@ -48,5 +48,4 @@ func CreateDB() {
 			notified integer,
 			creatorID integer);`)
 
-	
 }

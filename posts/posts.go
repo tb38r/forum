@@ -125,7 +125,7 @@ func ActivityComments(db *sql.DB, userid int) []ActPage {
 	return pac
 }
 
-//returns user's liked posts
+// returns user's liked posts
 func ActivityPostLikes(db *sql.DB, userid int) []ActPage {
 	rows, err := db.Query(`SELECT DISTINCT likes.userID, likes.postID, post.postTitle
 	FROM likes, post
@@ -147,10 +147,9 @@ func ActivityPostLikes(db *sql.DB, userid int) []ActPage {
 
 	}
 	return actlikes
-
 }
 
-//returns user's disliked posts
+// returns user's disliked posts
 func ActivityPostDislikes(db *sql.DB, userid int) []ActPage {
 	rows, err := db.Query(`SELECT DISTINCT dislikes.userID, dislikes.postID, post.postTitle
 	FROM dislikes, post
@@ -172,10 +171,9 @@ func ActivityPostDislikes(db *sql.DB, userid int) []ActPage {
 
 	}
 	return actpostdislikes
-
 }
 
-//returns user's liked comments
+// returns user's liked comments
 func ActivityCommentLikes(db *sql.DB, userid int) []ActPage {
 	rows, err := db.Query(`SELECT DISTINCT likes.userID, likes.commentID, comments.commentText
 	FROM likes, comments
@@ -197,10 +195,9 @@ func ActivityCommentLikes(db *sql.DB, userid int) []ActPage {
 
 	}
 	return actcommentlikes
-
 }
 
-//returns user's disliked comments
+// returns user's disliked comments
 func ActivityCommentDislikes(db *sql.DB, userid int) []ActPage {
 	rows, err := db.Query(`SELECT DISTINCT dislikes.userID, dislikes.commentID, comments.commentText
 	FROM dislikes, comments
@@ -222,7 +219,6 @@ func ActivityCommentDislikes(db *sql.DB, userid int) []ActPage {
 
 	}
 	return actcommentdislikes
-
 }
 
 func UsersPostsHomepageData(db *sql.DB, userID int) []HomepagePosts {
@@ -321,4 +317,13 @@ func CategoryPagePosts(db *sql.DB, name string) []HomepagePosts {
 
 	}
 	return posts
+}
+
+func DeletePost(db *sql.DB, postID int) {
+	stmt, err := db.Prepare("DELETE FROM post WHERE postID = ?")
+	if err != nil {
+		fmt.Println("error preparing delete post statement", err)
+	}
+
+	stmt.Exec(postID)
 }
