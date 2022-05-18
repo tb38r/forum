@@ -3,6 +3,7 @@
 
 <head>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://kit.fontawesome.com/0aef5c9550.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="/templates/showpost.css" />
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -33,6 +34,8 @@
 
             {{ end }}
             <div class="post-likes-dislikes">
+                    <button class="fa-solid fa-flag" type="checkbox" name="report">
+                     </button>
                 <div class="post-like">
                     <form action="/likes" method="POST">
                         {{if and .Liked .LoggedIn}}
