@@ -23,6 +23,7 @@ type PostPageData struct {
 	Username        string
 	Image           string
 	UserID          int
+	Reported 		bool
 }
 
 // type Server server.Server
