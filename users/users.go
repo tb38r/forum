@@ -3,6 +3,7 @@ package users
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"net"
 	"net/http"
 
@@ -86,4 +87,13 @@ func SessionExists(s string) bool {
 		return true
 	}
 	return false
+}
+
+func GetUserType(db *sql.DB, userId int) string {
+	var userType string
+	err := db.QueryRow("SELECT userType FROM users WHERE userId= ?;", userId).Scan(&userType)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return userType
 }
