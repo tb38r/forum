@@ -34,9 +34,11 @@
 
             {{ end }}
             <div class="post-likes-dislikes">
-
-                <button class="fa-solid fa-flag" type="checkbox" name="report">
+            <form action="/report" method ="POST">
+                <button class="fa-solid fa-flag" type="submit" value="report" name="report">
                 </button>
+                </form>
+                <br>
                 <div class="post-like">
                     <form action="/likes" method="POST">
                         {{if and .Liked .LoggedIn}}

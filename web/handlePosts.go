@@ -9,6 +9,7 @@ import (
 	"forum/categories"
 	"forum/comments"
 	"forum/posts"
+	"forum/report"
 	userimages "forum/templates/userImages"
 	"forum/users"
 )
@@ -167,15 +168,18 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 
 func (s *myServer) DeletePost() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		r.ParseForm()
+		posts.DeletePost(s.Db, PostIDInt)
 
-
-		delete := r.FormValue("delete")
-		fmt.Println("what is this", delete)
-
-		if delete == "delete" {
-			posts.DeletePost(s.Db, PostIDInt)
-		}
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
+	}
+}
+
+func (s *myServer) ReportHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		report.ReportButton(s.Db, GuserId, PostIDInt)
+
+		SPostID := strconv.Itoa(PostIDInt)
+
+		http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
 	}
 }
