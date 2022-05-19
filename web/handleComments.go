@@ -67,6 +67,8 @@ func (s *myServer) StoreCommentHandler() http.HandlerFunc {
 
 func (s *myServer) DeleteCommentHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// fmt.Println("this is the comment ID", CommentId)
+		// fmt.Println("this is the postId", PostIDInt)
 		comments.DeleteComment(s.Db, CommentId)
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}

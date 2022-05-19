@@ -18,7 +18,7 @@ func CreateDB() {
 		log.Fatal(err)
 	}
 
-	db.Exec("create table if not exists users (userID integer primary key, email text, username text, hash CHAR(60), usertype text, externalloginid text)")
+	db.Exec("create table if not exists users (userID integer primary key AUTOINCREMENT, email text, username text, hash CHAR(60), usertype text, externalloginid text)")
 	db.Exec(`create table if not exists post (
 		postID integer primary key AUTOINCREMENT, 
 		userID integer REFERENCES users(userID), 
