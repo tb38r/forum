@@ -34,10 +34,19 @@
 
             {{ end }}
             <div class="post-likes-dislikes">
-            <form action="/report" method ="POST">
+            {{ if eq .UserType "mod" }}
+            {{if .Reported}}
+             <form action="/report" method ="POST">
+                <button class="fa-solid fa-flag" style="background-color:#CD5C5C;" type="submit" value="report" name="report">
+                </button>
+                </form>
+                {{else}}
+                 <form action="/report" method ="POST">
                 <button class="fa-solid fa-flag" type="submit" value="report" name="report">
                 </button>
                 </form>
+                {{end}}
+                {{end}}
                 <br>
                 <div class="post-like">
                     <form action="/likes" method="POST">

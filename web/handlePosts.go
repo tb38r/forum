@@ -144,6 +144,7 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 			Image:           Imagename,
 			UserID:          GuserId,
 			UserType:        users.GetUserType(s.Db, GuserId),
+			Reported:        ModReported(s.Db),
 		}
 
 		fmt.Println(data.Comments)
@@ -176,10 +177,29 @@ func (s *myServer) DeletePost() http.HandlerFunc {
 
 func (s *myServer) ReportHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		report.ReportButton(s.Db, GuserId, PostIDInt)
-
 		SPostID := strconv.Itoa(PostIDInt)
 
-		http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
+		if ModReported(s.Db) {
+			fmt.Fprint(w, "You have already reported this post")
+			// http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
+		} else {
+			report.ReportButton(s.Db, GuserId, PostIDInt)
+			http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
+		}
 	}
+}
+
+func ModReported(db *sql.DB) bool {
+	// check if post already been reportd by mod
+	userStmt := "SELECT userID FROM report WHERE userID = ? AND postID = ?"
+	row := db.QueryRow(userStmt, GuserId, PostIDInt)
+
+	var uID string
+	var pID string
+	err := row.Scan(&uID, &pID)
+	if err != sql.ErrNoRows {
+		fmt.Println("Mod has already reported this post", err)
+		return true
+	}
+	return false
 }
