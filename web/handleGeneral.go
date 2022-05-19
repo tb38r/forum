@@ -2,6 +2,7 @@ package web
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 
 	"forum/posts"
@@ -23,6 +24,9 @@ func (s *myServer) HomepageHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := users.CurrentUser
 		s.Db, _ = sql.Open("sqlite3", "forum.db")
+
+		fmt.Println(CommentUsername(s.Db))
+
 		homepage := posts.GetHomepageData(s.Db)
 		category := r.FormValue("category")
 		homePageData := HomepageData{user, homepage, users.AlreadyLoggedIn(r), GuserId}
