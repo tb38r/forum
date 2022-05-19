@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"forum/dislikes"
 	"forum/likes"
+	"forum/users"
 	"log"
 )
 
@@ -18,6 +19,7 @@ type Comment struct {
 	Likes           int
 	Dislikes        int
 	Edited          bool
+	UserType        string
 }
 
 var db *sql.DB
@@ -63,8 +65,8 @@ func GetCommentText(db *sql.DB) map[int]string {
 	return CommentText
 }
 
-func GetCommentData(db *sql.DB, postID int) []Comment {
-	rows, err := db.Query(`SELECT commentID, commentText, comments.creationDate as cmntDate, users.username 
+func GetCommentData(db *sql.DB, postID int, user int) []Comment {
+	rows, err := db.Query(`SELECT commentID, commentText, comments.creationDate as cmntDate, users.username
 	FROM comments 
 	INNER JOIN post ON post.postID = comments.postID 
 	INNER JOIN users ON users.userID = comments.userID 
@@ -77,6 +79,7 @@ func GetCommentData(db *sql.DB, postID int) []Comment {
 	for rows.Next() {
 		var c Comment
 		err2 := rows.Scan(&c.CommentID, &c.CommentText, &c.CreationDate, &c.CommentUserName)
+		c.UserType = users.GetUserType(db, user)
 		c.Likes = likes.GetCommentLikes(db, c.CommentID)
 		c.Dislikes = dislikes.GetCommentDislikes(db, c.CommentID)
 		comment = append(comment, c)
@@ -123,4 +126,12 @@ func (c Comment) GetCID() int {
 	}
 	c.CommentID = id
 	return c.CommentID
+}
+
+func DeleteComment(db *sql.DB, commentId int) {
+	stmt, err := db.Prepare("DELETE FROM comments WHERE commentID=?")
+	if err != nil {
+		fmt.Println("error deleting comment", err)
+	}
+	stmt.Exec(commentId)
 }

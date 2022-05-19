@@ -47,4 +47,5 @@ func CreateDB() {
 			commentID integer REFERENCES comments(commentID));`)
 	db.Exec(`create table if not exists report(reportID integer PRIMARY KEY AUTOINCREMENT, 
 				userID integer REFERENCES users(userID), postID integer REFERENCES post(postID));`)
+	// comments.DeleteComment(db, 1)
 }

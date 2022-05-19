@@ -133,7 +133,7 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 
 		data := PostPageData{
 			Posts:           posts.GetPostData(s.Db, PostIDInt),
-			Comments:        comments.GetCommentData(s.Db, PostIDInt),
+			Comments:        comments.GetCommentData(s.Db, PostIDInt, GuserId),
 			LoggedIn:        users.AlreadyLoggedIn(r),
 			Liked:           UserLiked(s.Db),
 			Disliked:        UserDisliked(s.Db),
@@ -144,11 +144,13 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 			UserID:          GuserId,
 			UserType:        users.GetUserType(s.Db, GuserId),
 		}
+		// for _, v := range data.Comments {
+		// 	v.UserType = users.GetUserType(s.Db, GuserId)
+		// 	// fmt.Println("this is the usertype", v.UserType)
+		// 	fmt.Println("this is V", v.UserType)
+		// 	fmt.Println("this is the comments struct", data.Comments)
+		// }
 
-		fmt.Println(data.Comments)
-		for _, v := range data.Comments {
-			fmt.Println(v.CommentID)
-		}
 		fmt.Println(data.Liked)
 
 		Tpl.ExecuteTemplate(w, "showpost.html", data)
@@ -167,15 +169,7 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 
 func (s *myServer) DeletePost() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		r.ParseForm()
-
-
-		delete := r.FormValue("delete")
-		fmt.Println("what is this", delete)
-
-		if delete == "delete" {
-			posts.DeletePost(s.Db, PostIDInt)
-		}
+		posts.DeletePost(s.Db, PostIDInt)
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}
 }

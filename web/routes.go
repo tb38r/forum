@@ -41,6 +41,7 @@ func (s *myServer) Routes(a <-chan time.Time) {
 	http.HandleFunc("/storecomment", Rate(a, Auth(SessionChecker(s.StoreCommentHandler()))))
 	http.HandleFunc("/likes", Rate(a, Auth(SessionChecker(s.LikeHandler()))))
 	http.HandleFunc("/delete", Rate(a, Auth(SessionChecker(s.DeletePost()))))
+	http.HandleFunc("/deletecomment", Rate(a, Auth(SessionChecker(s.DeleteCommentHandler()))))
 	http.HandleFunc("/dislikes", Rate(a, Auth(SessionChecker(s.DislikeHandler()))))
 	http.HandleFunc("/commentlikes", Rate(a, Auth(SessionChecker(s.CommentLikeHandler()))))
 	http.HandleFunc("/commentdislikes", Rate(a, Auth(SessionChecker(s.CommentDislikeHandler()))))

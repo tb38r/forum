@@ -64,3 +64,10 @@ func (s *myServer) StoreCommentHandler() http.HandlerFunc {
 
 	}
 }
+
+func (s *myServer) DeleteCommentHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		comments.DeleteComment(s.Db, CommentId)
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
+	}
+}

@@ -100,6 +100,12 @@
                         </button>
                         {{ .Dislikes }}
                     </form>
+                    {{ if eq .UserType "admin" }}
+                    <form action="/deletecomment" method="POST">
+                        <button class="like-dislike-btn" type="submit" value="deletecomment"
+                            name="deletecomment">Delete</button>
+                    </form>
+                    {{ end }}
                 </div>
             </div>
         </div>
