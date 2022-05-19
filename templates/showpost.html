@@ -34,9 +34,9 @@
 
             {{ end }}
             <div class="post-likes-dislikes">
-          
-                    <button class="fa-solid fa-flag" type="checkbox" name="report">
-                     </button>
+
+                <button class="fa-solid fa-flag" type="checkbox" name="report">
+                </button>
                 <div class="post-like">
                     <form action="/likes" method="POST">
                         {{if and .Liked .LoggedIn}}
@@ -48,13 +48,12 @@
                             <span class="glyphicon glyphicon-thumbs-up"></span> Like
                         </button>
                         {{end}}
-                        {{ if eq .UserType "admin" }}
-                        <p>You are an admin</p>
-                        {{ end }}
                     </form>
-                      <form action="/delete" method="POST">
-               <button class="like-dislike-btn" type="submit" value="delete" name="delete">Delete</button>
-                 </form>
+                    {{ if eq .UserType "admin" }}
+                    <form action="/delete" method="POST">
+                        <button class="like-dislike-btn" type="submit" value="delete" name="delete">Delete</button>
+                    </form>
+                    {{ end }}
                 </div>
                 <form action="/dislikes" method="POST">
                     {{if .Disliked}}
