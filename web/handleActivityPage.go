@@ -26,11 +26,11 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var data ActivityPage
 
-		if len(CommentUsername(s.Db)) > 0 {
+		if len(CommentNotify(s.Db)) > 0 {
 			data.Nbool = true
 		}
 
-		data.Notification = len(CommentUsername(s.Db))
+		data.Notification = len(CommentNotify(s.Db))
 
 		data.Posts = posts.UsersPostsHomepageData(s.Db, GuserId)
 

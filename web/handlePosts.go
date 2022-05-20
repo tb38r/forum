@@ -145,10 +145,10 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 			Image:           Imagename,
 			UserID:          GuserId,
 			UserType:        users.GetUserType(s.Db, GuserId),
-			Notification:    len(CommentUsername(s.Db)),
+			Notification:    len(CommentNotify(s.Db)),
 		}
 
-		if len(CommentUsername(s.Db)) > 0 {
+		if len(CommentNotify(s.Db)) > 0 {
 			data.Nbool = true
 		}
 		fmt.Println(data.Comments)
