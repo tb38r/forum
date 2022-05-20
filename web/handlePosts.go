@@ -26,6 +26,8 @@ type PostPageData struct {
 	UserID          int
 	UserType        string
 	Reported        bool
+	Nbool           bool
+	Notification    int
 }
 
 // type Server server.Server
@@ -143,8 +145,12 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 			Image:           Imagename,
 			UserID:          GuserId,
 			UserType:        users.GetUserType(s.Db, GuserId),
+			Notification:    len(CommentUsername(s.Db)),
 		}
 
+		if len(CommentUsername(s.Db)) > 0 {
+			data.Nbool = true
+		}
 		fmt.Println(data.Comments)
 		for _, v := range data.Comments {
 			fmt.Println(v.CommentID)
@@ -168,7 +174,6 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 func (s *myServer) DeletePost() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
-
 
 		delete := r.FormValue("delete")
 		fmt.Println("what is this", delete)

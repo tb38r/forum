@@ -39,7 +39,8 @@ import (
 
 // }
 
-//return userID & postID where comment was made where notifed = 0
+
+//return user & post where comment was made where notified = 0
 func CommentUsername(db *sql.DB) []map[string]string {
 	rows, err := db.Query(`SELECT users.username, post.postTitle
 	FROM users, comments, post 
@@ -56,17 +57,16 @@ func CommentUsername(db *sql.DB) []map[string]string {
 	var CommentNotification []map[string]string
 
 	var username string
-	var postid string
+	var posttitle string
 
 	defer rows.Close()
 	for rows.Next() {
-		minimap := make (map[string]string)
-		err2 := rows.Scan(&username, &postid)
+		minimap := make(map[string]string)
+		err2 := rows.Scan(&username, &posttitle)
 		if err2 != nil {
 			log.Fatal("Web CommentUsername Error:", err2)
 		}
-		// AllpostTitles = append(AllpostTitles, postID, postTitle)
-		minimap[username] = postid
+		minimap[username] = posttitle
 		CommentNotification = append(CommentNotification, minimap)
 	}
 	return CommentNotification

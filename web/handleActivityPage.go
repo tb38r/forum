@@ -18,24 +18,23 @@ type ActivityPage struct {
 	Username          string
 	LoggedIn          bool
 	UserID            int
+	Nbool             bool
+	Notification      int
 }
 
 func (s *myServer) ActivityPage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var data ActivityPage
 
+		if len(CommentUsername(s.Db)) > 0 {
+			data.Nbool = true
+		}
+
+		data.Notification = len(CommentUsername(s.Db))
+
 		data.Posts = posts.UsersPostsHomepageData(s.Db, GuserId)
 
 		data.CommentsWithPosts = posts.ActivityComments(s.Db, GuserId)
-
-		//value := posts.ActivityCommentLikes(s.Db, GuserId)
-		// for _, item := range value {
-		// 	fmt.Print("UserID: ", item.UserID, "\t")
-		// 	fmt.Print("Title: ", item.PostTitle, "\t")
-		// 	fmt.Print("Comment: ", item.CommentText, "\t")
-		// 	fmt.Println()
-
-		// }
 
 		data.LikedPosts = posts.ActivityPostLikes(s.Db, GuserId)
 
