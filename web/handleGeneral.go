@@ -43,6 +43,10 @@ func (s *myServer) HomepageHandler() http.HandlerFunc {
 			userFilter := posts.UsersLikesHomepageData(s.Db, GuserId)
 			homePageData = HomepageData{user, userFilter, users.AlreadyLoggedIn(r), GuserId}
 			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
+		} else if homePageFilter == "Reported Posts" {
+			userFilter := posts.ReportedPostsHomepageData(s.Db)
+			homePageData = HomepageData{user, userFilter, users.AlreadyLoggedIn(r), GuserId}
+			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
 		}
 	}
 }
