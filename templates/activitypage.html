@@ -96,7 +96,11 @@
     <div class="activity-title">
       <p> {{.Username}} left on comment on <a href="/showpost?postid={{.PostID}}">{{.PostTitle}} </a></p>
     </div>
-
+    {{end}}
+    {{range .LikeNote}}
+    <div class="activity-title">
+      <p> {{.Username}} liked your post <a href="/showpost?postid={{.PostID}}">{{.PostTitle}} </a></p>
+    </div>
     {{end}}
 
   </div>

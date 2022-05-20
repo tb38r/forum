@@ -22,20 +22,27 @@ type ActivityPage struct {
 	Nbool             bool
 	Notification      int
 	CommentNote       []CommNotify
+	LikeNote          []CommNotify
 }
 
 func (s *myServer) ActivityPage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		for _, item := range LikesNotify(s.Db) {
+			fmt.Println("LIKES NOTIFY:", item)
+		}
+
 		var data ActivityPage
 
 		if len(CommentNotify(s.Db)) > 0 {
 			data.Nbool = true
 		}
 
-		data.Notification = len(CommentNotify(s.Db))
+		data.Notification = len(CommentNotify(s.Db)) + len(LikesNotify(s.Db))
 
 		data.CommentNote = CommentNotify(s.Db)
-		fmt.Println(data.CommentNote)
+
+		data.LikeNote = LikesNotify(s.Db)
 
 		data.Posts = posts.UsersPostsHomepageData(s.Db, GuserId)
 
@@ -59,14 +66,9 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 			return
 		}
 
-		// go func() {
-		// 	ResetCommentNotified(s.Db)
-		// }()
-
 		Tpl.ExecuteTemplate(w, "activitypage.html", data)
 
-		go func(){
-			fmt.Println("-----ENTERS GO FUNC")
+		go func() {
 			ResetCommentNotified(s.Db)
 		}()
 	}
