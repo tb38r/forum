@@ -19,34 +19,34 @@ import (
 
 // }
 
-//return userID & postID where comment was made
-func CommentUsername(db *sql.DB) map[int]int {
-	rows, err := db.Query(`SELECT comments.userID, comments.postID
-	FROM comments,  
-	 JOIN comments ON comments.userID = users.userID
-	 WHERE comments.creatorID = ?
-	 JOIN posts ON post.postID = comments.postID 
+//return userID & postID where comment was made where notifed = 0
+func CommentUsername(db *sql.DB) []map[string]int {
+	rows, err := db.Query(`SELECT users.username, comments.postID
+	FROM users, comments
 	 WHERE comments.creatorID = ?
 	 AND comments.notified = ?
-	;`, GuserId, GuserId, 0)
+	 AND comments.userID = users.userID
+	;`, GuserId, 0)
 	if err != nil {
 		log.Fatal("Web CommentUsername Error:", err)
 
 	}
 
-	CommentNotification := make(map[string]string)
+	var CommentNotification []map[string]int
 
 	var username string
-	var title string
+	var postid int
 
 	defer rows.Close()
 	for rows.Next() {
-		err2 := rows.Scan(&username, &title)
+		minimap := make (map[string]int)
+		err2 := rows.Scan(&username, &postid)
 		if err2 != nil {
 			log.Fatal("Web CommentUsername Error:", err2)
 		}
 		// AllpostTitles = append(AllpostTitles, postID, postTitle)
-		CommentNotification[username] = title
+		minimap[username] = postid
+		CommentNotification = append(CommentNotification, minimap)
 	}
 	return CommentNotification
 

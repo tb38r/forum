@@ -25,7 +25,7 @@ func (s *myServer) HomepageHandler() http.HandlerFunc {
 		user := users.CurrentUser
 		s.Db, _ = sql.Open("sqlite3", "forum.db")
 
-		fmt.Println(CommentUsername(s.Db))
+		fmt.Println("COMMENT USERNAME MAP", CommentUsername(s.Db))
 
 		homepage := posts.GetHomepageData(s.Db)
 		category := r.FormValue("category")
