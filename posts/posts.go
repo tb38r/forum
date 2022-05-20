@@ -319,13 +319,30 @@ func CategoryPagePosts(db *sql.DB, name string) []HomepagePosts {
 	return posts
 }
 
+// func should delete post and all comments relating to post
 func DeletePost(db *sql.DB, postID int) {
+	// deleting the post
 	stmt, err := db.Prepare("DELETE FROM post WHERE postID = ?")
 	if err != nil {
 		fmt.Println("error preparing delete post statement", err)
 	}
 
 	stmt.Exec(postID)
+
+	// deleting the comments related to the post
+	stmt2, err2 := db.Prepare("DELETE FROM comments WHERE postID = ?")
+
+	if err2 != nil {
+		fmt.Println("error deleting comments relating to post", err2)
+	}
+	stmt2.Exec(postID)
+
+	// deleting the reports connected to a post
+	stmt3, err3 := db.Prepare("DELETE FROM report WHERE postID = ?")
+	if err3 != nil {
+		fmt.Println("error deleting reports from the report table", err3)
+	}
+	stmt3.Exec(postID)
 }
 
 func ReportedPostsHomepageData(db *sql.DB) []HomepagePosts {

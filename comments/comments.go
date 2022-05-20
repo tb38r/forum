@@ -87,6 +87,7 @@ func GetCommentData(db *sql.DB, postID int, userId int) []Comment {
 			fmt.Println(err2)
 		}
 	}
+	fmt.Println()
 	return comment
 }
 

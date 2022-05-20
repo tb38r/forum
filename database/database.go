@@ -27,7 +27,7 @@ func CreateDB() {
 		postContent CHAR(250), 
 		image CHAR(100), 
 		edited integer);`)
-	db.Exec("create table if not exists category (categoryID integer PRIMARY KEY, postID integer REFERENCES post(postID), categoryname text)")
+	db.Exec("create table if not exists category (categoryID integer PRIMARY KEY AUTOINCREMENT, postID integer REFERENCES post(postID), categoryname text)")
 	db.Exec(`create table if not exists comments (
 		commentID integer primary key AUTOINCREMENT, 
 		userID integer REFERENCES users(userID), 

@@ -34,16 +34,17 @@
 
             {{ end }}
             <div class="post-likes-dislikes">
-            {{ if eq .UserType "mod" }}
-            {{if .Reported}}
-             <form action="/report" method ="POST">
-                <button class="fa-solid fa-flag" style="background-color:#CD5C5C;" type="submit" value="report" name="report">
-                </button>
+                {{ if eq .UserType "mod" }}
+                {{if .Reported}}
+                <form action="/report" method="POST">
+                    <button class="fa-solid fa-flag" style="background-color:#CD5C5C;" type="submit" value="report"
+                        name="report">
+                    </button>
                 </form>
                 {{else}}
-                 <form action="/report" method ="POST">
-                <button class="fa-solid fa-flag" type="submit" value="report" name="report">
-                </button>
+                <form action="/report" method="POST">
+                    <button class="fa-solid fa-flag" type="submit" value="report" name="report">
+                    </button>
                 </form>
                 {{end}}
                 {{end}}
@@ -113,7 +114,7 @@
                     </form>
                     {{ if eq .UserType "admin" }}
                     <form action="/deletecomment" method="POST">
-                        <button class="like-dislike-btn" type="submit" value="deletecomment"
+                        <button class="like-dislike-btn" type="submit" name="commentId" value="{{ .CommentID }}"
                             name="deletecomment">Delete</button>
                     </form>
                     {{ end }}

@@ -67,10 +67,14 @@ func (s *myServer) StoreCommentHandler() http.HandlerFunc {
 
 func (s *myServer) DeleteCommentHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("this is the comment ID", CommentId)
-		fmt.Println("this is the postId", PostIDInt)
-		comments.DeleteComment(s.Db, CommentId)
-		fmt.Println("Comment Id:", CommentId, "deleted")
-		http.Redirect(w, r, "/home", http.StatusSeeOther)
+		r.ParseForm()
+		for _, v := range r.Form {
+			for _, id := range v {
+				idInt, _ := strconv.Atoi(id)
+				comments.DeleteComment(s.Db, idInt)
+			}
+		}
+		SPostID := strconv.Itoa(PostIDInt)
+		http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
 	}
 }
