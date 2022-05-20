@@ -65,7 +65,7 @@ func GetCommentText(db *sql.DB) map[int]string {
 	return CommentText
 }
 
-func GetCommentData(db *sql.DB, postID int, user int) []Comment {
+func GetCommentData(db *sql.DB, postID int, userId int) []Comment {
 	rows, err := db.Query(`SELECT commentID, commentText, comments.creationDate as cmntDate, users.username
 	FROM comments 
 	INNER JOIN post ON post.postID = comments.postID 
@@ -79,7 +79,7 @@ func GetCommentData(db *sql.DB, postID int, user int) []Comment {
 	for rows.Next() {
 		var c Comment
 		err2 := rows.Scan(&c.CommentID, &c.CommentText, &c.CreationDate, &c.CommentUserName)
-		c.UserType = users.GetUserType(db, user)
+		c.UserType = users.GetUserType(db, userId)
 		c.Likes = likes.GetCommentLikes(db, c.CommentID)
 		c.Dislikes = dislikes.GetCommentDislikes(db, c.CommentID)
 		comment = append(comment, c)
