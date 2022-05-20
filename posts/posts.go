@@ -319,6 +319,7 @@ func CategoryPagePosts(db *sql.DB, name string) []HomepagePosts {
 	return posts
 }
 
+// func should delete post and all comments relating to post
 func DeletePost(db *sql.DB, postID int) {
 	stmt, err := db.Prepare("DELETE FROM post WHERE postID = ?")
 	if err != nil {
@@ -326,4 +327,10 @@ func DeletePost(db *sql.DB, postID int) {
 	}
 
 	stmt.Exec(postID)
+	stmt2, err2 := db.Prepare("DELETE FROM comments WHERE postID = ?")
+
+	if err2 != nil {
+		fmt.Println("error deleting comments relating to post", err)
+	}
+	stmt2.Exec(postID)
 }
