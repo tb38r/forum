@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"forum/posts"
 	"forum/users"
 	"net/http"
@@ -20,6 +21,7 @@ type ActivityPage struct {
 	UserID            int
 	Nbool             bool
 	Notification      int
+	CommentNote       []CommNotify
 }
 
 func (s *myServer) ActivityPage() http.HandlerFunc {
@@ -31,6 +33,9 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 		}
 
 		data.Notification = len(CommentNotify(s.Db))
+
+		data.CommentNote = CommentNotify(s.Db)
+		fmt.Println(data.CommentNote)
 
 		data.Posts = posts.UsersPostsHomepageData(s.Db, GuserId)
 
@@ -51,17 +56,9 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 		if string(r.URL.RawQuery[len(r.URL.RawQuery)-1]) != SuserID {
 			http.Error(w, "Incorrect user request made!", http.StatusBadRequest)
 			w.WriteHeader(http.StatusBadRequest)
-			// fmt.Fprintln(w, r.URL.Path)
-			// fmt.Fprintln(w, r.URL.RawQuery)
 			return
 		}
 
-		// if r.URL.Path != "/activitypage/"+r.URL.RawQuery {
-		// 	//	http.Error(w, "Incorrect user request made!", http.StatusBadRequest)
-		// 	fmt.Fprintln(w, r.URL.Path)
-		// 	fmt.Fprintln(w, r.URL.RawQuery)
-		// 	return
-		// }
 		Tpl.ExecuteTemplate(w, "activitypage.html", data)
 	}
 }
