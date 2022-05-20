@@ -52,7 +52,7 @@ func (s *myServer) StoreCommentHandler() http.HandlerFunc {
 		CommentId = comments.GetCommentID(s.Db, PostIDInt)
 
 		fmt.Println("testing method to get comment id", CommentId)
-		fmt.Println("testing cd id ************************8", commentData.CommentID)
+		// fmt.Println("testing cd id ************************8", commentData.CommentID)
 		// fmt.Println("comment data check: ---> ", commentData.CommentText)
 		// fmt.Println("comment post id check: ---> ", commentData.PostID)
 		// fmt.Println("comment user id check: ---> ", commentData.UserID)
@@ -62,5 +62,15 @@ func (s *myServer) StoreCommentHandler() http.HandlerFunc {
 		http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
 		//http.Redirect(w, r, "/home", http.StatusSeeOther)
 
+	}
+}
+
+func (s *myServer) DeleteCommentHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("this is the comment ID", CommentId)
+		fmt.Println("this is the postId", PostIDInt)
+		comments.DeleteComment(s.Db, CommentId)
+		fmt.Println("Comment Id:", CommentId, "deleted")
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}
 }
