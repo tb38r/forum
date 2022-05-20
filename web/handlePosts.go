@@ -151,7 +151,6 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 		// 	fmt.Println("this is V", v.UserType)
 		// 	fmt.Println("this is the comments struct", data.Comments)
 		// }
-
 		fmt.Println(data.Liked)
 
 		Tpl.ExecuteTemplate(w, "showpost.html", data)

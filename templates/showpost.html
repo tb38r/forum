@@ -34,9 +34,9 @@
 
             {{ end }}
             <div class="post-likes-dislikes">
-            <form action="/report" method ="POST">
-                <button class="fa-solid fa-flag" type="submit" value="report" name="report">
-                </button>
+                <form action="/report" method="POST">
+                    <button class="fa-solid fa-flag" type="submit" value="report" name="report">
+                    </button>
                 </form>
                 <br>
                 <div class="post-like">
@@ -104,7 +104,7 @@
                     </form>
                     {{ if eq .UserType "admin" }}
                     <form action="/deletecomment" method="POST">
-                        <button class="like-dislike-btn" type="submit" value="deletecomment"
+                        <button class="like-dislike-btn" type="submit" name="commentId" value="{{ .CommentID }}"
                             name="deletecomment">Delete</button>
                     </form>
                     {{ end }}
