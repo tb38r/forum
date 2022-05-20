@@ -327,3 +327,27 @@ func DeletePost(db *sql.DB, postID int) {
 
 	stmt.Exec(postID)
 }
+
+func ReportedPostsHomepageData(db *sql.DB) []HomepagePosts {
+	rows, err := db.Query(`SELECT post.postID, post.postTitle, username, post.creationDate 
+						FROM post INNER JOIN report on report.postID = post.postID
+						INNER JOIN users ON users.userID = post.userID`)
+	if err != nil {
+		fmt.Println(err)
+	}
+	postdata := []HomepagePosts{}
+	defer rows.Close()
+	for rows.Next() {
+		var p HomepagePosts
+		err2 := rows.Scan(&p.PostID, &p.PostTitle, &p.PostUsername, &p.CreationDate)
+		p.PostLike = likes.GetPostLikes(db, p.PostID)
+		p.PostDislike = dislikes.GetPostDislikes(db, p.PostID)
+		p.NetLikes = NetLikes(db, p.PostID)
+		p.CommentNum = likes.GetNumComment(db, p.PostID)
+		postdata = append(postdata, p)
+		if err2 != nil {
+			fmt.Println(err2)
+		}
+	}
+	return postdata
+}

@@ -2,7 +2,10 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
+
+	"forum/posts"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -47,4 +50,5 @@ func CreateDB() {
 			commentID integer REFERENCES comments(commentID));`)
 	db.Exec(`create table if not exists report(reportID integer PRIMARY KEY AUTOINCREMENT, 
 				userID integer REFERENCES users(userID), postID integer REFERENCES post(postID));`)
+	fmt.Println(posts.ReportedPostsHomepageData(db))
 }
