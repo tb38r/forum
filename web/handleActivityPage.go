@@ -64,5 +64,10 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 		// }()
 
 		Tpl.ExecuteTemplate(w, "activitypage.html", data)
+
+		go func(){
+			fmt.Println("-----ENTERS GO FUNC")
+			ResetCommentNotified(s.Db)
+		}()
 	}
 }

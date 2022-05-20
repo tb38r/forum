@@ -2,6 +2,7 @@ package web
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 )
 
@@ -85,9 +86,25 @@ func CommentNotify(db *sql.DB) []CommNotify {
 }
 
 func ResetCommentNotified(db *sql.DB) {
-	db.Exec(`UPDATE comments
-	SET comments.notified = 1
-	WHERE comments.creatorID = ?
-	;`, GuserId)
+	stmt, err := db.Prepare(`UPDATE comments
+	SET notified = ?
+	WHERE creatorID = ?
+	;`)
+	defer stmt.Close()
+	if err != nil {
+		log.Fatal("ResetComment 1:", err)
+	}
+
+	res, err2 := stmt.Exec(1, GuserId)
+	if err2 != nil {
+		log.Fatal("ResetComment 2:", err)
+	}
+
+	affected, err3 := res.RowsAffected()
+	if err3 != nil {
+		log.Fatal("ResetComment 3:", err)
+	}
+
+	fmt.Println(affected)
 
 }
