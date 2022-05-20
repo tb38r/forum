@@ -59,6 +59,10 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 			return
 		}
 
+		// go func() {
+		// 	ResetCommentNotified(s.Db)
+		// }()
+
 		Tpl.ExecuteTemplate(w, "activitypage.html", data)
 	}
 }

@@ -83,3 +83,11 @@ func CommentNotify(db *sql.DB) []CommNotify {
 	return CommentNotification
 
 }
+
+func ResetCommentNotified(db *sql.DB) {
+	db.Exec(`UPDATE comments
+	SET comments.notified = 1
+	WHERE comments.creatorID = ?
+	;`, GuserId)
+
+}
