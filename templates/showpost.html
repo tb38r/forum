@@ -61,7 +61,7 @@
                         </button>
                         {{end}}
                     </form>
-                    {{ if eq .UserType "admin" }}
+                    {{ if eq .UserType "admin" "mod" }}
                     <form action="/delete" method="POST">
                         <button class="like-dislike-btn" type="submit" value="delete" name="delete">Delete</button>
                     </form>
