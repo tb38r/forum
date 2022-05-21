@@ -34,7 +34,7 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 
 		var data ActivityPage
 
-		if len(CommentNotify(s.Db)) > 0 {
+		if (len(CommentNotify(s.Db)) + len(LikesNotify(s.Db))) > 0 {
 			data.Nbool = true
 		}
 
@@ -68,8 +68,13 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 
 		Tpl.ExecuteTemplate(w, "activitypage.html", data)
 
-		go func() {
+		func() {
 			ResetCommentNotified(s.Db)
 		}()
+
+		func() {
+			ResetLikesNotified(s.Db)
+		}()
+
 	}
 }

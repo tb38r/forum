@@ -33,11 +33,10 @@ func (s *myServer) HomepageHandler() http.HandlerFunc {
 		homepage := posts.GetHomepageData(s.Db)
 		var x bool
 
-		if len(CommentNotify(s.Db)) > 0 {
+		if (len(CommentNotify(s.Db)) + len(LikesNotify(s.Db))) > 0 {
 			x = true
 		}
-		notify := len(CommentNotify(s.Db))
-
+		notify := len(CommentNotify(s.Db)) + len(LikesNotify(s.Db))
 		homePageData := HomepageData{user, homepage, users.AlreadyLoggedIn(r), GuserId, x, notify}
 		category := r.FormValue("category")
 		homePageFilter := r.FormValue("userfilter")

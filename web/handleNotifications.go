@@ -12,7 +12,6 @@ type CommNotify struct {
 	PostTitle string
 }
 
-
 //return user, postid & posttitle where comment was made where notified = 0
 func CommentNotify(db *sql.DB) []CommNotify {
 	rows, err := db.Query(`SELECT users.username, comments.postID, post.postTitle
@@ -80,7 +79,7 @@ func LikesNotify(db *sql.DB) []CommNotify {
 		ministruct := CommNotify{}
 		err2 := rows.Scan(&username, &postid, &pTitle)
 		if err2 != nil {
-			log.Fatal("Web CommentUsername Error:", err2)
+			log.Fatal("LikesNotify Error:", err2)
 		}
 		ministruct.Username = username
 		ministruct.PostID = postid
@@ -92,10 +91,6 @@ func LikesNotify(db *sql.DB) []CommNotify {
 	return LikeNotification
 
 }
-
-
-
-
 
 func ResetCommentNotified(db *sql.DB) {
 	stmt, err := db.Prepare(`UPDATE comments
@@ -118,5 +113,29 @@ func ResetCommentNotified(db *sql.DB) {
 	}
 
 	fmt.Println(affected)
+
+}
+
+func ResetLikesNotified(db *sql.DB) {
+	stmt, err := db.Prepare(`UPDATE likes
+	SET notified = ?
+	WHERE creatorID = ?
+	;`)
+	defer stmt.Close()
+	if err != nil {
+		log.Fatal("ResetLikes 1:", err)
+	}
+
+	res, err2 := stmt.Exec(1, GuserId)
+	if err2 != nil {
+		log.Fatal("ResetLikes 2:", err)
+	}
+
+	affected, err3 := res.RowsAffected()
+	if err3 != nil {
+		log.Fatal("ResetLikes 3:", err)
+	}
+
+	fmt.Println("Likes Affected:", affected)
 
 }
