@@ -23,26 +23,26 @@ type ActivityPage struct {
 	Notification      int
 	CommentNote       []CommNotify
 	LikeNote          []CommNotify
+	DisLikeNote       []CommNotify
 }
 
 func (s *myServer) ActivityPage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		for _, item := range LikesNotify(s.Db) {
-			fmt.Println("LIKES NOTIFY:", item)
-		}
-
 		var data ActivityPage
 
-		if (len(CommentNotify(s.Db)) + len(LikesNotify(s.Db))) > 0 {
+		data.Notification = (len(CommentNotify(s.Db)) + len(LikesNotify(s.Db)) + len(DisLikesNotify(s.Db)))
+
+		if data.Notification > 0 {
 			data.Nbool = true
 		}
-
-		data.Notification = len(CommentNotify(s.Db)) + len(LikesNotify(s.Db))
 
 		data.CommentNote = CommentNotify(s.Db)
 
 		data.LikeNote = LikesNotify(s.Db)
+
+		data.DisLikeNote = DisLikesNotify(s.Db)
+		fmt.Println("DataDislikeNote:", data.DisLikeNote)
 
 		data.Posts = posts.UsersPostsHomepageData(s.Db, GuserId)
 
@@ -75,6 +75,11 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 		func() {
 			ResetLikesNotified(s.Db)
 		}()
+
+		func() {
+			ResetDisLikesNotified(s.Db)
+		}()
+
 
 	}
 }

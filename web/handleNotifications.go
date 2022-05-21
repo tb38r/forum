@@ -52,7 +52,7 @@ func CommentNotify(db *sql.DB) []CommNotify {
 
 }
 
-//return user, postid & posttitle where comment was made where notified = 0
+//return user, postid & posttitle where post was liked & where notified = 0
 func LikesNotify(db *sql.DB) []CommNotify {
 	rows, err := db.Query(`SELECT users.username, likes.postID, post.postTitle
 	FROM users, likes, post
@@ -91,6 +91,53 @@ func LikesNotify(db *sql.DB) []CommNotify {
 	return LikeNotification
 
 }
+
+//return user, postid & posttitle where post was disliked & where notified = 0
+func DisLikesNotify(db *sql.DB) []CommNotify {
+	rows, err := db.Query(`SELECT users.username, dislikes.postID, post.postTitle
+	FROM users, dislikes, post
+	 WHERE dislikes.creatorID = ?
+	 AND dislikes.userID != ?
+	 AND dislikes.notified = ?
+	 AND dislikes.userID = users.userID
+	 AND dislikes.postID = post.postID
+
+	;`, GuserId, GuserId, 0)
+	if err != nil {
+		log.Fatal("Web DisLikeNotify Error:", err)
+
+	}
+
+	DisLikeNotification := []CommNotify{}
+
+	var username string
+	var postid int
+	var pTitle string
+
+	defer rows.Close()
+	for rows.Next() {
+		ministruct := CommNotify{}
+		err2 := rows.Scan(&username, &postid, &pTitle)
+		if err2 != nil {
+			log.Fatal("LikesNotify Error:", err2)
+		}
+		ministruct.Username = username
+		ministruct.PostID = postid
+		ministruct.PostTitle = pTitle
+
+		DisLikeNotification = append(DisLikeNotification, ministruct)
+	}
+
+	return DisLikeNotification
+
+}
+
+
+
+
+
+
+
 
 func ResetCommentNotified(db *sql.DB) {
 	stmt, err := db.Prepare(`UPDATE comments
@@ -137,5 +184,29 @@ func ResetLikesNotified(db *sql.DB) {
 	}
 
 	fmt.Println("Likes Affected:", affected)
+
+}
+
+func ResetDisLikesNotified(db *sql.DB) {
+	stmt, err := db.Prepare(`UPDATE dislikes
+	SET notified = ?
+	WHERE creatorID = ?
+	;`)
+	defer stmt.Close()
+	if err != nil {
+		log.Fatal("ResetDisLikes 1:", err)
+	}
+
+	res, err2 := stmt.Exec(1, GuserId)
+	if err2 != nil {
+		log.Fatal("ResetDisLikes 2:", err)
+	}
+
+	affected, err3 := res.RowsAffected()
+	if err3 != nil {
+		log.Fatal("ResetDisLikes 3:", err)
+	}
+
+	fmt.Println("DisLikes Affected:", affected)
 
 }

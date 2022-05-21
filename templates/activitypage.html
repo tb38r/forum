@@ -94,12 +94,18 @@
     <h1>NOTIFICATIONS</h1>
     {{range .CommentNote}}
     <div class="activity-title">
-      <p> {{.Username}} left on comment on <a href="/showpost?postid={{.PostID}}">{{.PostTitle}} </a></p>
+      <p> {{.Username}} left on comment on your post <a href="/showpost?postid={{.PostID}}">{{.PostTitle}} </a></p>
     </div>
     {{end}}
     {{range .LikeNote}}
     <div class="activity-title">
       <p> {{.Username}} liked your post <a href="/showpost?postid={{.PostID}}">{{.PostTitle}} </a></p>
+    </div>
+    {{end}}
+    
+    {{range .DisLikeNote}}
+    <div class="activity-title">
+      <p> {{.Username}} disliked your post <a href="/showpost?postid={{.PostID}}">{{.PostTitle}} </a></p>
     </div>
     {{end}}
 

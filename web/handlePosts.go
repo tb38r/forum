@@ -133,6 +133,8 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 		postID := r.URL.Query().Get("postid")
 		PostIDInt, _ = strconv.Atoi(postID)
 
+		NotificationInt := len(CommentNotify(s.Db)) + len(LikesNotify(s.Db)) + len(DisLikesNotify(s.Db))
+
 		data := PostPageData{
 			Posts:           posts.GetPostData(s.Db, PostIDInt),
 			Comments:        comments.GetCommentData(s.Db, PostIDInt),
@@ -145,17 +147,17 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 			Image:           Imagename,
 			UserID:          GuserId,
 			UserType:        users.GetUserType(s.Db, GuserId),
-			Notification:    len(CommentNotify(s.Db)),
+			Notification:    NotificationInt,
 		}
 
-		if len(CommentNotify(s.Db)) > 0 {
+		if NotificationInt > 0 {
 			data.Nbool = true
 		}
-		fmt.Println(data.Comments)
-		for _, v := range data.Comments {
-			fmt.Println(v.CommentID)
-		}
-		fmt.Println(data.Liked)
+		// fmt.Println(data.Comments)
+		// for _, v := range data.Comments {
+		// 	fmt.Println(v.CommentID)
+		// }
+		// fmt.Println(data.Liked)
 
 		Tpl.ExecuteTemplate(w, "showpost.html", data)
 	}
