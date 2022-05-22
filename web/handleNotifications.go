@@ -6,14 +6,14 @@ import (
 	"log"
 )
 
-type CommNotify struct {
+type Notify struct {
 	Username  string
 	PostID    int
 	PostTitle string
 }
 
 //return user, postid & posttitle where comment was made where notified = 0
-func CommentNotify(db *sql.DB) []CommNotify {
+func CommentNotify(db *sql.DB) []Notify {
 	rows, err := db.Query(`SELECT users.username, comments.postID, post.postTitle
 	FROM users, comments, post
 	 WHERE comments.creatorID = ?
@@ -28,7 +28,7 @@ func CommentNotify(db *sql.DB) []CommNotify {
 
 	}
 
-	CommentNotification := []CommNotify{}
+	CommentNotification := []Notify{}
 
 	var username string
 	var postid int
@@ -36,7 +36,7 @@ func CommentNotify(db *sql.DB) []CommNotify {
 
 	defer rows.Close()
 	for rows.Next() {
-		ministruct := CommNotify{}
+		ministruct := Notify{}
 		err2 := rows.Scan(&username, &postid, &pTitle)
 		if err2 != nil {
 			log.Fatal("Web CommentUsername Error:", err2)
@@ -53,7 +53,7 @@ func CommentNotify(db *sql.DB) []CommNotify {
 }
 
 //return user, postid & posttitle where post was liked & where notified = 0
-func LikesNotify(db *sql.DB) []CommNotify {
+func LikesNotify(db *sql.DB) []Notify {
 	rows, err := db.Query(`SELECT users.username, likes.postID, post.postTitle
 	FROM users, likes, post
 	 WHERE likes.creatorID = ?
@@ -68,7 +68,7 @@ func LikesNotify(db *sql.DB) []CommNotify {
 
 	}
 
-	LikeNotification := []CommNotify{}
+	LikeNotification := []Notify{}
 
 	var username string
 	var postid int
@@ -76,7 +76,7 @@ func LikesNotify(db *sql.DB) []CommNotify {
 
 	defer rows.Close()
 	for rows.Next() {
-		ministruct := CommNotify{}
+		ministruct := Notify{}
 		err2 := rows.Scan(&username, &postid, &pTitle)
 		if err2 != nil {
 			log.Fatal("LikesNotify Error:", err2)
@@ -93,7 +93,7 @@ func LikesNotify(db *sql.DB) []CommNotify {
 }
 
 //return user, postid & posttitle where post was disliked & where notified = 0
-func DisLikesNotify(db *sql.DB) []CommNotify {
+func DisLikesNotify(db *sql.DB) []Notify {
 	rows, err := db.Query(`SELECT users.username, dislikes.postID, post.postTitle
 	FROM users, dislikes, post
 	 WHERE dislikes.creatorID = ?
@@ -108,7 +108,7 @@ func DisLikesNotify(db *sql.DB) []CommNotify {
 
 	}
 
-	DisLikeNotification := []CommNotify{}
+	DisLikeNotification := []Notify{}
 
 	var username string
 	var postid int
@@ -116,7 +116,7 @@ func DisLikesNotify(db *sql.DB) []CommNotify {
 
 	defer rows.Close()
 	for rows.Next() {
-		ministruct := CommNotify{}
+		ministruct := Notify{}
 		err2 := rows.Scan(&username, &postid, &pTitle)
 		if err2 != nil {
 			log.Fatal("LikesNotify Error:", err2)
@@ -131,13 +131,6 @@ func DisLikesNotify(db *sql.DB) []CommNotify {
 	return DisLikeNotification
 
 }
-
-
-
-
-
-
-
 
 func ResetCommentNotified(db *sql.DB) {
 	stmt, err := db.Prepare(`UPDATE comments

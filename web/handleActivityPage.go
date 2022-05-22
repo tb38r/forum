@@ -1,7 +1,6 @@
 package web
 
 import (
-	"fmt"
 	"forum/posts"
 	"forum/users"
 	"net/http"
@@ -21,9 +20,9 @@ type ActivityPage struct {
 	UserID            int
 	Nbool             bool
 	Notification      int
-	CommentNote       []CommNotify
-	LikeNote          []CommNotify
-	DisLikeNote       []CommNotify
+	CommentNote       []Notify
+	LikeNote          []Notify
+	DisLikeNote       []Notify
 }
 
 func (s *myServer) ActivityPage() http.HandlerFunc {
@@ -42,7 +41,6 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 		data.LikeNote = LikesNotify(s.Db)
 
 		data.DisLikeNote = DisLikesNotify(s.Db)
-		fmt.Println("DataDislikeNote:", data.DisLikeNote)
 
 		data.Posts = posts.UsersPostsHomepageData(s.Db, GuserId)
 
@@ -79,7 +77,6 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 		func() {
 			ResetDisLikesNotified(s.Db)
 		}()
-
 
 	}
 }
