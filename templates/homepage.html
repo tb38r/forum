@@ -18,6 +18,9 @@
       <a class="post btn-link" href="/createpost?userid={{.UserID}}">
         New Post
       </a>
+      {{ if eq .UserType "user" }}
+      <a class="post btn-link" href="">Become a Mod</a>
+      {{ end }}
     </p>
     <p style="text-align: right;">
     <form id="homepagefilter" action="/home" method="POST">
