@@ -3,6 +3,7 @@ package web
 import (
 	"fmt"
 	"forum/comments"
+	"forum/likes"
 	"net/http"
 	"strconv"
 )
@@ -40,7 +41,9 @@ func (s *myServer) StoreCommentHandler() http.HandlerFunc {
 		r.ParseForm()
 		ContentComment = r.FormValue("content")
 
-		comments.CreateComment(s.Db, GuserId, PostIDInt, ContentComment)
+		CreatorsID := likes.PostCreatorID(s.Db, PostIDInt)
+
+		comments.CreateComment(s.Db, GuserId, PostIDInt, ContentComment, CreatorsID)
 
 		var commentData comments.Comment
 		SPostID := strconv.Itoa(PostIDInt)

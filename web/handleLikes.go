@@ -11,7 +11,7 @@ import (
 )
 
 // var CUserIdint int
-var CommentLikeID int
+var  CommentLikeID int
 
 func (s *myServer) LikeHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -53,6 +53,7 @@ func (s *myServer) CommentLikeHandler() http.HandlerFunc {
 		// fmt.Println("Checking what cID method is in like handler", cid)
 
 		if !CommentUserLiked(s.Db) || CommentUserDisliked(s.Db) {
+			
 			likes.CommentLikeButton(s.Db, GuserId, CommentLikeID)
 			dislikes.DeleteCommentDislike(s.Db, GuserId, CommentLikeID)
 			fmt.Println("Like added to database----------------------")

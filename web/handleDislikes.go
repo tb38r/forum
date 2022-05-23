@@ -21,7 +21,11 @@ func (s *myServer) DislikeHandler() http.HandlerFunc {
 		SPostID := strconv.Itoa(PostIDInt)
 
 		if !UserDisliked(s.Db) || UserLiked(s.Db) {
-			dislikes.DislikeButton(s.Db, GuserId, PostIDInt)
+
+			CreatorsID := likes.PostCreatorID(s.Db, PostIDInt)
+
+
+			dislikes.DislikeButton(s.Db, GuserId, PostIDInt, CreatorsID)
 			likes.DeleteLike(s.Db, GuserId, PostIDInt)
 			fmt.Println("Dislike added to database----------------------")
 			http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)

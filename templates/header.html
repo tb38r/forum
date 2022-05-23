@@ -13,10 +13,19 @@
     <div class="topnav">
         <a class="active" href="/home">Home</a>
         <div class="login-container">
-            {{if .LoggedIn}}
+            {{if and .LoggedIn .Nbool }}
+
+            <a  class="notification" href="/activitypage?userid={{.UserID}}">
+                <span> {{ .Username }} </span>
+                <span class="badge">{{ .Notification}}</span>
+            </a>
+            <a class="active" href="/logout">Logout</a>
+
+
+            {{else if .LoggedIn}}
             <a href="/activitypage?userid={{.UserID}}">
-                    {{ .Username }}
-                </a>
+                {{ .Username }}
+            </a>
             <a class="active" href="/logout">Logout</a>
             {{else}}
             <form action="/loginauth" method="POST">

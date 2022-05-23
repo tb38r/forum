@@ -17,14 +17,14 @@ var db *sql.DB
 
 var LastIns int64
 
-func DislikeButton(db *sql.DB, userID int, postID int) {
-	stmt, err := db.Prepare("INSERT INTO dislikes(userID, postID) VALUES(?, ?) ")
+func DislikeButton(db *sql.DB, userID int, postID int, creator int) {
+	stmt, err := db.Prepare("INSERT INTO dislikes(userID, postID, notified, creatorID) VALUES(?, ?, 0, ?) ")
 	if err != nil {
 		fmt.Println("error preparing statement:", err)
 		return
 	}
 
-	result, _ := stmt.Exec(userID, postID)
+	result, _ := stmt.Exec(userID, postID, creator)
 
 	rowsAff, _ := result.RowsAffected()
 	LastIns, _ = result.LastInsertId()

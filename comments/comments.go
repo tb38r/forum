@@ -26,15 +26,15 @@ var db *sql.DB
 
 var LastIns int64
 
-func CreateComment(db *sql.DB, userID int, postID int, commentText string) {
-	stmt, err := db.Prepare("INSERT INTO comments (userID, postID, commentText, creationDate, notified) VALUES (?, ?, ?, strftime('%H:%M %d/%m/%Y','now', 'localtime'), 0)")
+func CreateComment(db *sql.DB, userID int, postID int, commentText string, creator int) {
+	stmt, err := db.Prepare("INSERT INTO comments (userID, postID, commentText, creationDate, notified, creatorID) VALUES (?, ?, ?, strftime('%H:%M %d/%m/%Y','now', 'localtime'), 0, ?)")
 
 	if err != nil {
 		fmt.Println("error preparing statement")
 		return
 	}
 
-	result, _ := stmt.Exec(userID, postID, commentText)
+	result, _ := stmt.Exec(userID, postID, commentText, creator)
 
 	rowsAff, _ := result.RowsAffected()
 	LastIns, _ = result.LastInsertId()

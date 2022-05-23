@@ -27,12 +27,12 @@ type PostPageData struct {
 	UserID          int
 	UserType        string
 	Reported        bool
+	Nbool           bool
+	Notification    int
 }
 
-// type Server server.Server
-var UserIdint int
-
 var (
+	UserIdint int
 	PostIDInt int
 	Imagename string
 )
@@ -132,6 +132,8 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 		postID := r.URL.Query().Get("postid")
 		PostIDInt, _ = strconv.Atoi(postID)
 
+		NotificationInt := len(CommentNotify(s.Db)) + len(LikesNotify(s.Db)) + len(DisLikesNotify(s.Db))
+
 		data := PostPageData{
 			Posts:           posts.GetPostData(s.Db, PostIDInt),
 			Comments:        comments.GetCommentData(s.Db, PostIDInt, GuserId),
@@ -144,29 +146,17 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 			Image:           Imagename,
 			UserID:          GuserId,
 			UserType:        users.GetUserType(s.Db, GuserId),
+			Notification:    NotificationInt,
 			Reported:        ModReported(s.Db),
 		}
-		// for _, v := range data.Comments {
-		// 	v.UserType = users.GetUserType(s.Db, GuserId)
-		// 	// fmt.Println("this is the usertype", v.UserType)
-		// 	fmt.Println("this is V", v.UserType)
-		// 	fmt.Println("this is the comments struct", data.Comments)
-		// }
-		fmt.Println(data.Liked)
+
+		if NotificationInt > 0 {
+			data.Nbool = true
+		}
 
 		Tpl.ExecuteTemplate(w, "showpost.html", data)
 	}
 }
-
-// func (s *myServer) EmptyCommentPost() http.HandlerFunc {
-// 	return func(w http.ResponseWriter, r *http.Request) {
-// 		SGuserId := strconv.Itoa(GuserId)
-
-// 		fmt.Fprint(w, "Can't create an empty post!")
-// 		//Tpl.ExecuteTemplate(w, "emptycommentpost.html", nil)
-// 		http.Redirect(w, r, "/createpost/?userid="+SGuserId, http.StatusSeeOther)
-// 	}
-// }
 
 func (s *myServer) DeletePost() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

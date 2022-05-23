@@ -18,24 +18,33 @@ type ActivityPage struct {
 	Username          string
 	LoggedIn          bool
 	UserID            int
+	Nbool             bool
+	Notification      int
+	CommentNote       []Notify
+	LikeNote          []Notify
+	DisLikeNote       []Notify
 }
 
 func (s *myServer) ActivityPage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
 		var data ActivityPage
+
+		data.Notification = (len(CommentNotify(s.Db)) + len(LikesNotify(s.Db)) + len(DisLikesNotify(s.Db)))
+
+		if data.Notification > 0 {
+			data.Nbool = true
+		}
+
+		data.CommentNote = CommentNotify(s.Db)
+
+		data.LikeNote = LikesNotify(s.Db)
+
+		data.DisLikeNote = DisLikesNotify(s.Db)
 
 		data.Posts = posts.UsersPostsHomepageData(s.Db, GuserId)
 
 		data.CommentsWithPosts = posts.ActivityComments(s.Db, GuserId)
-
-		//value := posts.ActivityCommentLikes(s.Db, GuserId)
-		// for _, item := range value {
-		// 	fmt.Print("UserID: ", item.UserID, "\t")
-		// 	fmt.Print("Title: ", item.PostTitle, "\t")
-		// 	fmt.Print("Comment: ", item.CommentText, "\t")
-		// 	fmt.Println()
-
-		// }
 
 		data.LikedPosts = posts.ActivityPostLikes(s.Db, GuserId)
 
@@ -52,17 +61,22 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 		if string(r.URL.RawQuery[len(r.URL.RawQuery)-1]) != SuserID {
 			http.Error(w, "Incorrect user request made!", http.StatusBadRequest)
 			w.WriteHeader(http.StatusBadRequest)
-			// fmt.Fprintln(w, r.URL.Path)
-			// fmt.Fprintln(w, r.URL.RawQuery)
 			return
 		}
 
-		// if r.URL.Path != "/activitypage/"+r.URL.RawQuery {
-		// 	//	http.Error(w, "Incorrect user request made!", http.StatusBadRequest)
-		// 	fmt.Fprintln(w, r.URL.Path)
-		// 	fmt.Fprintln(w, r.URL.RawQuery)
-		// 	return
-		// }
 		Tpl.ExecuteTemplate(w, "activitypage.html", data)
+
+		func() {
+			ResetCommentNotified(s.Db)
+		}()
+
+		func() {
+			ResetLikesNotified(s.Db)
+		}()
+
+		func() {
+			ResetDisLikesNotified(s.Db)
+		}()
+
 	}
 }

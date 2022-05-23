@@ -18,7 +18,7 @@
     <a class="navbar-brand" href="#comments">COMMENTS</a>
     <a class="navbar-brand" href="#likes">LIKES</a>
     <a class="navbar-brand" href="#dislikes">DISLIKES</a>
-    <a class="navbar-brand" href="#">EDIT</a>
+    <a class="navbar-brand" href="#notifications">NOTIFICATIONS</a>
     <a class="navbar-brand" href="/home">HOME</a>
   </nav>
 
@@ -86,4 +86,30 @@
 
 
   </div>
+
+  <br>
+  <br>
+
+  <div class="page" id="notifications">
+    <h1>NOTIFICATIONS</h1>
+    {{range .CommentNote}}
+    <div class="activity-title">
+      <p> {{.Username}} left on comment on your post <a href="/showpost?postid={{.PostID}}">{{.PostTitle}} </a></p>
+    </div>
+    {{end}}
+    {{range .LikeNote}}
+    <div class="activity-title">
+      <p> {{.Username}} liked your post <a href="/showpost?postid={{.PostID}}">{{.PostTitle}} </a></p>
+    </div>
+    {{end}}
+    
+    {{range .DisLikeNote}}
+    <div class="activity-title">
+      <p> {{.Username}} disliked your post <a href="/showpost?postid={{.PostID}}">{{.PostTitle}} </a></p>
+    </div>
+    {{end}}
+
+  </div>
+
+
 </body>

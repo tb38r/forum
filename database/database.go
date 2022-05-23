@@ -44,7 +44,10 @@ func CreateDB() {
 		creatorID integer);`)
 	db.Exec(`create table if not exists dislikes (dislikeID integer PRIMARY KEY AUTOINCREMENT, 
 			userID integer REFERENCES users(userID), postID integer REFERENCES post(postID), 
-			commentID integer REFERENCES comments(commentID));`)
-	db.Exec(`create table if not exists report(reportID integer PRIMARY KEY AUTOINCREMENT, 
+			commentID integer REFERENCES comments(commentID),
+			notified integer,
+			creatorID integer);`)
+	db.Exec(`create table if not exists report(reportID integer PRIMARY KEY, 
 				userID integer REFERENCES users(userID), postID integer REFERENCES post(postID));`)
+
 }

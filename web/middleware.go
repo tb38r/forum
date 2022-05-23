@@ -33,7 +33,6 @@ func Auth(HandlerFunc http.HandlerFunc) http.HandlerFunc {
 func SessionChecker(HandlerFunc http.HandlerFunc) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println(users.DbSessions)
 		if users.SessionExists(users.CurrentUser) {
 			fmt.Println()
 			fmt.Println("Session Exists/ID", users.DbSessions)
@@ -55,7 +54,7 @@ func SessionChecker(HandlerFunc http.HandlerFunc) http.HandlerFunc {
 				http.SetCookie(w, c)
 				users.DbSessions[users.CurrentUser] = c.Value
 				HandlerFunc.ServeHTTP(w, r)
-				fmt.Println("Map Values reassigned for new client log in: ", users.DbSessions)
+				fmt.Println("Map Values reassigned for new client log in:  ", users.DbSessions)
 				fmt.Println()
 
 				return
@@ -102,10 +101,10 @@ func SessionChecker(HandlerFunc http.HandlerFunc) http.HandlerFunc {
 func HomepageSessionChecker(HandlerFunc http.HandlerFunc) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println(users.DbSessions)
+		//fmt.Println(users.DbSessions)
 		if users.SessionExists(users.CurrentUser) {
 			fmt.Println()
-			fmt.Println("Session Exists/ID", users.DbSessions)
+			//fmt.Println("Session Exists/ID", users.DbSessions)
 			fmt.Println()
 
 			// Read the cookie,if there are any
@@ -122,11 +121,8 @@ func HomepageSessionChecker(HandlerFunc http.HandlerFunc) http.HandlerFunc {
 
 				//expire cookie as there's an active session elsewhere
 				for _, cookie := range r.Cookies() {
-					fmt.Println("-------Test Delete 3")
 
 					if cookie.Name == users.CurrentUser {
-						fmt.Println("checking if loop entered--------------------------------------------------------")
-						fmt.Println("1st max age check ----> ", cookie.MaxAge, cookie.Value)
 
 						cookie.MaxAge = -1
 						//cookie.Value = ""
