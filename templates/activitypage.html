@@ -31,6 +31,11 @@
       <p> <a href="/showpost?postid={{.PostID}}">{{ .PostTitle }}</a></p>
     </div>
 
+    <form action="/deleteactpost" method="POST">
+      <button class="like-dislike-btn" type="submit" name="postID" value="{{ .PostID }}"
+        name="deletecomment">Delete</button>
+    </form>
+
     {{end}}
   </div>
 
@@ -102,7 +107,7 @@
       <p> {{.Username}} liked your post <a href="/showpost?postid={{.PostID}}">{{.PostTitle}} </a></p>
     </div>
     {{end}}
-    
+
     {{range .DisLikeNote}}
     <div class="activity-title">
       <p> {{.Username}} disliked your post <a href="/showpost?postid={{.PostID}}">{{.PostTitle}} </a></p>
