@@ -147,7 +147,7 @@ func (s *myServer) GoogleOAUTHLogin() http.HandlerFunc {
 
 		for i := 0; i < len(GMailAdd.Email); i++ {
 			if GMailAdd.Email[i] == '@' {
-				GoogleUserName = GMailAdd.Email[0:i] + GMailAdd.ID[0:4]
+				GoogleUserName = GMailAdd.Email[0:i] + GMailAdd.ID[0:4] + "[google]"
 			}
 		}
 
@@ -305,7 +305,7 @@ func (s *myServer) GitOAUTHLogin() http.HandlerFunc {
 		fmt.Println(Guser.Username)
 		fmt.Println(GitUserMail[0])
 
-		GitLoginName = Guser.Username
+		GitLoginName = Guser.Username + "[git]"
 
 		var (
 			UnameExists  bool
@@ -325,7 +325,7 @@ func (s *myServer) GitOAUTHLogin() http.HandlerFunc {
 
 		// check if username already exists
 		userStmt := "SELECT userID FROM users WHERE username = ?"
-		rowU := s.Db.QueryRow(userStmt, Guser.Username)
+		rowU := s.Db.QueryRow(userStmt, GitLoginName)
 		var uIDs string
 		error := rowU.Scan(&uIDs)
 		if error != sql.ErrNoRows {
@@ -338,13 +338,14 @@ func (s *myServer) GitOAUTHLogin() http.HandlerFunc {
 
 		if !UnameExists && !UemailExists {
 
-			users.RegisterUser(s.Db, Guser.Username, blank, GitUserMail[0])
+			users.RegisterUser(s.Db, GitLoginName, blank, GitUserMail[0])
 		} else if !UnameExists && UemailExists {
 			Tpl.ExecuteTemplate(w, "register.html", "email already exists")
 			return
 			//fmt.Print("This is an existing user")
 		} else if UnameExists && !UemailExists {
 			Tpl.ExecuteTemplate(w, "register.html", "username already exists")
+			return
 		}
 
 		// // get userId to pass onto createpost handler
