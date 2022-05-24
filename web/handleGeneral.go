@@ -18,13 +18,13 @@ type HomepageData struct {
 	UserID       int
 	Nbool        bool
 	Notification int
+	UserType     string
 	// PostUsername  map[int]string
 }
 
 // in chrome this handler is being run twice on localhost:8080, on safari only once (which is what we need) *** UNLESS route is changed from / to /home
 func (s *myServer) HomepageHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		user := users.CurrentUser
 		s.Db, _ = sql.Open("sqlite3", "forum.db")
 
@@ -38,7 +38,7 @@ func (s *myServer) HomepageHandler() http.HandlerFunc {
 		if notify > 0 {
 			x = true
 		}
-		homePageData := HomepageData{user, homepage, users.AlreadyLoggedIn(r), GuserId, x, notify}
+		homePageData := HomepageData{user, homepage, users.AlreadyLoggedIn(r), GuserId, x, notify, users.GetUserType(s.Db, GuserId)}
 		category := r.FormValue("category")
 		homePageFilter := r.FormValue("userfilter")
 
@@ -47,19 +47,19 @@ func (s *myServer) HomepageHandler() http.HandlerFunc {
 			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
 		} else if len(category) > 0 {
 			categoryFilter := posts.CategoryPagePosts(s.Db, category)
-			homePageData = HomepageData{user, categoryFilter, users.AlreadyLoggedIn(r), GuserId, x, notify}
+			homePageData = HomepageData{user, categoryFilter, users.AlreadyLoggedIn(r), GuserId, x, notify, users.GetUserType(s.Db, GuserId)}
 			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
 		} else if homePageFilter == "Created Post" {
 			userFilter := posts.UsersPostsHomepageData(s.Db, GuserId)
-			homePageData = HomepageData{user, userFilter, users.AlreadyLoggedIn(r), GuserId, x, notify}
+			homePageData = HomepageData{user, userFilter, users.AlreadyLoggedIn(r), GuserId, x, notify, users.GetUserType(s.Db, GuserId)}
 			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
 		} else if homePageFilter == "Liked Posts" {
 			userFilter := posts.UsersLikesHomepageData(s.Db, GuserId)
-			homePageData = HomepageData{user, userFilter, users.AlreadyLoggedIn(r), GuserId, x, notify}
+			homePageData = HomepageData{user, userFilter, users.AlreadyLoggedIn(r), GuserId, x, notify, users.GetUserType(s.Db, GuserId)}
 			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
 		} else if homePageFilter == "Reported Posts" {
 			userFilter := posts.ReportedPostsHomepageData(s.Db)
-			homePageData = HomepageData{user, userFilter, users.AlreadyLoggedIn(r), GuserId, x ,notify}
+			homePageData = HomepageData{user, userFilter, users.AlreadyLoggedIn(r), GuserId, x, notify, users.GetUserType(s.Db, GuserId)}
 			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
 		}
 	}

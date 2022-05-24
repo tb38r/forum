@@ -13,13 +13,14 @@
   {{ template "header.html" . }}
   <div id="maincontent">
     <h2>Posts</h2>
-    {{if .LoggedIn}}
     <p style="text-align: right;">
+    {{if .LoggedIn}}
       <a class="post btn-link" href="/createpost?userid={{.UserID}}">
         New Post
       </a>
     </p>
     <p style="text-align: right;">
+    {{if eq .UserType "admin"}}
     <form id="homepagefilter" action="/home" method="POST">
       <label for="userfilter">Sort by:</label>
       <select name="userfilter" id="userfilter">
@@ -29,7 +30,16 @@
       </select>
       <input type="submit" value="Submit">
     </form>
-    </p>
+        {{else}}
+        <form id="homepagefilter" action="/home" method="POST">
+      <label for="userfilter">Sort by:</label>
+      <select name="userfilter" id="userfilter">
+        <option value="Created Post">My Posts</option>
+        <option value="Liked Posts">Liked Posts</option>
+      </select>
+      <input type="submit" value="Submit">
+    </form>
+    {{end}}
     {{end}}
     <p style="text-align: right;">
     <form id="categoryfilter" action="/home" method="POST">
