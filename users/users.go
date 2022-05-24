@@ -134,3 +134,12 @@ func AcceptMod(db *sql.DB, username string) {
 
 	stmt.Exec(username)
 }
+
+func DeclineMod(db *sql.DB, username string) {
+	stmt, err := db.Prepare("UPDATE users SET becomemod = 0 WHERE username = ?")
+
+	if err != nil {
+		fmt.Println("Error updating the become mod column in users table when declining mod", err)
+	}
+	stmt.Exec(username)
+}

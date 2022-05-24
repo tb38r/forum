@@ -258,3 +258,15 @@ func (s *myServer) AcceptAModHandler() http.HandlerFunc {
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}
 }
+
+func (s *myServer) DeclineAModHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		for _, v := range r.Form {
+			for _, name := range v {
+				users.DeclineMod(s.Db, name)
+			}
+		}
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
+	}
+}
