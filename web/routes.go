@@ -47,7 +47,7 @@ func (s *myServer) Routes(a <-chan time.Time) {
 	http.HandleFunc("/commentlikes", Rate(a, Auth(SessionChecker(s.CommentLikeHandler()))))
 	http.HandleFunc("/commentdislikes", Rate(a, Auth(SessionChecker(s.CommentDislikeHandler()))))
 	http.HandleFunc("/showpost/", Rate(a, s.ShowPostHandler()))
-
+	http.HandleFunc("/becomeamod", Rate(a, Auth(SessionChecker(s.BecomeAModHandler()))))
 	// http.HandleFunc("/emptycommentpost/", Rate(a, Auth(SessionChecker(s.EmptyCommentPost()))))
 	// http.HandleFunc("/showcomment/", Rate(a, Auth(SessionChecker(s.ShowCommentHandler()))))
 	// this is for the template css files to run.

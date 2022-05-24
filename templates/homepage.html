@@ -14,14 +14,16 @@
   <div id="maincontent">
     <h2>Posts</h2>
     {{if .LoggedIn}}
-    <p style="text-align: right;">
+    <div class="userbuttons">
       <a class="post btn-link" href="/createpost?userid={{.UserID}}">
         New Post
       </a>
       {{ if eq .UserType "user" }}
-      <a class="post btn-link" href="">Become a Mod</a>
+      <form action="/becomeamod" method="post" style="all: inherit;">
+        <a class="post btn-link" href="/becomeamod">Become a Mod</a>
+      </form>
       {{ end }}
-    </p>
+    </div>
     <p style="text-align: right;">
     <form id="homepagefilter" action="/home" method="POST">
       <label for="userfilter">Sort by:</label>

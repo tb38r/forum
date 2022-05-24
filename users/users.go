@@ -37,7 +37,7 @@ var DbSessions = make(map[string]string)
 // this func registers a users username, password(as a hash) and email
 func RegisterUser(db *sql.DB, username string, hash []byte, email string) {
 	// db, _ = sql.Open("sqlite3", "forum.db")
-	stmt, err := db.Prepare("INSERT INTO users (username, hash, email, usertype) VALUES (?, ?, ?, 'user')")
+	stmt, err := db.Prepare("INSERT INTO users (username, hash, email, usertype, becomemod) VALUES (?, ?, ?, 'user', 0)")
 	if err != nil {
 		fmt.Println("error preparing statement:", err)
 		return
@@ -93,4 +93,14 @@ func GetUserType(db *sql.DB, userId int) string {
 		fmt.Println("error from get user", err)
 	}
 	return userType
+}
+
+func BecomeAMod(db *sql.DB, userId int) {
+	stmt, err := db.Prepare("UPDATE users SET becomemod = 1 WHERE userId= ?")
+
+	if err != nil {
+		fmt.Println("Error updating the become mod column in users table", err)
+	}
+
+	stmt.Exec(userId)
 }
