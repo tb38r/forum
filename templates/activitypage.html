@@ -34,10 +34,12 @@
       <button class="like-dislike-btn" type="submit" name="postID" value="{{ .PostID }}" name="deletepost">Delete
         Post</button>
     </form>
-    <form action="/editactpost" method="POST">
-      <select id="new_data" name="new_data" class="tag-select chzn-done" multiple="" >
 
-      <button class="like-dislike-btn" type="submit" name="editpost" value="{{ .PostID }}" value = "{{ .PostTitle }}" value = "{{ .PostContent}}" >Edit
+    <form action="/editactpost" method="POST">
+      <button class="like-dislike-btn" id="editpost" name="editpost"
+        value="{{ .PostID }}& {{ .PostTitle}} &{{ .PostContent}}" type="submit">Edit
+
+
         Post</button>
     </form>
 
