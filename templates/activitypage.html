@@ -122,6 +122,15 @@
       </form>
     </div>
     {{ end }}
+    <h1>All Mods</h1>
+    {{ range $_, $u := .AllMods}}
+    <div class="activity-title">
+      <p>{{$u}}</p>
+      <form action="/demotemod" method="post">
+        <button name="username" value="{{$u}}">Demote</button>
+      </form>
+    </div>
+    {{ end }}
     {{ end }}
   </div>
 

@@ -143,3 +143,31 @@ func DeclineMod(db *sql.DB, username string) {
 	}
 	stmt.Exec(username)
 }
+
+func GetAllMods(db *sql.DB) []string {
+	var allMods []string
+
+	rows, err := db.Query("SELECT username FROM users WHERE userType= 'mod'")
+	if err != nil {
+		fmt.Println("Error with getting all mod usernames", err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var username string
+		err2 := rows.Scan(&username)
+		allMods = append(allMods, username)
+		if err2 != nil {
+			fmt.Println("cannot range through to get usernames of moderators", err2)
+		}
+	}
+	return allMods
+}
+
+func DemoteMod(db *sql.DB, username string) {
+	stmt, err := db.Prepare("UPDATE users SET becomemod = 0, usertype = 'user' WHERE username = ?")
+
+	if err != nil {
+		fmt.Println("Error demoting a mod", err)
+	}
+	stmt.Exec(username)
+}

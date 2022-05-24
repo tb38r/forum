@@ -270,3 +270,15 @@ func (s *myServer) DeclineAModHandler() http.HandlerFunc {
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}
 }
+
+func (s *myServer) DemoteAModHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		for _, v := range r.Form {
+			for _, name := range v {
+				users.DemoteMod(s.Db, name)
+			}
+		}
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
+	}
+}
