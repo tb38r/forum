@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"forum/comments"
 	"forum/posts"
 	"forum/users"
@@ -24,6 +25,20 @@ type ActivityPage struct {
 	CommentNote       []Notify
 	LikeNote          []Notify
 	DisLikeNote       []Notify
+}
+
+func (s *myServer) EditActComment() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		r.ParseForm()
+		for _, v := range r.Form {
+			for _, id := range v {
+				fmt.Println("-----------", id)
+			}
+		}
+		
+		Tpl.ExecuteTemplate(w, "editactpost.html", PostPageData{LoggedIn: users.AlreadyLoggedIn(r), Username: users.CurrentUser, UserID: UserIdint})
+	}
 }
 
 func (s *myServer) DeleteActComment() http.HandlerFunc {

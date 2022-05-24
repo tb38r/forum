@@ -49,6 +49,8 @@ func (s *myServer) Routes(a <-chan time.Time) {
 	http.HandleFunc("/showpost/", Rate(a, s.ShowPostHandler()))
 	http.HandleFunc("/deleteactpost", Rate(a, Auth(SessionChecker(s.DeleteActPost()))))
 	http.HandleFunc("/deleteactcomment", Rate(a, Auth(SessionChecker(s.DeleteActComment()))))
+	http.HandleFunc("/editactpost", Rate(a, Auth(SessionChecker(s.EditActComment()))))
+
 
 	// http.HandleFunc("/emptycommentpost/", Rate(a, Auth(SessionChecker(s.EmptyCommentPost()))))
 	// http.HandleFunc("/showcomment/", Rate(a, Auth(SessionChecker(s.ShowCommentHandler()))))

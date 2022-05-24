@@ -152,7 +152,7 @@ func ResetCommentNotified(db *sql.DB) {
 		log.Fatal("ResetComment 3:", err)
 	}
 
-	fmt.Println(affected)
+	fmt.Println("Reset Affected", affected)
 
 }
 

@@ -105,25 +105,6 @@ func DeleteCommentLike(db *sql.DB, userID int, commentID int) {
 	fmt.Println("last inserted", LastIns)
 }
 
-// func GetLikeData(db *sql.DB, likeID int) Like {
-// 	row := db.QueryRow("SELECT * FROM like WHERE likeID = ?;", likeID)
-// 	var like Like
-// 	err := row.Scan(&like.PostID, &like.UserID, &like.PostID, &like.CommentID)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	return like
-// }
-
-// func NotifyPostLikes(db *sql.DB, userID int) int {
-// 	var count int
-
-// 	err := db.QueryRow("SELECT COUNT(*) FROM likes WHERE postID = ?;", postID).Scan(&count)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	return count
-// }
 
 func GetPostLikes(db *sql.DB, postID int) int {
 	var count int
@@ -155,26 +136,3 @@ func GetNumComment(db *sql.DB, postID int) int {
 	return count
 }
 
-// func HomePostLikes(db *sql.DB) map[int]int {
-// 	rows, err := db.Query(`SELECT post.postID, count(*) FROM likes
-// 					INNER JOIN post ON likes.postID = post.postID
-// 					GROUP BY likes.postID;`)
-// 	if err != nil {
-// 		fmt.Println("HomePostLikes error", err)
-// 	}
-
-// 	PostLikes := make(map[int]int)
-
-// 	var postID int
-// 	var likes int
-
-// 	defer rows.Close()
-// 	for rows.Next() {
-// 		err2 := rows.Scan(&postID, &likes)
-// 		if err2 != nil {
-// 			log.Fatal("HomePostLikers err2", err2)
-// 		}
-// 		PostLikes[postID] = likes
-// 	}
-// 	return PostLikes
-// }
