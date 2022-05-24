@@ -23,6 +23,8 @@ type ActivityPage struct {
 	CommentNote       []Notify
 	LikeNote          []Notify
 	DisLikeNote       []Notify
+	ModRequests       []string
+	UserType          string
 }
 
 func (s *myServer) ActivityPage() http.HandlerFunc {
@@ -55,6 +57,8 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 		data.DislikedComments = posts.ActivityCommentDislikes(s.Db, GuserId)
 		data.Username = users.CurrentUser
 		data.LoggedIn = users.AlreadyLoggedIn(r)
+		data.ModRequests = users.GetModRequests(s.Db)
+		data.UserType = users.GetUserType(s.Db, GuserId)
 		data.UserID = GuserId
 		SuserID := strconv.Itoa(GuserId)
 

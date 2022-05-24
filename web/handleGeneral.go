@@ -48,19 +48,19 @@ func (s *myServer) HomepageHandler() http.HandlerFunc {
 			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
 		} else if len(category) > 0 {
 			categoryFilter := posts.CategoryPagePosts(s.Db, category)
-			homePageData = HomepageData{user, categoryFilter, users.AlreadyLoggedIn(r), GuserId, x, notify, userType}
+			homePageData.AllPosts = categoryFilter
 			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
 		} else if homePageFilter == "Created Post" {
 			userFilter := posts.UsersPostsHomepageData(s.Db, GuserId)
-			homePageData = HomepageData{user, userFilter, users.AlreadyLoggedIn(r), GuserId, x, notify, userType}
+			homePageData.AllPosts = userFilter
 			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
 		} else if homePageFilter == "Liked Posts" {
-			userFilter := posts.UsersLikesHomepageData(s.Db, GuserId)
-			homePageData = HomepageData{user, userFilter, users.AlreadyLoggedIn(r), GuserId, x, notify, userType}
+			likedFilter := posts.UsersLikesHomepageData(s.Db, GuserId)
+			homePageData.AllPosts = likedFilter
 			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
 		} else if homePageFilter == "Reported Posts" {
-			userFilter := posts.ReportedPostsHomepageData(s.Db)
-			homePageData = HomepageData{user, userFilter, users.AlreadyLoggedIn(r), GuserId, x, notify, userType}
+			reportFilter := posts.ReportedPostsHomepageData(s.Db)
+			homePageData.AllPosts = reportFilter
 			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
 		}
 	}

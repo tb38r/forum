@@ -102,14 +102,21 @@
       <p> {{.Username}} liked your post <a href="/showpost?postid={{.PostID}}">{{.PostTitle}} </a></p>
     </div>
     {{end}}
-    
+
     {{range .DisLikeNote}}
     <div class="activity-title">
       <p> {{.Username}} disliked your post <a href="/showpost?postid={{.PostID}}">{{.PostTitle}} </a></p>
     </div>
     {{end}}
 
+    {{ if eq .UserType "admin" }}
+    <h1>Mod Requests</h1>
+    {{ range $_, $u := .ModRequests }}
+    <div class="activity-title">
+      <p>{{ $u }}</p>
+    </div>
+    {{ end }}
+    {{ end }}
   </div>
-
 
 </body>

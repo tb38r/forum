@@ -104,3 +104,23 @@ func BecomeAMod(db *sql.DB, userId int) {
 
 	stmt.Exec(userId)
 }
+
+func GetModRequests(db *sql.DB) []string {
+	var modRequests []string
+	rows, err := db.Query("SELECT username FROM users WHERE becomemod = 1")
+	if err != nil {
+		fmt.Println("Error with getting all mod requests", err)
+	}
+
+	defer rows.Close()
+	for rows.Next() {
+		var username string
+		err2 := rows.Scan(&username)
+		modRequests = append(modRequests, username)
+		if err2 != nil {
+			fmt.Println("cannot range through to get usernames of requested mods", err2)
+		}
+	}
+
+	return modRequests
+}
