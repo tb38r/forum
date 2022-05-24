@@ -102,7 +102,7 @@ func NetLikes(db *sql.DB, PostID int) int {
 
 // returns user's comments with their corresponding posts
 func ActivityComments(db *sql.DB, userid int) []ActPage {
-	rows, err := db.Query(`SELECT post.userID, post.postTitle, comments.commentText, post.postID 
+	rows, err := db.Query(`SELECT post.userID, post.postTitle, comments.commentID, comments.commentText, post.postID 
 	FROM post, comments
 	WHERE comments.userID = ?
 	AND post.postID = comments.postID
@@ -114,7 +114,7 @@ func ActivityComments(db *sql.DB, userid int) []ActPage {
 	defer rows.Close()
 	for rows.Next() {
 		var p ActPage
-		err2 := rows.Scan(&p.PostID, &p.PostTitle, &p.CommentText, &p.PostID)
+		err2 := rows.Scan(&p.PostID, &p.PostTitle, &p.CommentID, &p.CommentText, &p.PostID)
 		p.PostLike = likes.GetPostLikes(db, p.PostID)
 		pac = append(pac, p)
 		if err2 != nil {
@@ -343,6 +343,27 @@ func DeletePost(db *sql.DB, postID int) {
 		fmt.Println("error deleting reports from the report table", err3)
 	}
 	stmt3.Exec(postID)
+
+	// deleting the likes connected to a post
+	stmt4, err4 := db.Prepare("DELETE FROM likes WHERE postID = ?")
+	if err3 != nil {
+		fmt.Println("error deleting reports from the likes table", err4)
+	}
+	stmt4.Exec(postID)
+
+	// deleting the dislikes connected to a post
+	stmt5, err5 := db.Prepare("DELETE FROM dislikes WHERE postID = ?")
+	if err4 != nil {
+		fmt.Println("error deleting reports from the dislikes table", err5)
+	}
+	stmt5.Exec(postID)
+
+	// deleting the dislikes connected to a post
+	stmt6, err6 := db.Prepare("DELETE FROM category WHERE postID = ?")
+	if err3 != nil {
+		fmt.Println("error deleting reports from the dislikes table", err6)
+	}
+	stmt6.Exec(postID)
 }
 
 func ReportedPostsHomepageData(db *sql.DB) []HomepagePosts {

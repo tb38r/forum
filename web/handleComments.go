@@ -57,7 +57,6 @@ func (s *myServer) StoreCommentHandler() http.HandlerFunc {
 		fmt.Println("testing method to get comment id", CommentId)
 
 		http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
-		//http.Redirect(w, r, "/home", http.StatusSeeOther)
 
 	}
 }

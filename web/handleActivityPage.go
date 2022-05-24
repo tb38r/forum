@@ -1,7 +1,7 @@
 package web
 
 import (
-	"fmt"
+	"forum/comments"
 	"forum/posts"
 	"forum/users"
 	"net/http"
@@ -26,9 +26,22 @@ type ActivityPage struct {
 	DisLikeNote       []Notify
 }
 
+func (s *myServer) DeleteActComment() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		for _, v := range r.Form {
+			for _, id := range v {
+				idInt, _ := strconv.Atoi(id)
+				comments.DeleteComment(s.Db, idInt)
+			}
+		}
+		stringGID := strconv.Itoa(GuserId)
+		http.Redirect(w, r, "/activitypage?userid="+stringGID, http.StatusSeeOther)
+	}
+}
+
 func (s *myServer) DeleteActPost() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("ACTIVTY URL PATH--------", r.URL.Path)
 		r.ParseForm()
 
 		for _, v := range r.Form {

@@ -135,4 +135,16 @@ func DeleteComment(db *sql.DB, commentId int) {
 		fmt.Println("error deleting comment", err)
 	}
 	stmt.Exec(commentId)
+
+	stmt2, err := db.Prepare("DELETE FROM likes WHERE commentID=?")
+	if err != nil {
+		fmt.Println("error deleting comment", err)
+	}
+	stmt2.Exec(commentId)
+
+	stmt3, err := db.Prepare("DELETE FROM dislikes WHERE commentID=?")
+	if err != nil {
+		fmt.Println("error deleting comment", err)
+	}
+	stmt3.Exec(commentId)
 }

@@ -30,10 +30,9 @@
     <div class="activity-title">
       <p> <a href="/showpost?postid={{.PostID}}">{{ .PostTitle }}</a></p>
     </div>
-
     <form action="/deleteactpost" method="POST">
-      <button class="like-dislike-btn" type="submit" name="postID" value="{{ .PostID }}"
-        name="deletecomment">Delete</button>
+      <button class="like-dislike-btn" type="submit" name="postID" value="{{ .PostID }}" name="deletepost">Delete
+        Post</button>
     </form>
 
     {{end}}
@@ -45,10 +44,18 @@
   <div class="page" id="comments">
     <h1>YOUR COMMENTS</h1>
     {{range .CommentsWithPosts}}
+
     <div class="activity-title">
       <p> <a href="/showpost?postid={{.PostID}}">{{ .PostTitle }}</a></p>
+      <p>{{ .CommentText}}</p>
+
+
+      <form action="/deleteactcomment" method="POST">
+        <button class="like-dislike-btn" type="submit" name="deletecomment" value="{{ .CommentID }}"
+          name="deletecomment">Delete Comment</button>
+      </form>
+
     </div>
-    <p>{{ .CommentText}}</p>
 
     {{end}}
 
