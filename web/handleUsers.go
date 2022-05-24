@@ -2,16 +2,406 @@ package web
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"forum/users"
+	"io"
+	"io/ioutil"
+	"log"
 	"net/http"
+	"os"
 	"unicode"
 
 	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
+type GitOAuthAccessResponse struct {
+	AccessToken string `json:"access_token"`
+}
+
+type GoogleOAuthAccessResponse struct {
+	AccessToken string `json:"access_token"`
+}
+
+type GoogleEmail struct {
+	Email string `json:"email"`
+	ID    string `json:"id"`
+}
+
+type GitUserName struct {
+	Username string `json:"login"`
+	//Email    string                 `json:"email"`
+	//X map[string]interface{} `json:"-"`
+}
+
+type GitEmail struct {
+	Email string `json:"email"`
+	//X     map[string]interface{} `json:"-"`
+}
+
 var GuserId int
+var GitLoginName string
+var GoogleUserName string
+
+const GitclientID = "3c0054a12dde712c09fb"
+const GitclientSecret = "d44989291dc0c3eb40bf37dc84f948310aa10672"
+
+const GoogleClientID = "994843129537-tmvgh06pi2fpuaite0b5em56so3nng9h.apps.googleusercontent.com"
+const GoogleClientSecret = "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"
+
+func (s *myServer) GoogleLogin() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		Tpl.ExecuteTemplate(w, "googlelogin.html", nil)
+	}
+}
+
+func (s *myServer) GoogleOAUTHLogin() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		//fmt.Fprint(w, "checking it redirects")
+		s.Db, _ = sql.Open("sqlite3", "forum.db")
+		httpClient := http.Client{}
+		err := r.ParseForm()
+		for k, v := range r.Form {
+			fmt.Println("checking what is in the form data======> ", k, v)
+		}
+		if err != nil {
+			fmt.Fprint(w, "Couldn't parse query", err)
+		}
+
+		code := r.FormValue("code")
+
+		fmt.Println("checking what the code value is ~~~~~~~~>> ", code)
+
+		reqURL := fmt.Sprintf("https://oauth2.googleapis.com/token?&code=%s&client_id=%s&client_secret=%s&redirect_uri=https://localhost:8080/google/redirect&grant_type=authorization_code", code, GoogleClientID, GoogleClientSecret)
+
+		req, err := http.NewRequest(http.MethodPost, reqURL, nil)
+		if err != nil {
+			fmt.Fprint(w, "Couldn't create HTTP request", err)
+		}
+		//req.Header.Add("Authorization", "Basic"+GoogleClientID+":"+GoogleClientSecret)
+
+		//Setting this header so the response is in json format
+		req.Header.Set("accept", "application/json")
+
+		//Sending out the HTTP request
+		res, err := httpClient.Do(req)
+		if err != nil {
+			fmt.Fprint(w, "couldn't send http request", err)
+		}
+		defer res.Body.Close()
+		fmt.Println("checking the res body----------------->", io.Reader(res.Body))
+
+		fmt.Println("the url is =>>", r.URL.RawPath)
+
+		var g GoogleOAuthAccessResponse
+		if err := json.NewDecoder(res.Body).Decode(&g); err != nil {
+			fmt.Fprintf(os.Stdout, "could not parse JSON response: %v", err)
+			w.WriteHeader(http.StatusBadRequest)
+		}
+		body, _ := ioutil.ReadAll(res.Body)
+		fmt.Println("****&&****", string([]byte(body)))
+		fmt.Println("checking if token is unmarshalled to struct!!!!!!1", g.AccessToken)
+
+		for k, v := range r.Form {
+			fmt.Println("checking what is in the form data----=> ", k, v)
+		}
+
+		//w.Header().Get(t.AccessToken,"https://github.com/user")
+
+		var bearer = "Bearer " + g.AccessToken
+
+		reqURL2 := fmt.Sprintf("https://www.googleapis.com/oauth2/v2/userinfo?access_token=%s", g.AccessToken)
+		//reqURL3 := fmt.Sprintf("https://www.googleapis.com/oauth2/v2/plus.login?access_token=%s", g.AccessToken)
+
+		// Create a new request using http
+		req1, err := http.NewRequest("GET", reqURL2, nil)
+
+		//req2, err := http.NewRequest("GET", "https://api.github.com/user/emails", nil)
+		// add authorization header to the req
+		req1.Header.Add("Authorization", bearer)
+
+		client := &http.Client{}
+		resp, err := client.Do(req1)
+		if err != nil {
+			log.Println("Error on response.\n[ERROR] -", err)
+		}
+
+		body1, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Println("Error while reading the response bytes:", err)
+		}
+
+		log.Println("checking body 1******", string([]byte(body1)))
+
+		var GMailAdd GoogleEmail
+
+		err3 := json.Unmarshal(body1, &GMailAdd)
+		if err3 != nil {
+			log.Fatal(err3)
+		}
+
+		fmt.Println("CHECKING IF EMAIL IS UNMARSHALLED", GMailAdd.Email)
+
+		//resp, err := httpClient.Get("https://www.googleapis.com/oauth2/v3/userinfo")
+
+		for i := 0; i < len(GMailAdd.Email); i++ {
+			if GMailAdd.Email[i] == '@' {
+				GoogleUserName = GMailAdd.Email[0:i] + GMailAdd.ID[0:4]
+			}
+		}
+
+		fmt.Println("Checking if the username is created======>> ", GoogleUserName)
+
+		var (
+			UnameExists  bool
+			UemailExists bool
+		)
+
+		// check if email already exists
+		emailStmt := "SELECT userID FROM users WHERE email = ?"
+		rowE := s.Db.QueryRow(emailStmt, GMailAdd.Email)
+		var uID string
+		err5 := rowE.Scan(&uID)
+		if err5 != sql.ErrNoRows {
+			fmt.Println("email already exists, err:", err5)
+			UemailExists = true
+
+		}
+
+		// check if username already exists
+		userStmt := "SELECT userID FROM users WHERE username = ?"
+		rowU := s.Db.QueryRow(userStmt, GoogleUserName)
+		var uIDs string
+		error := rowU.Scan(&uIDs)
+		if error != sql.ErrNoRows {
+			fmt.Println("username already exists, err:", error)
+			UnameExists = true
+
+		}
+
+		var blank []byte
+
+		if !UnameExists && !UemailExists {
+
+			users.RegisterUser(s.Db, GoogleUserName, blank, GMailAdd.Email)
+
+		} else if !UnameExists && UemailExists {
+			Tpl.ExecuteTemplate(w, "register.html", "email already exists")
+			return
+			//fmt.Print("This is an existing user")
+		} else if UnameExists && !UemailExists {
+			Tpl.ExecuteTemplate(w, "register.html", "username already exists")
+			return
+		}
+
+		http.Redirect(w, r, "/loginauth", http.StatusSeeOther)
+
+	}
+}
+
+func (s *myServer) GitLogin() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		Tpl.ExecuteTemplate(w, "githublogin.html", nil)
+	}
+}
+
+func (s *myServer) GitOAUTHLogin() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		s.Db, _ = sql.Open("sqlite3", "forum.db")
+		httpClient := http.Client{}
+		err := r.ParseForm()
+		for k, v := range r.Form {
+			fmt.Println(k, v)
+		}
+		if err != nil {
+			fmt.Fprint(w, "Couldn't parse query", err)
+		}
+
+		code := r.FormValue("code")
+
+		reqURL := fmt.Sprintf("https://github.com/login/oauth/access_token?client_id=%s&client_secret=%s&code=%s", GitclientID, GitclientSecret, code)
+
+		req, err := http.NewRequest(http.MethodPost, reqURL, nil)
+		if err != nil {
+			fmt.Fprint(w, "Couldn't create HTTP request", err)
+		}
+
+		//Setting this header so the response is in json format
+		req.Header.Set("accept", "application/json")
+
+		//Sending out the HTTP request
+		res, err := httpClient.Do(req)
+		if err != nil {
+			fmt.Fprint(w, "couldn't send http request", err)
+		}
+		defer res.Body.Close()
+		fmt.Println("checking the res body----------------->", io.Reader(res.Body))
+
+		fmt.Println("the url is =>>", r.URL.RawPath)
+
+		// Parse the request body into the `Git` struct
+		var t GitOAuthAccessResponse
+		if err := json.NewDecoder(res.Body).Decode(&t); err != nil {
+			fmt.Fprintf(os.Stdout, "could not parse JSON response: %v", err)
+			w.WriteHeader(http.StatusBadRequest)
+		}
+		body, _ := ioutil.ReadAll(res.Body)
+		fmt.Println("****&&****", string([]byte(body)))
+
+		//w.Header().Get(t.AccessToken,"https://github.com/user")
+
+		var bearer = "Bearer " + t.AccessToken
+
+		// Create a new request using http
+		req1, err := http.NewRequest("GET", "https://api.github.com/user", nil)
+		req2, err := http.NewRequest("GET", "https://api.github.com/user/emails", nil)
+		// add authorization header to the req
+		req1.Header.Add("Authorization", bearer)
+		req2.Header.Add("Authorization", bearer)
+		//	req1.SetBasicAuth(t.AccessToken, "x-oauth-basic")
+
+		// Send req using http Client
+		client := &http.Client{}
+		resp, err := client.Do(req1)
+		if err != nil {
+			log.Println("Error on response.\n[ERROR] -", err)
+		}
+
+		resp1, err := client.Do(req2)
+		//defer resp.Body.Close()
+
+		body1, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Println("Error while reading the response bytes:", err)
+		}
+
+		body2, err := ioutil.ReadAll(resp1.Body)
+		log.Println("checking body 1*******", string([]byte(body1)))
+		fmt.Println("----------------------------")
+		log.Println(string([]byte(body2)))
+
+		//fmt.Fprintln(w, string([]byte(body1)))
+		var GitUserMail []string
+
+		defer resp.Body.Close()
+		var Guser GitUserName
+		var Gmail []GitEmail
+
+		err3 := json.Unmarshal(body1, &Guser)
+		if err3 != nil {
+			log.Fatal(err3)
+		}
+
+		err4 := json.Unmarshal(body2, &Gmail)
+		if err4 != nil {
+			log.Fatal(err4)
+		}
+		for _, v := range Gmail {
+			GitUserMail = append(GitUserMail, v.Email)
+		}
+		fmt.Printf("Received user's name: %s ", Guser.Username)
+		fmt.Printf("Received user's email: %s ", GitUserMail[0])
+
+		fmt.Println(Guser.Username)
+		fmt.Println(GitUserMail[0])
+
+		GitLoginName = Guser.Username
+
+		var (
+			UnameExists  bool
+			UemailExists bool
+		)
+
+		// check if email already exists
+		emailStmt := "SELECT userID FROM users WHERE email = ?"
+		rowE := s.Db.QueryRow(emailStmt, GitUserMail[0])
+		var uID string
+		err5 := rowE.Scan(&uID)
+		if err5 != sql.ErrNoRows {
+			fmt.Println("email already exists, err:", err5)
+			UemailExists = true
+
+		}
+
+		// check if username already exists
+		userStmt := "SELECT userID FROM users WHERE username = ?"
+		rowU := s.Db.QueryRow(userStmt, GitLoginName)
+		var uIDs string
+		error := rowU.Scan(&uIDs)
+		if error != sql.ErrNoRows {
+			fmt.Println("username already exists, err:", error)
+			UnameExists = true
+
+		}
+
+		var blank []byte
+
+		if !UnameExists && !UemailExists {
+
+			users.RegisterUser(s.Db, GitLoginName, blank, GitUserMail[0])
+		} else if !UnameExists && UemailExists {
+			Tpl.ExecuteTemplate(w, "register.html", "email already exists")
+			return
+			//fmt.Print("This is an existing user")
+		} else if UnameExists && !UemailExists {
+			Tpl.ExecuteTemplate(w, "register.html", "username already exists")
+			return
+		}
+
+		// // get userId to pass onto createpost handler
+
+		// var userID int
+
+		// stmt2 := "SELECT userID FROM users WHERE username = ?"
+		// row2 := s.Db.QueryRow(stmt2, Guser.Username)
+		// err2 := row2.Scan(&userID)
+		// fmt.Println("userID from db:", userID)
+		// GuserId = userID
+		// if err2 != nil {
+		// 	fmt.Println("user not found in db")
+		// }
+
+		// fmt.Println("CHECKING CURRENT USER +++++", users.CurrentUser)
+
+		// id := uuid.Must(uuid.NewV4())
+		// c := &http.Cookie{
+		// 	Name:  users.CurrentUser,
+		// 	Value: id.String(),
+		// }
+
+		// http.SetCookie(w, c)
+		// users.DbSessions[users.CurrentUser] = c.Value
+		//	Tpl.ExecuteTemplate(w, "welcome.html", userID)
+		http.Redirect(w, r, "/loginauth", http.StatusSeeOther)
+
+		/////////remove///////////////////
+		// fmt.Println("sessionbool", users.SessionExists(Guser.Username))
+
+		// fmt.Println("checking already logged in func", users.AlreadyLoggedIn(req2))
+
+		// for _, cookie := range r.Cookies() {
+		// 	fmt.Println("ddvdvsdsv")
+		// 	fmt.Println("Name : ", cookie.Name)
+		// 	fmt.Println("Value/UUID : ", cookie.Value)
+		// }
+
+		// fmt.Println("First time log-in successful")
+		// fmt.Println()
+
+		//req.Header.Add("Authorization", bearer)
+
+		// Finally, send a response to redirect the user to the "welcome" page
+		// with the access token
+		fmt.Println("this is the access token ===>", t.AccessToken)
+		//r.Header.Set("Authorization", t.AccessToken)
+
+		// w.Header().Set("Authorization", "Bearer"+t.AccessToken)
+		// w.Header().Set("Location", "/welcome.html?access_token="+t.AccessToken)
+		// w.WriteHeader(http.StatusFound)
+		// http.Redirect(w, r, "/home.html/?access_token="+t.AccessToken, http.StatusFound)
+	}
+}
 
 func (s *myServer) RegisterUserHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -140,43 +530,175 @@ func (s *myServer) LoginHandler() http.HandlerFunc {
 
 func (s *myServer) LoginAuthHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// we need to figure out whether we have to close the database at some point to save resources.
-		s.Db, _ = sql.Open("sqlite3", "forum.db")
-		fmt.Println("login authHandler running")
-		r.ParseForm()
-		username := r.FormValue("username")
-		password := r.FormValue("password")
+		if GitLoginName == "" && GoogleUserName == "" {
+			fmt.Println("CHECKING IF GIT LOGIN NAME IS EMPTY", GitLoginName)
+			// we need to figure out whether we have to close the database at some point to save resources.
+			s.Db, _ = sql.Open("sqlite3", "forum.db")
+			fmt.Println("login authHandler running")
+			r.ParseForm()
+			username := r.FormValue("username")
+			password := r.FormValue("password")
 
-		users.CurrentUser = username
-		fmt.Println("username:", username, "password", password)
-		// get password(hash form) from db to compare with users supplied password
-		var hash string
-		stmt := "SELECT hash FROM users WHERE username = ?"
-		row := s.Db.QueryRow(stmt, username)
-		err := row.Scan(&hash)
-		fmt.Println("hash from db:", hash)
-		if err != nil {
-			fmt.Println("error with username, may not exist")
-			// keep the message to the user a little more vague, so hackers dont know whether you entered an incorrect username or password
+			users.CurrentUser = username
+			fmt.Println("username:", username, "password", password)
+			// get password(hash form) from db to compare with users supplied password
+			var hash string
+			stmt := "SELECT hash FROM users WHERE username = ?"
+			row := s.Db.QueryRow(stmt, username)
+			err := row.Scan(&hash)
+			fmt.Println("hash from db:", hash)
+			if err != nil {
+				fmt.Println("error with username, may not exist")
+				// keep the message to the user a little more vague, so hackers dont know whether you entered an incorrect username or password
+				Tpl.ExecuteTemplate(w, "login.html", "check username and password")
+				return
+			}
+
+			// get userId to pass onto createpost handler
+
+			var userID int
+
+			stmt2 := "SELECT userID FROM users WHERE username = ?"
+			row2 := s.Db.QueryRow(stmt2, username)
+			err2 := row2.Scan(&userID)
+			fmt.Println("userID from db:", userID)
+			GuserId = userID
+			if err2 != nil {
+				fmt.Println("user not found in db")
+			}
+
+			err = bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+			if err == nil {
+
+				//NO ACTIVE SESSION/FIRST TIME
+				id := uuid.Must(uuid.NewV4())
+				c := &http.Cookie{
+					Name:  username,
+					Value: id.String(),
+				}
+
+				http.SetCookie(w, c)
+				users.DbSessions[username] = c.Value
+				// tpl.ExecuteTemplate(w, "loginauth.html", userID)
+				http.Redirect(w, r, "/home", http.StatusSeeOther)
+
+				/////////remove///////////////////
+				fmt.Println("sessionbool", users.SessionExists(username))
+
+				for _, cookie := range r.Cookies() {
+					fmt.Println()
+					fmt.Println("Name : ", cookie.Name)
+					fmt.Println("Value/UUID : ", cookie.Value)
+				}
+
+				fmt.Println("First time log-in successful")
+				fmt.Println()
+				/////////////////////////////////////
+				return
+
+			}
+
+			fmt.Println("incorrect password")
 			Tpl.ExecuteTemplate(w, "login.html", "check username and password")
+		}
+		//Git log in
+		if GitLoginName != "" {
+			s.Db, _ = sql.Open("sqlite3", "forum.db")
+			fmt.Println("login authHandler running")
+			r.ParseForm()
+			username := GitLoginName
+			GitLoginName = ""
+			// password := r.FormValue("password")
+
+			users.CurrentUser = username
+			fmt.Println("username:", username)
+			// get password(hash form) from db to compare with users supplied password
+			// var hash string
+			// stmt := "SELECT hash FROM users WHERE username = ?"
+			// row := s.Db.QueryRow(stmt, username)
+			// err := row.Scan(&hash)
+			// fmt.Println("hash from db:", hash)
+			// if err != nil {
+			// 	fmt.Println("error with username, may not exist")
+			// 	// keep the message to the user a little more vague, so hackers dont know whether you entered an incorrect username or password
+			// 	Tpl.ExecuteTemplate(w, "login.html", "check username and password")
+			// 	return
+			// }
+
+			// get userId to pass onto createpost handler
+
+			var userID int
+
+			stmt2 := "SELECT userID FROM users WHERE username = ?"
+			row2 := s.Db.QueryRow(stmt2, username)
+			err2 := row2.Scan(&userID)
+			fmt.Println("userID from db:", userID)
+			GuserId = userID
+			if err2 != nil {
+				fmt.Println("user not found in db")
+			}
+
+			//NO ACTIVE SESSION/FIRST TIME
+			id := uuid.Must(uuid.NewV4())
+			c := &http.Cookie{
+				Name:  username,
+				Value: id.String(),
+			}
+
+			http.SetCookie(w, c)
+			users.DbSessions[username] = c.Value
+			// tpl.ExecuteTemplate(w, "loginauth.html", userID)
+			http.Redirect(w, r, "/home", http.StatusSeeOther)
+
+			/////////remove///////////////////
+			fmt.Println("sessionbool", users.SessionExists(username))
+
+			for _, cookie := range r.Cookies() {
+				fmt.Println()
+				fmt.Println("Name : ", cookie.Name)
+				fmt.Println("Value/UUID : ", cookie.Value)
+			}
+
+			fmt.Println("First time log-in successful")
+			fmt.Println()
+			/////////////////////////////////////
 			return
 		}
+		if GoogleUserName != "" {
+			s.Db, _ = sql.Open("sqlite3", "forum.db")
+			fmt.Println("login authHandler running")
+			r.ParseForm()
+			username := GoogleUserName
+			GoogleUserName = ""
+			// password := r.FormValue("password")
 
-		// get userId to pass onto createpost handler
+			users.CurrentUser = username
+			fmt.Println("username:", username)
+			// get password(hash form) from db to compare with users supplied password
+			// var hash string
+			// stmt := "SELECT hash FROM users WHERE username = ?"
+			// row := s.Db.QueryRow(stmt, username)
+			// err := row.Scan(&hash)
+			// fmt.Println("hash from db:", hash)
+			// if err != nil {
+			// 	fmt.Println("error with username, may not exist")
+			// 	// keep the message to the user a little more vague, so hackers dont know whether you entered an incorrect username or password
+			// 	Tpl.ExecuteTemplate(w, "login.html", "check username and password")
+			// 	return
+			// }
 
-		var userID int
+			// get userId to pass onto createpost handler
 
-		stmt2 := "SELECT userID FROM users WHERE username = ?"
-		row2 := s.Db.QueryRow(stmt2, username)
-		err2 := row2.Scan(&userID)
-		fmt.Println("userID from db:", userID)
-		GuserId = userID
-		if err2 != nil {
-			fmt.Println("user not found in db")
-		}
+			var userID int
 
-		err = bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-		if err == nil {
+			stmt2 := "SELECT userID FROM users WHERE username = ?"
+			row2 := s.Db.QueryRow(stmt2, username)
+			err2 := row2.Scan(&userID)
+			fmt.Println("userID from db:", userID)
+			GuserId = userID
+			if err2 != nil {
+				fmt.Println("user not found in db")
+			}
 
 			//NO ACTIVE SESSION/FIRST TIME
 			id := uuid.Must(uuid.NewV4())
@@ -205,11 +727,10 @@ func (s *myServer) LoginAuthHandler() http.HandlerFunc {
 			return
 
 		}
+		// fmt.Println("incorrect password")
+		// Tpl.ExecuteTemplate(w, "login.html", "check username and password")
 
-		fmt.Println("incorrect password")
-		Tpl.ExecuteTemplate(w, "login.html", "check username and password")
 	}
-
 }
 
 func (s *myServer) LogoutHandler() http.HandlerFunc {
