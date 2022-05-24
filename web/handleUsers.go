@@ -147,7 +147,7 @@ func (s *myServer) GoogleOAUTHLogin() http.HandlerFunc {
 
 		for i := 0; i < len(GMailAdd.Email); i++ {
 			if GMailAdd.Email[i] == '@' {
-				GoogleUserName = GMailAdd.Email[0:i] + GMailAdd.ID[0:4] + "[google]"
+				GoogleUserName = GMailAdd.Email[0:i] + GMailAdd.ID[0:4]
 			}
 		}
 
@@ -185,6 +185,7 @@ func (s *myServer) GoogleOAUTHLogin() http.HandlerFunc {
 		if !UnameExists && !UemailExists {
 
 			users.RegisterUser(s.Db, GoogleUserName, blank, GMailAdd.Email)
+
 		} else if !UnameExists && UemailExists {
 			Tpl.ExecuteTemplate(w, "register.html", "email already exists")
 			return
@@ -305,7 +306,7 @@ func (s *myServer) GitOAUTHLogin() http.HandlerFunc {
 		fmt.Println(Guser.Username)
 		fmt.Println(GitUserMail[0])
 
-		GitLoginName = Guser.Username + "[git]"
+		GitLoginName = Guser.Username
 
 		var (
 			UnameExists  bool
