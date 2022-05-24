@@ -114,6 +114,12 @@
     {{ range $_, $u := .ModRequests }}
     <div class="activity-title">
       <p>{{ $u }}</p>
+      <form action="/acceptmod" method="post">
+        <button name="username" value="{{$u}}">Accept</button>
+      </form>
+      <form action="/declinemod" method="post">
+        <button name="username" value="{{$u}}">Decline</button>
+      </form>
     </div>
     {{ end }}
     {{ end }}

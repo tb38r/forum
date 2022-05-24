@@ -107,7 +107,7 @@ func BecomeAMod(db *sql.DB, userId int) {
 
 func GetModRequests(db *sql.DB) []string {
 	var modRequests []string
-	rows, err := db.Query("SELECT username FROM users WHERE becomemod = 1")
+	rows, err := db.Query("SELECT username FROM users WHERE becomemod = 1 AND userType= 'user'")
 	if err != nil {
 		fmt.Println("Error with getting all mod requests", err)
 	}
@@ -123,4 +123,14 @@ func GetModRequests(db *sql.DB) []string {
 	}
 
 	return modRequests
+}
+
+func AcceptMod(db *sql.DB, username string) {
+	stmt, err := db.Prepare("UPDATE users set userType= 'mod' where username = ?")
+
+	if err != nil {
+		fmt.Println("User could not be updated to mod", err)
+	}
+
+	stmt.Exec(username)
 }

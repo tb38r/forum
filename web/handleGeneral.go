@@ -65,10 +65,3 @@ func (s *myServer) HomepageHandler() http.HandlerFunc {
 		}
 	}
 }
-
-func (s *myServer) BecomeAModHandler() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		users.BecomeAMod(s.Db, GuserId)
-		http.Redirect(w, r, "/home", http.StatusSeeOther)
-	}
-}
