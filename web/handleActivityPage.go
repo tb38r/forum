@@ -83,6 +83,7 @@ func (s *myServer) EditPCHandler() http.HandlerFunc {
 
 		// update database with new values
 		UpdatePost(s.Db, title, content, Imagename, postid)
+		
 
 
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
