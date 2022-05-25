@@ -20,17 +20,6 @@
       </a>
     </p>
     <p style="text-align: right;">
-    {{if eq .UserType "admin"}}
-    <form id="homepagefilter" action="/home" method="POST">
-      <label for="userfilter">Sort by:</label>
-      <select name="userfilter" id="userfilter">
-        <option value="Created Post">My Posts</option>
-        <option value="Liked Posts">Liked Posts</option>
-        <option value="Reported Posts">Reported Posts</option>
-      </select>
-      <input type="submit" value="Submit">
-    </form>
-        {{else}}
         <form id="homepagefilter" action="/home" method="POST">
       <label for="userfilter">Sort by:</label>
       <select name="userfilter" id="userfilter">
@@ -39,7 +28,6 @@
       </select>
       <input type="submit" value="Submit">
     </form>
-    {{end}}
     {{end}}
     <p style="text-align: right;">
     <form id="categoryfilter" action="/home" method="POST">

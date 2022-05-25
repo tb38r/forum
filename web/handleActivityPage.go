@@ -1,10 +1,12 @@
 package web
 
 import (
-	"forum/posts"
-	"forum/users"
 	"net/http"
 	"strconv"
+
+	"forum/posts"
+	"forum/report"
+	"forum/users"
 )
 
 type ActivityPage struct {
@@ -23,11 +25,11 @@ type ActivityPage struct {
 	CommentNote       []Notify
 	LikeNote          []Notify
 	DisLikeNote       []Notify
+	ReportedPosts     []report.Report
 }
 
 func (s *myServer) ActivityPage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		var data ActivityPage
 
 		data.Notification = (len(CommentNotify(s.Db)) + len(LikesNotify(s.Db)) + len(DisLikesNotify(s.Db)))
@@ -51,6 +53,8 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 		data.DislikedPosts = posts.ActivityPostDislikes(s.Db, GuserId)
 
 		data.LikedComments = posts.ActivityCommentLikes(s.Db, GuserId)
+
+		data.ReportedPosts = report.GetReportData(s.Db)
 
 		data.DislikedComments = posts.ActivityCommentDislikes(s.Db, GuserId)
 		data.Username = users.CurrentUser
@@ -77,6 +81,5 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 		func() {
 			ResetDisLikesNotified(s.Db)
 		}()
-
 	}
 }

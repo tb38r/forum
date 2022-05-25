@@ -47,10 +47,16 @@
                     <input type="submit" value="Submit">
                     </form>
                 {{else}}
-                <form action="/report" method="POST">
-                    <button class="fa-solid fa-flag" type="submit" value="report" name="report">
-                    </button>
-                </form>
+                <form id="postpagefilter" action="/report" method="POST">
+                    <label for="reportfilter">Report:</label>
+                    <select name="reportfilter" id="reportfilter">
+                        <option value="Irrelevant">Irrelevant</option>
+                        <option value="Obscene">Obscene</option>
+                        <option value="Illegal">Illegal</option>
+                        <option value="Insulting">Insulting</option>
+                    </select>
+                    <input type="submit" value="Submit">
+                    </form>
                 {{end}}
                 {{end}}
                 <br>
