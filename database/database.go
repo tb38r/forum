@@ -2,6 +2,8 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
+	"forum/categories"
 	"log"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -27,7 +29,8 @@ func CreateDB() {
 		postContent CHAR(250), 
 		image CHAR(100), 
 		edited integer);`)
-	db.Exec("create table if not exists category (categoryID integer PRIMARY KEY AUTOINCREMENT, postID integer REFERENCES post(postID), categoryname text)")
+	db.Exec("create table if not exists postcategory (categoryID integer PRIMARY KEY AUTOINCREMENT, postID integer REFERENCES post(postID), categoryname text)")
+	db.Exec("create table if not exists categories (categoryID integer PRIMARY KEY AUTOINCREMENT, categoryname text)")
 	db.Exec(`create table if not exists comments (
 		commentID integer primary key AUTOINCREMENT, 
 		userID integer REFERENCES users(userID), 
@@ -49,4 +52,6 @@ func CreateDB() {
 			creatorID integer);`)
 	db.Exec(`create table if not exists report(reportID integer PRIMARY KEY AUTOINCREMENT, 
 				userID integer REFERENCES users(userID), postID integer REFERENCES post(postID));`)
+	fmt.Println("checking if cat exists", categories.CategoryExistsCheck(db, "Liverpool"))
+	fmt.Println("checking reutrn cats func", categories.GetAllCategories(db))
 }

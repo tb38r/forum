@@ -131,6 +131,19 @@
       </form>
     </div>
     {{ end }}
+    <form action="/addcategory" method="POST">
+      <H2>Create Category</H2>
+
+      <label for="category">Category</label><br>
+      <textarea placeholder="No more than 15 characters" id="category" name="category" rows="1" cols="50" maxlength="15" required></textarea><br>
+      <button class="btn btn-primary" type="submit">Create A Category</button>
+  </form>
+  {{ range .Categories}}
+  <h4>{{ . }}</h4>
+  <form action="/deletecategory" method="post">
+    <button name="category" value="{{ . }}">Delete Category</button>
+  </form>
+  {{ end }}
     {{ end }}
   </div>
 

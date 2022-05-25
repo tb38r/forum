@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"forum/categories"
 	"forum/posts"
 	"forum/users"
 )
@@ -19,6 +20,7 @@ type HomepageData struct {
 	Nbool        bool
 	Notification int
 	UserType     string
+	Categories   []string
 	// PostUsername  map[int]string
 }
 
@@ -39,7 +41,7 @@ func (s *myServer) HomepageHandler() http.HandlerFunc {
 		if notify > 0 {
 			x = true
 		}
-		homePageData := HomepageData{user, homepage, users.AlreadyLoggedIn(r), GuserId, x, notify, userType}
+		homePageData := HomepageData{user, homepage, users.AlreadyLoggedIn(r), GuserId, x, notify, userType, categories.GetAllCategories(s.Db)}
 		category := r.FormValue("category")
 		homePageFilter := r.FormValue("userfilter")
 

@@ -295,9 +295,9 @@ func GetPostData(db *sql.DB, postID int) []Post {
 
 func CategoryPagePosts(db *sql.DB, name string) []HomepagePosts {
 	rows, err := db.Query(`SELECT post.postID, postTitle, username, creationDate FROM post 
-	INNER JOIN category ON category.postID = post.postID 
+	INNER JOIN postcategory ON postcategory.postID = post.postID 
 	INNER JOIN users ON users.userID = post.userID
-	WHERE categoryname = ?;`, name)
+	WHERE postcategory.categoryname = ?;`, name)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -343,6 +343,12 @@ func DeletePost(db *sql.DB, postID int) {
 		fmt.Println("error deleting reports from the report table", err3)
 	}
 	stmt3.Exec(postID)
+
+	stmt4, err4 := db.Prepare("DELETE FROM postcategory WHERE postID = ?")
+	if err4 != nil {
+		fmt.Println("error deleting post from the category table", err4)
+	}
+	stmt4.Exec(postID)
 }
 
 func ReportedPostsHomepageData(db *sql.DB) []HomepagePosts {
