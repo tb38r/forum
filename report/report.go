@@ -28,14 +28,25 @@ func ReportButton(db *sql.DB, username string, reporttype string, postID int) {
 	fmt.Println("last inserted", LastIns)
 }
 
-// func GetReportType(db *sql.DB, reportID int) string {
-// 	var reportType string
-// 	err := db.QueryRow("SELECT reporttype FROM report WHERE reportID= ?;", reportID).Scan(&reportType)
-// 	if err != nil {
-// 		fmt.Println("error from get report", err)
-// 	}
-// 	return reportType
-// }
+func GetReportType(db *sql.DB, postID int) []string {
+	rows, err := db.Query("SELECT reporttype FROM report WHERE postID= ?;", postID)
+	if err != nil {
+		fmt.Println("error from get report", err)
+	}
+
+	var reportType []string
+	defer rows.Close()
+	for rows.Next() {
+		var r string
+		err2 := rows.Scan(&r)
+		if err != nil {
+			fmt.Println(err2)
+		}
+		reportType = append(reportType, r)
+	}
+	return reportType
+}
+
 // func GetMod(db *sql.DB, reportID int) string {
 // 	var username string
 // 	err := db.QueryRow("SELECT username FROM users WHERE reportID= ?;", reportID).Scan(&username)

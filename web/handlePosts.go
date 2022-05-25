@@ -29,6 +29,7 @@ type PostPageData struct {
 	Reported        bool
 	Nbool           bool
 	Notification    int
+	ReportType      []string
 }
 
 var (
@@ -149,6 +150,7 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 			UserType:        users.GetUserType(s.Db, GuserId),
 			Notification:    NotificationInt,
 			Reported:        ModReported(s.Db),
+			ReportType:      report.GetReportType(s.Db, PostIDInt),
 		}
 
 		if NotificationInt > 0 {

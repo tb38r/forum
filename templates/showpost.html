@@ -93,6 +93,10 @@
         </div>
         <div>
         </div>
+        <br>
+        {{ range .ReportType }}
+        {{ . }}
+        {{ end }}
         {{ range .Comments}}
         <div class="comment-row">
             <div class="comment-body">

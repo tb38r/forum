@@ -54,6 +54,7 @@ func CreateDB() {
 				username text REFERENCES users(username), postID integer REFERENCES post(postID));`)
 
 	fmt.Println(report.GetReportData(db))
+	fmt.Println(report.GetReportType(db, 1))
 }
 
 //
