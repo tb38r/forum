@@ -2,8 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
-	"forum/comments"
 	"log"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -52,5 +50,4 @@ func CreateDB() {
 	db.Exec(`create table if not exists report(reportID integer PRIMARY KEY, 
 				userID integer REFERENCES users(userID), postID integer REFERENCES post(postID));`)
 
-	fmt.Println("------", comments.GetCommentEdit(db, 3))
 }
