@@ -37,7 +37,7 @@ var DbSessions = make(map[string]string)
 // this func registers a users username, password(as a hash) and email
 func RegisterUser(db *sql.DB, username string, hash []byte, email string) {
 	// db, _ = sql.Open("sqlite3", "forum.db")
-	stmt, err := db.Prepare("INSERT INTO users (username, hash, email, usertype) VALUES (?, ?, ?, 'user')")
+	stmt, err := db.Prepare("INSERT INTO users (username, hash, email, usertype, becomemod) VALUES (?, ?, ?, 'user', 0)")
 	if err != nil {
 		fmt.Println("error preparing statement:", err)
 		return
@@ -93,4 +93,81 @@ func GetUserType(db *sql.DB, userId int) string {
 		fmt.Println("error from get user", err)
 	}
 	return userType
+}
+
+func BecomeAMod(db *sql.DB, userId int) {
+	stmt, err := db.Prepare("UPDATE users SET becomemod = 1 WHERE userId= ?")
+
+	if err != nil {
+		fmt.Println("Error updating the become mod column in users table", err)
+	}
+
+	stmt.Exec(userId)
+}
+
+func GetModRequests(db *sql.DB) []string {
+	var modRequests []string
+	rows, err := db.Query("SELECT username FROM users WHERE becomemod = 1 AND userType= 'user'")
+	if err != nil {
+		fmt.Println("Error with getting all mod requests", err)
+	}
+
+	defer rows.Close()
+	for rows.Next() {
+		var username string
+		err2 := rows.Scan(&username)
+		modRequests = append(modRequests, username)
+		if err2 != nil {
+			fmt.Println("cannot range through to get usernames of requested mods", err2)
+		}
+	}
+
+	return modRequests
+}
+
+func AcceptMod(db *sql.DB, username string) {
+	stmt, err := db.Prepare("UPDATE users set userType= 'mod' where username = ?")
+
+	if err != nil {
+		fmt.Println("User could not be updated to mod", err)
+	}
+
+	stmt.Exec(username)
+}
+
+func DeclineMod(db *sql.DB, username string) {
+	stmt, err := db.Prepare("UPDATE users SET becomemod = 0 WHERE username = ?")
+
+	if err != nil {
+		fmt.Println("Error updating the become mod column in users table when declining mod", err)
+	}
+	stmt.Exec(username)
+}
+
+func GetAllMods(db *sql.DB) []string {
+	var allMods []string
+
+	rows, err := db.Query("SELECT username FROM users WHERE userType= 'mod'")
+	if err != nil {
+		fmt.Println("Error with getting all mod usernames", err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var username string
+		err2 := rows.Scan(&username)
+		allMods = append(allMods, username)
+		if err2 != nil {
+			fmt.Println("cannot range through to get usernames of moderators", err2)
+		}
+	}
+	return allMods
+}
+
+func DemoteMod(db *sql.DB, username string) {
+	stmt, err := db.Prepare("UPDATE users SET becomemod = 0, usertype = 'user' WHERE username = ?")
+
+	if err != nil {
+		fmt.Println("Error demoting a mod", err)
+	}
+	stmt.Exec(username)
 }

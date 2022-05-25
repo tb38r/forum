@@ -102,14 +102,36 @@
       <p> {{.Username}} liked your post <a href="/showpost?postid={{.PostID}}">{{.PostTitle}} </a></p>
     </div>
     {{end}}
-    
+
     {{range .DisLikeNote}}
     <div class="activity-title">
       <p> {{.Username}} disliked your post <a href="/showpost?postid={{.PostID}}">{{.PostTitle}} </a></p>
     </div>
     {{end}}
 
+    {{ if eq .UserType "admin" }}
+    <h1>Mod Requests</h1>
+    {{ range $_, $u := .ModRequests }}
+    <div class="activity-title">
+      <p>{{ $u }}</p>
+      <form action="/acceptmod" method="post">
+        <button name="username" value="{{$u}}">Accept</button>
+      </form>
+      <form action="/declinemod" method="post">
+        <button name="username" value="{{$u}}">Decline</button>
+      </form>
+    </div>
+    {{ end }}
+    <h1>All Mods</h1>
+    {{ range $_, $u := .AllMods}}
+    <div class="activity-title">
+      <p>{{$u}}</p>
+      <form action="/demotemod" method="post">
+        <button name="username" value="{{$u}}">Demote</button>
+      </form>
+    </div>
+    {{ end }}
+    {{ end }}
   </div>
-
 
 </body>

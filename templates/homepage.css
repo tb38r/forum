@@ -69,3 +69,8 @@ a.btn-link:hover {
   font-weight: bold;
   text-transform: uppercase;
 }
+
+.userbuttons {
+  display: flex;
+  justify-content: flex-end;
+}

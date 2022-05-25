@@ -18,6 +18,7 @@ type HomepageData struct {
 	UserID       int
 	Nbool        bool
 	Notification int
+	UserType     string
 	// PostUsername  map[int]string
 }
 
@@ -27,7 +28,7 @@ func (s *myServer) HomepageHandler() http.HandlerFunc {
 
 		user := users.CurrentUser
 		s.Db, _ = sql.Open("sqlite3", "forum.db")
-
+		userType := users.GetUserType(s.Db, GuserId)
 		fmt.Println("COMMENT USERNAME MAP", CommentNotify(s.Db))
 
 		homepage := posts.GetHomepageData(s.Db)
@@ -38,7 +39,7 @@ func (s *myServer) HomepageHandler() http.HandlerFunc {
 		if notify > 0 {
 			x = true
 		}
-		homePageData := HomepageData{user, homepage, users.AlreadyLoggedIn(r), GuserId, x, notify}
+		homePageData := HomepageData{user, homepage, users.AlreadyLoggedIn(r), GuserId, x, notify, userType}
 		category := r.FormValue("category")
 		homePageFilter := r.FormValue("userfilter")
 
@@ -47,19 +48,19 @@ func (s *myServer) HomepageHandler() http.HandlerFunc {
 			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
 		} else if len(category) > 0 {
 			categoryFilter := posts.CategoryPagePosts(s.Db, category)
-			homePageData = HomepageData{user, categoryFilter, users.AlreadyLoggedIn(r), GuserId, x, notify}
+			homePageData.AllPosts = categoryFilter
 			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
 		} else if homePageFilter == "Created Post" {
 			userFilter := posts.UsersPostsHomepageData(s.Db, GuserId)
-			homePageData = HomepageData{user, userFilter, users.AlreadyLoggedIn(r), GuserId, x, notify}
+			homePageData.AllPosts = userFilter
 			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
 		} else if homePageFilter == "Liked Posts" {
-			userFilter := posts.UsersLikesHomepageData(s.Db, GuserId)
-			homePageData = HomepageData{user, userFilter, users.AlreadyLoggedIn(r), GuserId, x, notify}
+			likedFilter := posts.UsersLikesHomepageData(s.Db, GuserId)
+			homePageData.AllPosts = likedFilter
 			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
 		} else if homePageFilter == "Reported Posts" {
-			userFilter := posts.ReportedPostsHomepageData(s.Db)
-			homePageData = HomepageData{user, userFilter, users.AlreadyLoggedIn(r), GuserId, x ,notify}
+			reportFilter := posts.ReportedPostsHomepageData(s.Db)
+			homePageData.AllPosts = reportFilter
 			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
 		}
 	}

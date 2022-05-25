@@ -760,3 +760,46 @@ func (s *myServer) LogoutHandler() http.HandlerFunc {
 
 	}
 }
+
+func (s *myServer) BecomeAModHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		users.BecomeAMod(s.Db, GuserId)
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
+	}
+}
+
+func (s *myServer) AcceptAModHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		for _, v := range r.Form {
+			for _, name := range v {
+				users.AcceptMod(s.Db, name)
+			}
+		}
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
+	}
+}
+
+func (s *myServer) DeclineAModHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		for _, v := range r.Form {
+			for _, name := range v {
+				users.DeclineMod(s.Db, name)
+			}
+		}
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
+	}
+}
+
+func (s *myServer) DemoteAModHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		for _, v := range r.Form {
+			for _, name := range v {
+				users.DemoteMod(s.Db, name)
+			}
+		}
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
+	}
+}
