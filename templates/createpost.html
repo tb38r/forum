@@ -23,18 +23,10 @@
             <textarea id="content" name="content" rows="4" cols="65"></textarea><br>
             <br>
             <h4>Choose category?</h4>
-            <input type="checkbox" class="btn-check" id="btncheck1" name="manutd" autocomplete="off">
-            <label class="btn btn-outline-primary" for="btncheck1">Man Utd</label>
-            <input type="checkbox" class="btn-check" id="btncheck2" name="arsenal" autocomplete="off">
-            <label class="btn btn-outline-primary" for="btncheck2">Arsenal</label>
-            <input type="checkbox" class="btn-check" id="btncheck3" name="tottenham" autocomplete="off">
-            <label class="btn btn-outline-primary" for="btncheck3">Tottenham</label>
-            <input type="checkbox" class="btn-check" id="btncheck4" name="chelsea" autocomplete="off">
-            <label class="btn btn-outline-primary" for="btncheck4">Chelsea</label>
-            <input type="checkbox" class="btn-check" id="btncheck5" name="mancity" autocomplete="off">
-            <label class="btn btn-outline-primary" for="btncheck5">Man City</label>
-            <input type="checkbox" class="btn-check" id="btncheck6" name="newcastle" autocomplete="off">
-            <label class="btn btn-outline-primary" for="btncheck6">Newcastle</label>
+            {{ range .Categories }}
+            <input type="checkbox" class="btn-check" id="{{ . }}" name="category" value="{{ . }}" autocomplete="off">
+            <label class="btn btn-outline-primary" for="{{ . }}">{{ . }}</label>
+           {{ end }}
             <div class="bottom-buttons">
                 <input type="file" name="userimage" id="userimage">
                 <button class="btn btn-primary" type="submit">Create Post</button>

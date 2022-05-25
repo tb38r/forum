@@ -29,6 +29,7 @@ type PostPageData struct {
 	Reported        bool
 	Nbool           bool
 	Notification    int
+	Categories      []string
 }
 
 var (
@@ -42,7 +43,7 @@ func (s *myServer) CreatePostHandler() http.HandlerFunc {
 		// getting the user id from the url
 		userId := r.URL.Query().Get("userid")
 		UserIdint, _ = strconv.Atoi(userId)
-		Tpl.ExecuteTemplate(w, "createpost.html", PostPageData{LoggedIn: users.AlreadyLoggedIn(r), Username: users.CurrentUser, UserID: UserIdint})
+		Tpl.ExecuteTemplate(w, "createpost.html", PostPageData{LoggedIn: users.AlreadyLoggedIn(r), Username: users.CurrentUser, UserID: UserIdint, Categories: categories.GetAllCategories(s.Db)})
 	}
 }
 
@@ -89,32 +90,42 @@ func (s *myServer) StorePostHandler() http.HandlerFunc {
 		posts.CreatePosts(s.Db, UserIdint, title, content, Imagename)
 
 		// formvalue for buttons. If they have been clicked, the form value returned will be "on"
-		manutd := r.FormValue("manutd")
-		arsenal := r.FormValue("arsenal")
-		chelsea := r.FormValue("chelsea")
-		tottenham := r.FormValue("tottenham")
-		newcastle := r.FormValue("newcastle")
-		mancity := r.FormValue("mancity")
+		for k, v := range r.Form {
+			if k == "category" {
 
-		// use if statements because we need to enter the cat name instead of the returned value "on"
-		if manutd == "on" {
-			categories.AddCategory(s.Db, posts.LastIns, "manutd")
+				for _, c := range v {
+
+					categories.AddCategory(s.Db, posts.LastIns, c)
+				}
+
+			}
 		}
-		if arsenal == "on" {
-			categories.AddCategory(s.Db, posts.LastIns, "arsenal")
-		}
-		if chelsea == "on" {
-			categories.AddCategory(s.Db, posts.LastIns, "chelsea")
-		}
-		if newcastle == "on" {
-			categories.AddCategory(s.Db, posts.LastIns, "newcastle")
-		}
-		if tottenham == "on" {
-			categories.AddCategory(s.Db, posts.LastIns, "tottenham")
-		}
-		if mancity == "on" {
-			categories.AddCategory(s.Db, posts.LastIns, "mancity")
-		}
+		// manutd := r.FormValue("manutd")
+		// arsenal := r.FormValue("arsenal")
+		// chelsea := r.FormValue("chelsea")
+		// tottenham := r.FormValue("tottenham")
+		// newcastle := r.FormValue("newcastle")
+		// mancity := r.FormValue("mancity")
+
+		// // use if statements because we need to enter the cat name instead of the returned value "on"
+		// if manutd == "on" {
+		// 	categories.AddCategory(s.Db, posts.LastIns, "manutd")
+		// }
+		// if arsenal == "on" {
+		// 	categories.AddCategory(s.Db, posts.LastIns, "arsenal")
+		// }
+		// if chelsea == "on" {
+		// 	categories.AddCategory(s.Db, posts.LastIns, "chelsea")
+		// }
+		// if newcastle == "on" {
+		// 	categories.AddCategory(s.Db, posts.LastIns, "newcastle")
+		// }
+		// if tottenham == "on" {
+		// 	categories.AddCategory(s.Db, posts.LastIns, "tottenham")
+		// }
+		// if mancity == "on" {
+		// 	categories.AddCategory(s.Db, posts.LastIns, "mancity")
+		// }
 		fmt.Println("title:", title, "content:", content)
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}

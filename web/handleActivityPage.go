@@ -1,6 +1,8 @@
 package web
 
 import (
+	"fmt"
+	"forum/categories"
 	"forum/posts"
 	"forum/users"
 	"net/http"
@@ -26,6 +28,7 @@ type ActivityPage struct {
 	ModRequests       []string
 	UserType          string
 	AllMods           []string
+	Categories        []string
 }
 
 func (s *myServer) ActivityPage() http.HandlerFunc {
@@ -62,6 +65,7 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 		data.UserType = users.GetUserType(s.Db, GuserId)
 		data.UserID = GuserId
 		data.AllMods = users.GetAllMods(s.Db)
+		data.Categories = categories.GetAllCategories(s.Db)
 		SuserID := strconv.Itoa(GuserId)
 
 		if string(r.URL.RawQuery[len(r.URL.RawQuery)-1]) != SuserID {
@@ -83,6 +87,38 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 		func() {
 			ResetDisLikesNotified(s.Db)
 		}()
+
+	}
+}
+
+func (s *myServer) AdminAddingCategory() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		for k, v := range r.Form {
+			fmt.Println("key: ", k, "value: ", v)
+		}
+		SuserID := strconv.Itoa(GuserId)
+		categoryname := r.FormValue("category")
+		if categoryname != "" {
+			categories.AdminAddCategory(s.Db, categoryname)
+		}
+		//http.Redirect(w, r, "/home", http.StatusSeeOther)
+
+		http.Redirect(w, r, "/activitypage?userid="+SuserID, http.StatusSeeOther)
+	}
+}
+
+func (s *myServer) AdminDeletingCategory() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		for _, v := range r.Form {
+			for _, c := range v {
+				categories.DeleteCategory(s.Db, c)
+			}
+		}
+		SuserID := strconv.Itoa(GuserId)
+
+		http.Redirect(w, r, "/activitypage?userid="+SuserID, http.StatusSeeOther)
 
 	}
 }

@@ -40,12 +40,10 @@
     <form id="categoryfilter" action="/home" method="POST">
       <label for="categoryfilter">Filter by Category:</label>
       <select name="category" id="categoryfilter">
-        <option value="manutd">Man Utd</option>
-        <option value="arsenal">Arsenal</option>
-        <option value="chelsea">Chelsea</option>
-        <option value="tottenham">Tottenham</option>
-        <option value="newcastle">Newcastle</option>
-        <option value="mancity">Man City</option>
+        {{ range .Categories }}
+        <option value="{{ . }}">{{ . }}</option>
+        
+        {{ end }}
       </select>
       <input type="submit" value="Submit">
     </form>

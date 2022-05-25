@@ -55,6 +55,8 @@ func (s *myServer) Routes(a <-chan time.Time) {
 	http.HandleFunc("/acceptmod", Rate(a, Auth(SessionChecker(s.AcceptAModHandler()))))
 	http.HandleFunc("/declinemod", Rate(a, Auth(SessionChecker(s.DeclineAModHandler()))))
 	http.HandleFunc("/demotemod", Rate(a, Auth(SessionChecker(s.DemoteAModHandler()))))
+	http.HandleFunc("/addcategory", Rate(a, Auth(SessionChecker(s.AdminAddingCategory()))))
+	http.HandleFunc("/deletecategory", Rate(a, Auth(SessionChecker(s.AdminDeletingCategory()))))
 
 	// http.HandleFunc("/emptycommentpost/", Rate(a, Auth(SessionChecker(s.EmptyCommentPost()))))
 	// http.HandleFunc("/showcomment/", Rate(a, Auth(SessionChecker(s.ShowCommentHandler()))))
