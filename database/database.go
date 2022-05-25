@@ -47,8 +47,8 @@ func CreateDB() {
 			commentID integer REFERENCES comments(commentID),
 			notified integer,
 			creatorID integer);`)
-	db.Exec(`create table if not exists report(reportID integer PRIMARY KEY, 
-				userID integer REFERENCES users(userID), postID integer REFERENCES post(postID));`)
-}
+	db.Exec(`create table if not exists report(reportID integer PRIMARY KEY, reporttype text,
+				username text REFERENCES users(username), postID integer REFERENCES post(postID));`)
 
+}
 //
