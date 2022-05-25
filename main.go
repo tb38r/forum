@@ -1,9 +1,10 @@
 package main
 
 import (
+	"time"
+
 	"forum/database"
 	"forum/web"
-	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -14,7 +15,6 @@ type RateLimiter struct {
 }
 
 func main() {
-	
 	rate := RateLimiter{}
 
 	rate.seconds = 2

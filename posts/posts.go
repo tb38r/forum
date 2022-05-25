@@ -373,7 +373,7 @@ func DeletePost(db *sql.DB, postID int) {
 }
 
 func ReportedPostsHomepageData(db *sql.DB) []HomepagePosts {
-	rows, err := db.Query(`SELECT post.postID, post.postTitle, username, post.creationDate 
+	rows, err := db.Query(`SELECT post.postID, post.postTitle, users.username, post.creationDate 
 						FROM post INNER JOIN report on report.postID = post.postID
 						INNER JOIN users ON users.userID = post.userID`)
 	if err != nil {
@@ -394,4 +394,14 @@ func ReportedPostsHomepageData(db *sql.DB) []HomepagePosts {
 		}
 	}
 	return postdata
+}
+
+func DenyReportRequest(db *sql.DB, postID int) {
+	// delete the report
+	stmt, err := db.Prepare("DELETE FROM report WHERE postID = ?")
+	if err != nil {
+		fmt.Println("error preparing delete report statement", err)
+	}
+
+	stmt.Exec(postID)
 }

@@ -2,14 +2,17 @@ package web
 
 import (
 	"fmt"
+	"net/http"
+	"strconv"
+	"strings"
+
 	"forum/categories"
 	"forum/comments"
 	"forum/posts"
 	userimages "forum/templates/userImages"
 	"forum/users"
-	"net/http"
-	"strconv"
-	"strings"
+
+	"forum/report"
 )
 
 type ActivityPage struct {
@@ -36,6 +39,7 @@ type ActivityPage struct {
 	EditFormTitle     string
 	EditFormContent   string
 	EditCommentID     int
+	ReportedPosts     []report.Report
 }
 
 var (
@@ -64,7 +68,6 @@ func (s *myServer) EditedCommentHandler() http.HandlerFunc {
 		Suserid := strconv.Itoa(GuserId)
 
 		http.Redirect(w, r, "/activitypage?userid="+Suserid, http.StatusSeeOther)
-
 	}
 }
 
@@ -103,8 +106,8 @@ func (s *myServer) EditCommentHandler() http.HandlerFunc {
 
 		}
 	}
-
 }
+
 func (s *myServer) EditPostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// limits requests to 20MB (x is the limiter where x<<20)
@@ -219,13 +222,11 @@ func (s *myServer) DeleteActPost() http.HandlerFunc {
 		stringGID := strconv.Itoa(GuserId)
 
 		http.Redirect(w, r, "/activitypage?userid="+stringGID, http.StatusSeeOther)
-
 	}
 }
 
 func (s *myServer) ActivityPage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		var data ActivityPage
 
 		data.Notification = (len(CommentNotify(s.Db)) + len(LikesNotify(s.Db)) + len(DisLikesNotify(s.Db)))
@@ -249,6 +250,8 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 		data.DislikedPosts = posts.ActivityPostDislikes(s.Db, GuserId)
 
 		data.LikedComments = posts.ActivityCommentLikes(s.Db, GuserId)
+
+		data.ReportedPosts = report.GetReportData(s.Db)
 
 		data.DislikedComments = posts.ActivityCommentDislikes(s.Db, GuserId)
 		data.Username = users.CurrentUser
@@ -282,7 +285,6 @@ func (s *myServer) ActivityPage() http.HandlerFunc {
 		func() {
 			ResetDisLikesNotified(s.Db)
 		}()
-
 	}
 }
 
@@ -297,7 +299,7 @@ func (s *myServer) AdminAddingCategory() http.HandlerFunc {
 		if categoryname != "" {
 			categories.AdminAddCategory(s.Db, categoryname)
 		}
-		//http.Redirect(w, r, "/home", http.StatusSeeOther)
+		// http.Redirect(w, r, "/home", http.StatusSeeOther)
 
 		http.Redirect(w, r, "/activitypage?userid="+SuserID, http.StatusSeeOther)
 	}
@@ -314,6 +316,5 @@ func (s *myServer) AdminDeletingCategory() http.HandlerFunc {
 		SuserID := strconv.Itoa(GuserId)
 
 		http.Redirect(w, r, "/activitypage?userid="+SuserID, http.StatusSeeOther)
-
 	}
 }

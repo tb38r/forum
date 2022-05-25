@@ -36,16 +36,27 @@
             <div class="post-likes-dislikes">
                 {{ if eq .UserType "mod" }}
                 {{if .Reported}}
-                <form action="/report" method="POST">
-                    <button class="fa-solid fa-flag" style="background-color:#CD5C5C;" type="submit" value="report"
-                        name="report">
-                    </button>
-                </form>
+                <form id="postpagefilter" action="/report" method="POST">
+                    <label for="reportfilter">Report:</label>
+                    <select name="reportfilter" id="reportfilter">
+                        <option value="Irrelevant">Irrelevant</option>
+                        <option value="Obscene">Obscene</option>
+                        <option value="Illegal">Illegal</option>
+                        <option value="Insulting">Insulting</option>
+                    </select>
+                    <input type="submit" value="Submit">
+                    </form>
                 {{else}}
-                <form action="/report" method="POST">
-                    <button class="fa-solid fa-flag" type="submit" value="report" name="report">
-                    </button>
-                </form>
+                <form id="postpagefilter" action="/report" method="POST">
+                    <label for="reportfilter">Report:</label>
+                    <select name="reportfilter" id="reportfilter">
+                        <option value="Irrelevant">Irrelevant</option>
+                        <option value="Obscene">Obscene</option>
+                        <option value="Illegal">Illegal</option>
+                        <option value="Insulting">Insulting</option>
+                    </select>
+                    <input type="submit" value="Submit">
+                    </form>
                 {{end}}
                 {{end}}
                 <br>
@@ -82,6 +93,10 @@
         </div>
         <div>
         </div>
+        <br>
+        {{ range .ReportType }}
+        {{ . }}
+        {{ end }}
         {{ range .Comments}}
         <div class="comment-row">
             <div class="comment-body">

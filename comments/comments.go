@@ -3,10 +3,11 @@ package comments
 import (
 	"database/sql"
 	"fmt"
+	"log"
+
 	"forum/dislikes"
 	"forum/likes"
 	"forum/users"
-	"log"
 )
 
 type Comment struct {
@@ -28,7 +29,6 @@ var LastIns int64
 
 func CreateComment(db *sql.DB, userID int, postID int, commentText string, creator int) {
 	stmt, err := db.Prepare("INSERT INTO comments (userID, postID, commentText, creationDate, notified, creatorID) VALUES (?, ?, ?, strftime('%H:%M %d/%m/%Y','now', 'localtime'), 0, ?)")
-
 	if err != nil {
 		fmt.Println("error preparing statement")
 		return
@@ -44,7 +44,6 @@ func CreateComment(db *sql.DB, userID int, postID int, commentText string, creat
 
 func GetCommentText(db *sql.DB) map[int]string {
 	rows, err := db.Query("SELECT postID, commentText FROM comments")
-
 	if err != nil {
 		fmt.Println("gct error 1", err)
 	}
@@ -129,11 +128,14 @@ func (c Comment) GetCID() int {
 	return c.CommentID
 }
 
+// func should delete post and all comments relating to post
 func DeleteComment(db *sql.DB, commentId int) {
-	stmt, err := db.Prepare("DELETE FROM comments WHERE commentID=?")
+	// deleting the comment
+	stmt, err := db.Prepare("DELETE FROM comments WHERE commentID = ?")
 	if err != nil {
-		fmt.Println("error deleting comment", err)
+		fmt.Println("error preparing delete comment statement", err)
 	}
+
 	stmt.Exec(commentId)
 
 	stmt2, err := db.Prepare("DELETE FROM likes WHERE commentID=?")

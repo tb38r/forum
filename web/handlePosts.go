@@ -36,12 +36,14 @@ type PostPageData struct {
 	EditComment string
 	EditCommentID int
 
+	ReportType      []string
 }
 
 var (
-	UserIdint int
-	PostIDInt int
-	Imagename string
+	UserIdint  int
+	PostIDInt  int
+	Imagename  string
+	ReportType string
 )
 
 func (s *myServer) CreatePostHandler() http.HandlerFunc {
@@ -165,6 +167,7 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 			UserType:        users.GetUserType(s.Db, GuserId),
 			Notification:    NotificationInt,
 			Reported:        ModReported(s.Db),
+			ReportType:      report.GetReportType(s.Db, PostIDInt),
 		}
 
 		if NotificationInt > 0 {
@@ -188,12 +191,27 @@ func (s *myServer) DeletePost() http.HandlerFunc {
 func (s *myServer) ReportHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		SPostID := strconv.Itoa(PostIDInt)
+		r.ParseForm()
 
 		if ModReported(s.Db) {
 			fmt.Fprint(w, "You have already reported this post")
 			// http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
 		} else {
-			report.ReportButton(s.Db, GuserId, PostIDInt)
+			postPageFilter := r.FormValue("reportfilter")
+
+			if postPageFilter == "Irrelevant" {
+				report.ReportButton(s.Db, users.CurrentUser, "irrelevant", PostIDInt)
+			}
+			if postPageFilter == "Obscene" {
+				report.ReportButton(s.Db, users.CurrentUser, "obscene", PostIDInt)
+			}
+			if postPageFilter == "Illegal" {
+				report.ReportButton(s.Db, users.CurrentUser, "illegal", PostIDInt)
+			}
+			if postPageFilter == "Insulting" {
+				report.ReportButton(s.Db, users.CurrentUser, "insulting", PostIDInt)
+			}
+
 			http.Redirect(w, r, "/showpost/?postid="+SPostID, http.StatusSeeOther)
 		}
 	}
@@ -201,8 +219,8 @@ func (s *myServer) ReportHandler() http.HandlerFunc {
 
 func ModReported(db *sql.DB) bool {
 	// check if post already been reportd by mod
-	userStmt := "SELECT userID FROM report WHERE userID = ? AND postID = ?"
-	row := db.QueryRow(userStmt, GuserId, PostIDInt)
+	userStmt := "SELECT username FROM report WHERE username = ? AND postID = ?"
+	row := db.QueryRow(userStmt, users.CurrentUser, PostIDInt)
 
 	var uID string
 	var pID string

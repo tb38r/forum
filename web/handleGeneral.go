@@ -21,16 +21,15 @@ type HomepageData struct {
 	Notification int
 	UserType     string
 	Categories   []string
+	ReportedBy   string
 	// PostUsername  map[int]string
 }
 
 // in chrome this handler is being run twice on localhost:8080, on safari only once (which is what we need) *** UNLESS route is changed from / to /home
 func (s *myServer) HomepageHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		user := users.CurrentUser
 		s.Db, _ = sql.Open("sqlite3", "forum.db")
-		userType := users.GetUserType(s.Db, GuserId)
 		fmt.Println("COMMENT USERNAME MAP", CommentNotify(s.Db))
 
 		homepage := posts.GetHomepageData(s.Db)
@@ -41,7 +40,16 @@ func (s *myServer) HomepageHandler() http.HandlerFunc {
 		if notify > 0 {
 			x = true
 		}
-		homePageData := HomepageData{user, homepage, users.AlreadyLoggedIn(r), GuserId, x, notify, userType, categories.GetAllCategories(s.Db)}
+		homePageData := HomepageData{
+			Username:     user,
+			AllPosts:     homepage,
+			LoggedIn:     users.AlreadyLoggedIn(r),
+			UserID:       GuserId,
+			Nbool:        x,
+			Notification: notify,
+			UserType:     users.GetUserType(s.Db, GuserId),
+			Categories:   categories.GetAllCategories(s.Db),
+		}
 		category := r.FormValue("category")
 		homePageFilter := r.FormValue("userfilter")
 
@@ -57,12 +65,13 @@ func (s *myServer) HomepageHandler() http.HandlerFunc {
 			homePageData.AllPosts = userFilter
 			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
 		} else if homePageFilter == "Liked Posts" {
-			likedFilter := posts.UsersLikesHomepageData(s.Db, GuserId)
-			homePageData.AllPosts = likedFilter
+			likeFilter := posts.UsersLikesHomepageData(s.Db, GuserId)
+			homePageData.AllPosts = likeFilter
 			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
 		} else if homePageFilter == "Reported Posts" {
 			reportFilter := posts.ReportedPostsHomepageData(s.Db)
 			homePageData.AllPosts = reportFilter
+			homePageData.ReportedBy = users.CurrentUser
 			Tpl.ExecuteTemplate(w, "homepage.html", homePageData)
 		}
 	}
