@@ -30,6 +30,12 @@ type PostPageData struct {
 	Nbool           bool
 	Notification    int
 	Categories      []string
+	EditFormID        string
+	EditFormTitle     string
+	EditFormContent   string
+	EditComment string
+	EditCommentID int
+
 }
 
 var (
@@ -171,6 +177,8 @@ func (s *myServer) ShowPostHandler() http.HandlerFunc {
 
 func (s *myServer) DeletePost() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		fmt.Println("ACTIVTY URL PATH", r.URL.Path)
 		posts.DeletePost(s.Db, PostIDInt)
 
 		http.Redirect(w, r, "/home", http.StatusSeeOther)

@@ -21,6 +21,7 @@ type Post struct {
 type HomepagePosts struct {
 	PostID       int
 	PostTitle    string
+	PostContent  string
 	PostUsername string
 	CreationDate string
 	PostLike     int
@@ -63,7 +64,7 @@ func CreatePosts(db *sql.DB, userID int, title string, content string, image str
 
 // Get all the data needed for the hompage
 func GetHomepageData(db *sql.DB) []HomepagePosts {
-	rows, err := db.Query(`SELECT postID, postTitle, username, creationDate FROM post 
+	rows, err := db.Query(`SELECT postID, postTitle, postContent, username, creationDate FROM post 
 	INNER JOIN users ON users.userID = post.userID;`)
 	if err != nil {
 		fmt.Println(err)
@@ -74,7 +75,7 @@ func GetHomepageData(db *sql.DB) []HomepagePosts {
 	for rows.Next() {
 		var p HomepagePosts
 		// fmt.Println(&p.PostID)
-		err2 := rows.Scan(&p.PostID, &p.PostTitle, &p.PostUsername, &p.CreationDate)
+		err2 := rows.Scan(&p.PostID, &p.PostTitle, &p.PostContent, &p.PostUsername, &p.CreationDate)
 		p.PostLike = likes.GetPostLikes(db, p.PostID)
 		p.PostDislike = dislikes.GetPostDislikes(db, p.PostID)
 		p.NetLikes = NetLikes(db, p.PostID)
@@ -102,7 +103,7 @@ func NetLikes(db *sql.DB, PostID int) int {
 
 // returns user's comments with their corresponding posts
 func ActivityComments(db *sql.DB, userid int) []ActPage {
-	rows, err := db.Query(`SELECT post.userID, post.postTitle, comments.commentText, post.postID 
+	rows, err := db.Query(`SELECT post.userID, post.postTitle, comments.commentID, comments.commentText, post.postID 
 	FROM post, comments
 	WHERE comments.userID = ?
 	AND post.postID = comments.postID
@@ -114,7 +115,7 @@ func ActivityComments(db *sql.DB, userid int) []ActPage {
 	defer rows.Close()
 	for rows.Next() {
 		var p ActPage
-		err2 := rows.Scan(&p.PostID, &p.PostTitle, &p.CommentText, &p.PostID)
+		err2 := rows.Scan(&p.PostID, &p.PostTitle, &p.CommentID, &p.CommentText, &p.PostID)
 		p.PostLike = likes.GetPostLikes(db, p.PostID)
 		pac = append(pac, p)
 		if err2 != nil {
@@ -222,7 +223,7 @@ func ActivityCommentDislikes(db *sql.DB, userid int) []ActPage {
 }
 
 func UsersPostsHomepageData(db *sql.DB, userID int) []HomepagePosts {
-	rows, err := db.Query("SELECT postID, postTitle, username, creationDate FROM post INNER JOIN users ON users.userID =  post.userID WHERE users.userID = ?;", userID)
+	rows, err := db.Query("SELECT postID, postTitle, postContent, username, creationDate FROM post INNER JOIN users ON users.userID =  post.userID WHERE users.userID = ?;", userID)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -230,7 +231,7 @@ func UsersPostsHomepageData(db *sql.DB, userID int) []HomepagePosts {
 	defer rows.Close()
 	for rows.Next() {
 		var p HomepagePosts
-		err2 := rows.Scan(&p.PostID, &p.PostTitle, &p.PostUsername, &p.CreationDate)
+		err2 := rows.Scan(&p.PostID, &p.PostTitle, &p.PostContent, &p.PostUsername, &p.CreationDate)
 		p.PostLike = likes.GetPostLikes(db, p.PostID)
 		p.PostDislike = dislikes.GetPostDislikes(db, p.PostID)
 		p.NetLikes = NetLikes(db, p.PostID)
@@ -349,6 +350,26 @@ func DeletePost(db *sql.DB, postID int) {
 		fmt.Println("error deleting post from the category table", err4)
 	}
 	stmt4.Exec(postID)
+	// deleting the likes connected to a post
+	stmt7, err7 := db.Prepare("DELETE FROM likes WHERE postID = ?")
+	if err7 != nil {
+		fmt.Println("error deleting reports from the likes table", err4)
+	}
+	stmt7.Exec(postID)
+
+	// deleting the dislikes connected to a post
+	stmt5, err5 := db.Prepare("DELETE FROM dislikes WHERE postID = ?")
+	if err4 != nil {
+		fmt.Println("error deleting reports from the dislikes table", err5)
+	}
+	stmt5.Exec(postID)
+
+	// deleting the dislikes connected to a post
+	stmt6, err6 := db.Prepare("DELETE FROM category WHERE postID = ?")
+	if err3 != nil {
+		fmt.Println("error deleting reports from the dislikes table", err6)
+	}
+	stmt6.Exec(postID)
 }
 
 func ReportedPostsHomepageData(db *sql.DB) []HomepagePosts {

@@ -152,7 +152,7 @@ func ResetCommentNotified(db *sql.DB) {
 		log.Fatal("ResetComment 3:", err)
 	}
 
-	fmt.Println(affected)
+	fmt.Println("Reset Affected", affected)
 
 }
 
@@ -201,5 +201,17 @@ func ResetDisLikesNotified(db *sql.DB) {
 	}
 
 	fmt.Println("DisLikes Affected:", affected)
+
+}
+
+func UpdatePost(db *sql.DB, title, content, image string, postID int) {
+
+	db.Exec("UPDATE post SET postTitle = ?, postContent = ?, image = ? WHERE postID = ?;", title, content, image, postID)
+
+}
+
+func UpdateComment(db *sql.DB, comment string, commentID int) {
+
+	db.Exec("UPDATE comments SET commentText = ? WHERE commentID = ?;", comment, commentID)
 
 }

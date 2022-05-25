@@ -61,5 +61,11 @@ func (s *myServer) Routes(a <-chan time.Time) {
 	// http.HandleFunc("/emptycommentpost/", Rate(a, Auth(SessionChecker(s.EmptyCommentPost()))))
 	// http.HandleFunc("/showcomment/", Rate(a, Auth(SessionChecker(s.ShowCommentHandler()))))
 	// this is for the template css files to run.
+	http.HandleFunc("/deleteactpost", Rate(a, Auth(SessionChecker(s.DeleteActPost()))))
+	http.HandleFunc("/deleteactcomment", Rate(a, Auth(SessionChecker(s.DeleteActComment()))))
+	http.HandleFunc("/editactpost", Rate(a, Auth(SessionChecker(s.EditActComment()))))
+	http.HandleFunc("/postedited", Rate(a, Auth(SessionChecker(s.EditPostHandler()))))
+	http.HandleFunc("/editactcomment", Rate(a, Auth(SessionChecker(s.EditCommentHandler()))))
+	http.HandleFunc("/commentedited", Rate(a, Auth(SessionChecker(s.EditedCommentHandler()))))
 	http.Handle("/templates/", http.StripPrefix("/templates/", http.FileServer(http.Dir("./templates"))))
 }
