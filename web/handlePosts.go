@@ -29,6 +29,9 @@ type PostPageData struct {
 	Reported        bool
 	Nbool           bool
 	Notification    int
+	EditFormID        string
+	EditFormTitle     string
+	EditFormContent   string
 }
 
 var (

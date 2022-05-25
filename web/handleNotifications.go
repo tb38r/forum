@@ -203,3 +203,9 @@ func ResetDisLikesNotified(db *sql.DB) {
 	fmt.Println("DisLikes Affected:", affected)
 
 }
+
+func UpdatePost(db *sql.DB, title, content, image string, postID int) {
+
+	db.Exec("UPDATE post SET postTitle = ?, postContent = ?, image = ? WHERE postID = ?;", title, content, image, postID)
+
+}
