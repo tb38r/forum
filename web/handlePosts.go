@@ -32,6 +32,9 @@ type PostPageData struct {
 	EditFormID        string
 	EditFormTitle     string
 	EditFormContent   string
+	EditComment string
+	EditCommentID int
+
 }
 
 var (

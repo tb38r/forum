@@ -63,9 +63,16 @@
           name="deletecomment">Delete Comment</button>
       </form>
 
-    </div>
+      <form action="/editactcomment" method="POST">
+        <button class="like-dislike-btn" id="editcomment" name="editcomment" value="{{ .CommentID }}" type="submit">Edit
 
-    {{end}}
+
+          Comment</button>
+      </form>
+
+
+      {{end}}
+    </div>
 
   </div>
 

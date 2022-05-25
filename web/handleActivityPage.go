@@ -30,6 +30,7 @@ type ActivityPage struct {
 	EditFormID        string
 	EditFormTitle     string
 	EditFormContent   string
+	EditCommentID     int
 }
 
 var (
@@ -39,7 +40,67 @@ var (
 	editbool        bool
 )
 
-func (s *myServer) EditPCHandler() http.HandlerFunc {
+func (s *myServer) EditedCommentHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// limits requests to 20MB (x is the limiter where x<<20)
+		r.Body = http.MaxBytesReader(w, r.Body, 20<<20)
+
+		err := r.ParseMultipartForm(20 << 20)
+		if err != nil {
+			http.Error(w, "Images must be less than 20MB!!", http.StatusBadRequest)
+			return
+		}
+
+		comment := r.FormValue("comment")
+		commentid, _ := strconv.Atoi(r.FormValue(("editpage")))
+
+		UpdateComment(s.Db, comment, commentid)
+
+		Suserid := strconv.Itoa(GuserId)
+
+		http.Redirect(w, r, "/activitypage?userid="+Suserid, http.StatusSeeOther)
+
+	}
+}
+
+func (s *myServer) EditCommentHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "POST" {
+			r.ParseForm()
+
+			var commID string
+
+			for _, value := range r.Form["editcomment"] {
+				commID += value
+			}
+
+			coMMInt, _ := strconv.Atoi(commID)
+
+			comment := comments.GetCommentEdit(s.Db, coMMInt)
+
+			notify := len(CommentNotify(s.Db)) + len(LikesNotify(s.Db)) + len(DisLikesNotify(s.Db))
+
+			if notify > 0 {
+				editbool = true
+			}
+
+			var EditComment PostPageData
+
+			EditComment.LoggedIn = users.AlreadyLoggedIn(r)
+			EditComment.Username = users.CurrentUser
+			EditComment.UserID = GuserId
+			EditComment.Notification = notify
+			EditComment.Nbool = editbool
+			EditComment.EditComment = comment
+			EditComment.EditCommentID = coMMInt
+
+			Tpl.ExecuteTemplate(w, "editactcomment.html", EditComment)
+
+		}
+	}
+
+}
+func (s *myServer) EditPostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// limits requests to 20MB (x is the limiter where x<<20)
 		r.Body = http.MaxBytesReader(w, r.Body, 20<<20)
@@ -53,10 +114,6 @@ func (s *myServer) EditPCHandler() http.HandlerFunc {
 		title := r.FormValue("title")
 		content := r.FormValue("content")
 		postid, _ := strconv.Atoi(r.FormValue(("editpage")))
-
-		fmt.Println("--EPC---", title)
-		fmt.Println("--EPC---", content)
-		fmt.Println("--EPC---", postid)
 
 		x, _, _ := r.FormFile("userimage")
 		if x != nil {
@@ -77,14 +134,11 @@ func (s *myServer) EditPCHandler() http.HandlerFunc {
 
 			Imagename = handler.Filename
 
-
 			userimages.SaveImage(file, handler.Filename)
 		}
 
 		// update database with new values
 		UpdatePost(s.Db, title, content, Imagename, postid)
-		
-
 
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}

@@ -148,3 +148,23 @@ func DeleteComment(db *sql.DB, commentId int) {
 	}
 	stmt3.Exec(commentId)
 }
+
+func GetCommentEdit(db *sql.DB, commentID int) string {
+	rows, err := db.Query(`SELECT commentText
+	FROM comments 
+	WHERE commentID = ?;`, commentID)
+	if err != nil {
+		fmt.Println(err)
+	}
+	var comment string
+	defer rows.Close()
+	for rows.Next() {
+
+		err2 := rows.Scan(&comment)
+
+		if err2 != nil {
+			fmt.Println(err2)
+		}
+	}
+	return comment
+}

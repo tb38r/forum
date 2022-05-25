@@ -209,3 +209,9 @@ func UpdatePost(db *sql.DB, title, content, image string, postID int) {
 	db.Exec("UPDATE post SET postTitle = ?, postContent = ?, image = ? WHERE postID = ?;", title, content, image, postID)
 
 }
+
+func UpdateComment(db *sql.DB, comment string, commentID int) {
+
+	db.Exec("UPDATE comments SET commentText = ? WHERE commentID = ?;", comment, commentID)
+
+}

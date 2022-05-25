@@ -50,9 +50,9 @@ func (s *myServer) Routes(a <-chan time.Time) {
 	http.HandleFunc("/deleteactpost", Rate(a, Auth(SessionChecker(s.DeleteActPost()))))
 	http.HandleFunc("/deleteactcomment", Rate(a, Auth(SessionChecker(s.DeleteActComment()))))
 	http.HandleFunc("/editactpost", Rate(a, Auth(SessionChecker(s.EditActComment()))))
-	http.HandleFunc("/pcedited", Rate(a, Auth(SessionChecker(s.EditPCHandler()))))
-
-
+	http.HandleFunc("/postedited", Rate(a, Auth(SessionChecker(s.EditPostHandler()))))
+	http.HandleFunc("/editactcomment", Rate(a, Auth(SessionChecker(s.EditCommentHandler()))))
+	http.HandleFunc("/commentedited", Rate(a, Auth(SessionChecker(s.EditedCommentHandler()))))
 
 	// http.HandleFunc("/emptycommentpost/", Rate(a, Auth(SessionChecker(s.EmptyCommentPost()))))
 	// http.HandleFunc("/showcomment/", Rate(a, Auth(SessionChecker(s.ShowCommentHandler()))))
