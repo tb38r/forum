@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"forum/users"
-	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -62,16 +61,12 @@ func (s *myServer) GoogleOAUTHLogin() http.HandlerFunc {
 		s.Db, _ = sql.Open("sqlite3", "forum.db")
 		httpClient := http.Client{}
 		err := r.ParseForm()
-		for k, v := range r.Form {
-			fmt.Println("checking what is in the form data======> ", k, v)
-		}
+
 		if err != nil {
 			fmt.Fprint(w, "Couldn't parse query", err)
 		}
 
 		code := r.FormValue("code")
-
-		fmt.Println("checking what the code value is ~~~~~~~~>> ", code)
 
 		reqURL := fmt.Sprintf("https://oauth2.googleapis.com/token?&code=%s&client_id=%s&client_secret=%s&redirect_uri=https://localhost:8080/google/redirect&grant_type=authorization_code", code, GoogleClientID, GoogleClientSecret)
 
@@ -90,35 +85,20 @@ func (s *myServer) GoogleOAUTHLogin() http.HandlerFunc {
 			fmt.Fprint(w, "couldn't send http request", err)
 		}
 		defer res.Body.Close()
-		fmt.Println("checking the res body----------------->", io.Reader(res.Body))
-
-		fmt.Println("the url is =>>", r.URL.RawPath)
 
 		var g GoogleOAuthAccessResponse
 		if err := json.NewDecoder(res.Body).Decode(&g); err != nil {
 			fmt.Fprintf(os.Stdout, "could not parse JSON response: %v", err)
 			w.WriteHeader(http.StatusBadRequest)
 		}
-		body, _ := ioutil.ReadAll(res.Body)
-		fmt.Println("****&&****", string([]byte(body)))
-		fmt.Println("checking if token is unmarshalled to struct!!!!!!1", g.AccessToken)
-
-		for k, v := range r.Form {
-			fmt.Println("checking what is in the form data----=> ", k, v)
-		}
-
-		//w.Header().Get(t.AccessToken,"https://github.com/user")
 
 		var bearer = "Bearer " + g.AccessToken
 
 		reqURL2 := fmt.Sprintf("https://www.googleapis.com/oauth2/v2/userinfo?access_token=%s", g.AccessToken)
-		//reqURL3 := fmt.Sprintf("https://www.googleapis.com/oauth2/v2/plus.login?access_token=%s", g.AccessToken)
 
 		// Create a new request using http
 		req1, err := http.NewRequest("GET", reqURL2, nil)
 
-		//req2, err := http.NewRequest("GET", "https://api.github.com/user/emails", nil)
-		// add authorization header to the req
 		req1.Header.Add("Authorization", bearer)
 
 		client := &http.Client{}
@@ -132,8 +112,6 @@ func (s *myServer) GoogleOAUTHLogin() http.HandlerFunc {
 			log.Println("Error while reading the response bytes:", err)
 		}
 
-		log.Println("checking body 1******", string([]byte(body1)))
-
 		var GMailAdd GoogleEmail
 
 		err3 := json.Unmarshal(body1, &GMailAdd)
@@ -141,17 +119,11 @@ func (s *myServer) GoogleOAUTHLogin() http.HandlerFunc {
 			log.Fatal(err3)
 		}
 
-		fmt.Println("CHECKING IF EMAIL IS UNMARSHALLED", GMailAdd.Email)
-
-		//resp, err := httpClient.Get("https://www.googleapis.com/oauth2/v3/userinfo")
-
 		for i := 0; i < len(GMailAdd.Email); i++ {
 			if GMailAdd.Email[i] == '@' {
 				GoogleUserName = GMailAdd.Email[0:i] + GMailAdd.ID[0:4]
 			}
 		}
-
-		fmt.Println("Checking if the username is created======>> ", GoogleUserName)
 
 		var (
 			UnameExists  bool
@@ -211,9 +183,7 @@ func (s *myServer) GitOAUTHLogin() http.HandlerFunc {
 		s.Db, _ = sql.Open("sqlite3", "forum.db")
 		httpClient := http.Client{}
 		err := r.ParseForm()
-		for k, v := range r.Form {
-			fmt.Println(k, v)
-		}
+
 		if err != nil {
 			fmt.Fprint(w, "Couldn't parse query", err)
 		}
@@ -236,9 +206,6 @@ func (s *myServer) GitOAUTHLogin() http.HandlerFunc {
 			fmt.Fprint(w, "couldn't send http request", err)
 		}
 		defer res.Body.Close()
-		fmt.Println("checking the res body----------------->", io.Reader(res.Body))
-
-		fmt.Println("the url is =>>", r.URL.RawPath)
 
 		// Parse the request body into the `Git` struct
 		var t GitOAuthAccessResponse
@@ -246,10 +213,6 @@ func (s *myServer) GitOAUTHLogin() http.HandlerFunc {
 			fmt.Fprintf(os.Stdout, "could not parse JSON response: %v", err)
 			w.WriteHeader(http.StatusBadRequest)
 		}
-		body, _ := ioutil.ReadAll(res.Body)
-		fmt.Println("****&&****", string([]byte(body)))
-
-		//w.Header().Get(t.AccessToken,"https://github.com/user")
 
 		var bearer = "Bearer " + t.AccessToken
 
@@ -269,7 +232,6 @@ func (s *myServer) GitOAUTHLogin() http.HandlerFunc {
 		}
 
 		resp1, err := client.Do(req2)
-		//defer resp.Body.Close()
 
 		body1, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
@@ -277,9 +239,6 @@ func (s *myServer) GitOAUTHLogin() http.HandlerFunc {
 		}
 
 		body2, err := ioutil.ReadAll(resp1.Body)
-		log.Println("checking body 1*******", string([]byte(body1)))
-		fmt.Println("----------------------------")
-		log.Println(string([]byte(body2)))
 
 		//fmt.Fprintln(w, string([]byte(body1)))
 		var GitUserMail []string
@@ -300,11 +259,6 @@ func (s *myServer) GitOAUTHLogin() http.HandlerFunc {
 		for _, v := range Gmail {
 			GitUserMail = append(GitUserMail, v.Email)
 		}
-		fmt.Printf("Received user's name: %s ", Guser.Username)
-		fmt.Printf("Received user's email: %s ", GitUserMail[0])
-
-		fmt.Println(Guser.Username)
-		fmt.Println(GitUserMail[0])
 
 		GitLoginName = Guser.Username
 
@@ -349,57 +303,8 @@ func (s *myServer) GitOAUTHLogin() http.HandlerFunc {
 			return
 		}
 
-		// // get userId to pass onto createpost handler
-
-		// var userID int
-
-		// stmt2 := "SELECT userID FROM users WHERE username = ?"
-		// row2 := s.Db.QueryRow(stmt2, Guser.Username)
-		// err2 := row2.Scan(&userID)
-		// fmt.Println("userID from db:", userID)
-		// GuserId = userID
-		// if err2 != nil {
-		// 	fmt.Println("user not found in db")
-		// }
-
-		// fmt.Println("CHECKING CURRENT USER +++++", users.CurrentUser)
-
-		// id := uuid.Must(uuid.NewV4())
-		// c := &http.Cookie{
-		// 	Name:  users.CurrentUser,
-		// 	Value: id.String(),
-		// }
-
-		// http.SetCookie(w, c)
-		// users.DbSessions[users.CurrentUser] = c.Value
-		//	Tpl.ExecuteTemplate(w, "welcome.html", userID)
 		http.Redirect(w, r, "/loginauth", http.StatusSeeOther)
 
-		/////////remove///////////////////
-		// fmt.Println("sessionbool", users.SessionExists(Guser.Username))
-
-		// fmt.Println("checking already logged in func", users.AlreadyLoggedIn(req2))
-
-		// for _, cookie := range r.Cookies() {
-		// 	fmt.Println("ddvdvsdsv")
-		// 	fmt.Println("Name : ", cookie.Name)
-		// 	fmt.Println("Value/UUID : ", cookie.Value)
-		// }
-
-		// fmt.Println("First time log-in successful")
-		// fmt.Println()
-
-		//req.Header.Add("Authorization", bearer)
-
-		// Finally, send a response to redirect the user to the "welcome" page
-		// with the access token
-		fmt.Println("this is the access token ===>", t.AccessToken)
-		//r.Header.Set("Authorization", t.AccessToken)
-
-		// w.Header().Set("Authorization", "Bearer"+t.AccessToken)
-		// w.Header().Set("Location", "/welcome.html?access_token="+t.AccessToken)
-		// w.WriteHeader(http.StatusFound)
-		// http.Redirect(w, r, "/home.html/?access_token="+t.AccessToken, http.StatusFound)
 	}
 }
 
