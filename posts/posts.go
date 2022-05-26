@@ -345,29 +345,23 @@ func DeletePost(db *sql.DB, postID int) {
 	}
 	stmt3.Exec(postID)
 
-	stmt4, err4 := db.Prepare("DELETE FROM postcategory WHERE postID = ?")
-	if err4 != nil {
-		fmt.Println("error deleting post from the category table", err4)
-	}
-	stmt4.Exec(postID)
-	// deleting the likes connected to a post
-	stmt7, err7 := db.Prepare("DELETE FROM likes WHERE postID = ?")
-	if err7 != nil {
-		fmt.Println("error deleting reports from the likes table", err4)
-	}
-	stmt7.Exec(postID)
+	// stmt4, err4 := db.Prepare("DELETE FROM postcategory WHERE postID = ?")
+	// if err4 != nil {
+	// 	fmt.Println("error deleting post from the postcategory table", err4)
+	// }
+	// stmt4.Exec(postID)
 
 	// deleting the dislikes connected to a post
 	stmt5, err5 := db.Prepare("DELETE FROM dislikes WHERE postID = ?")
-	if err4 != nil {
+	if err5 != nil {
 		fmt.Println("error deleting reports from the dislikes table", err5)
 	}
 	stmt5.Exec(postID)
 
-	// deleting the dislikes connected to a post
-	stmt6, err6 := db.Prepare("DELETE FROM category WHERE postID = ?")
-	if err3 != nil {
-		fmt.Println("error deleting reports from the dislikes table", err6)
+	// deleting the likes connected to a post
+	stmt6, err6 := db.Prepare("DELETE FROM likes WHERE postID = ?")
+	if err6 != nil {
+		fmt.Println("error deleting reports from the likes table", err6)
 	}
 	stmt6.Exec(postID)
 }
