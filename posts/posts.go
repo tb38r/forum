@@ -345,11 +345,11 @@ func DeletePost(db *sql.DB, postID int) {
 	}
 	stmt3.Exec(postID)
 
-	// stmt4, err4 := db.Prepare("DELETE FROM postcategory WHERE postID = ?")
-	// if err4 != nil {
-	// 	fmt.Println("error deleting post from the postcategory table", err4)
-	// }
-	// stmt4.Exec(postID)
+	stmt4, err4 := db.Prepare("DELETE FROM postcategory WHERE postID = ?")
+	if err4 != nil {
+		fmt.Println("error deleting post from the postcategory table", err4)
+	}
+	stmt4.Exec(postID)
 
 	// deleting the dislikes connected to a post
 	stmt5, err5 := db.Prepare("DELETE FROM dislikes WHERE postID = ?")
