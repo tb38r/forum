@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"unicode"
 
 	uuid "github.com/satori/go.uuid"
@@ -376,6 +377,7 @@ func (s *myServer) RegisterAuthHandler() http.HandlerFunc {
 		}
 
 		email := r.FormValue("email")
+		email = strings.ToLower(email)
 		fmt.Println("email", email)
 
 		if !users.ValidEmail(email) {
